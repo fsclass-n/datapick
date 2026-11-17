@@ -53,3 +53,12 @@
 - 배포: 플랫폼 Git 연동 자동 배포 (Netlify: netlify.toml ignore 로 frontend/ 변경 시만, Render: render.yaml buildFilter). Actions(deploy.yml)는 테스트·빌드만, Secrets 미등록 시 배포 단계 skip
 - 도메인: 프런트 https://dataquill.onrender.com (Render Static Site), 백엔드 https://dataquill-api.onrender.com (Render Web Service). Netlify 는 보조
 - TiDB Cloud 는 DB_SSL=true 필수 (false 면 1105 insecure transport 오류로 기동 실패)
+
+## 진행일지 · 산출물 (docs/*.hwpx → docs/pdf)
+- 재생성: `python docs/tools/build_docs.py` (pywin32 가 있는 Python, 한컴오피스 2020 필요) → 진행일지 빈 칸 채움(양식·기간·조·보고자 유지), `docs/산출물/*.hwpx` 작성, `docs/pdf/` 에 PDF 저장
+- 진행일지 팀원 칸은 `홍기흥`, 보고자는 양식의 `조휘일 (서명)` 유지 (`TEAM` 상수)
+- 이미 채워진 셀은 건너뜀 → 문구를 바꾸려면 빈 양식으로 되돌린 뒤 실행 (`git checkout 608cdee -- docs/프로젝트_진행일지_*.hwpx`)
+- 한글 자동화 보안 모듈: `HKCU\Software\HNC\HwpAutomation\Modules\FilePathCheckerModule` 에 pyhwpx 의 DLL 등록 필요, COM 이 멈추면 남은 `Hwp` 프로세스 종료
+- 한글 HTML 가져오기는 CSS 대부분과 `&#x27;` 를 무시 → `html.escape(..., quote=False)`, 한글이 섞인 아스키 다이어그램 대신 표 사용
+- 내용은 `docs/md` 작업 기록·코드에서 확인된 사실만 사용 (검증되지 않은 수치 금지)
+- Windows 에서 `pip install -r requirements.txt` 가 cp949 디코딩 오류를 내면 `PYTHONUTF8=1` 로 실행 (requirements 에 한글 주석)
