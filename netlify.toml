@@ -1,0 +1,16 @@
+# Netlify (Git 연동 자동 배포). Base directory 를 비워 두면 이 파일이 사용된다.
+# (Base directory 를 frontend 로 지정한 경우 frontend/netlify.toml 이 사용됨)
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+  # frontend/ 변경이 없으면 빌드를 건너뛴다 (첫 배포는 항상 빌드)
+  ignore = "[ \"$CACHED_COMMIT_REF\" = \"$COMMIT_REF\" ] && exit 1; git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- ."
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

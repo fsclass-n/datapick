@@ -1,0 +1,27 @@
+# ---- Backend / API ----
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+python-dotenv==1.1.0
+python-multipart==0.0.20
+SQLAlchemy==2.0.40
+PyMySQL==1.1.1
+PyJWT==2.10.1
+pydantic[email]==2.11.4
+
+# ---- AI ----
+google-genai==1.14.0
+
+# ---- Data / RPA / OCR ----
+numpy==2.2.5
+pandas==2.2.3
+openpyxl==3.1.5
+requests==2.32.3
+beautifulsoup4==4.13.4
+pypdf==5.4.0
+pillow==11.2.1
+pytesseract==0.3.13
+playwright==1.52.0
+
+# ---- Test ----
+pytest==8.3.5
+httpx==0.28.1
