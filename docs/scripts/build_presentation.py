@@ -520,7 +520,7 @@ def s08_auth(prs):
         "**OAuth 3종** — Google · Naver · Kakao 인가 코드 방식, state 쿠키로 CSRF 방지",
         "**계정 탈취 방지** — 같은 이메일이 다른 방식으로 가입돼 있으면 자동 연결 거부, 제공자의 이메일 인증 여부 확인",
         "**토큰 전달** — URL 해시(#token)로 전달 → 서버 접근 로그에 남지 않음",
-        "**테스트 계정** — 일반 / 관리자 버튼 → 자동 입력 후 로그인 (면접관 즉시 체험)",
+        "**테스트 계정** — 일반 / 테스트 관리자(조회 전용) 버튼 → 자동 입력 후 로그인 (면접관 즉시 체험)",
     ], size=12.5), space=6)
     flow = ["/oauth/{p}/login\nstate 생성 · HttpOnly 쿠키", "제공자 로그인", "/callback\nstate 비교", "토큰 교환\n프로필 조회", "계정 연결 · 생성\n→ #token=JWT"]
     for i, step in enumerate(flow):
@@ -536,7 +536,7 @@ def s08_auth(prs):
 이메일이 같다고 기존 계정에 자동으로 연결해 버리면 그 사람이 제 계정에 들어올 수 있습니다.
 그래서 이메일이 겹치면 연결하지 않고 막았고, 제공자가 이메일 인증 여부를 주는 경우에는 인증된 이메일만 믿습니다.
 로그인이 끝나면 토큰을 쿼리 문자열이 아니라 URL 해시로 넘겨서 서버 접근 로그에 토큰이 남지 않게 했습니다.
-테스트 계정 버튼은 오늘 같은 자리를 위해 만들었습니다. 가입 없이 일반 사용자와 관리자 화면을 바로 비교해 보실 수 있습니다.
+테스트 계정 버튼은 오늘 같은 자리를 위해 만들었습니다. 가입 없이 일반 사용자와 관리자 화면을 바로 비교해 보실 수 있고, 공개된 테스트 관리자는 조회만 가능합니다.
 """)
 
 
@@ -594,7 +594,7 @@ UI는 "상용 B2B SaaS처럼 보이는가"를 기준으로 만들었습니다.
 def s11_admin(prs):
     s = base(prs, 11, "10 · 주요 기능 ④ 관리자(Admin) 백오피스", "접근 제어는 세 겹, 보안 경계는 서버 하나")
     picture(s, SHOTS / "admin_users.png", 0.6, 1.8, 7.2, 4.5)
-    textbox(s, 0.6, 6.35, 7.2, 0.5, [("검색(250ms 디바운스) · 권한 필터 · 가입 방식 · 처리 문서 수 · 권한 토글 (로컬 데모 데이터)", {"size": 10, "color": MUTED})])
+    textbox(s, 0.6, 6.35, 7.2, 0.5, [("검색(250ms 디바운스) · 권한 필터 · 가입 방식 · 처리 문서 수 · 권한 토글 (운영 화면 · 테스트 관리자)", {"size": 10, "color": MUTED})])
     layers = [
         ("① 메뉴 노출", "관리자만 '회원 관리' · '모니터링' 메뉴 표시", PANEL, LINE, INK),
         ("② 라우트 가드", "<RequireAuth admin> → 일반 사용자는 대시보드로", PANEL, LINE, INK),
@@ -608,13 +608,14 @@ def s11_admin(prs):
     textbox(s, 8.15, 4.95, 4.55, 1.9, bullets([
         "**권한 변경** — 토글 + 확인창 → PATCH /api/admin/users/{id}/role",
         "**안전장치** — 본인 관리자 권한 해제 금지 (UI 비활성 + 서버 400) → 관리자 0명 방지",
-        "**반응형** — 모바일에서는 표 대신 카드 목록",
+        "**테스트 관리자** — 화면은 조회만, 쓰기 요청은 `get_current_user` 에서 403 · 운영 관리자는 ADMIN_TOKEN 로그인",
     ], size=12), space=6)
     notes(s, """
 관리자 기능의 핵심은 접근 제어를 세 겹으로 둔 것입니다. 메뉴를 숨기고, 라우트에서 막고, API에서 다시 막습니다.
 그런데 앞의 두 개는 사용자 편의를 위한 것이고, 진짜 보안 경계는 서버의 require_admin 의존성 하나라고 생각합니다.
 테스트에서도 일반 사용자 토큰으로 관리자 API를 호출하면 403, 토큰 없이 호출하면 401이 나오는지 확인합니다.
 또 관리자가 실수로 자기 권한을 지우면 관리자가 아무도 없는 상태가 될 수 있어서, 그건 서버에서 400으로 막았습니다.
+로그인 화면에 공개한 테스트 관리자는 조회만 할 수 있고, 데이터를 바꾸는 요청은 인증 단계에서 모두 403으로 거부합니다.
 """)
 
 
@@ -623,7 +624,7 @@ def s12_devops(prs):
     card(s, 0.6, 3.0, 1.9, 1.1, [("git push\nmain", {"size": 15, "bold": True, "color": WHITE, "align": PP_ALIGN.CENTER})],
          fill=BRAND_DARK, line=None, anchor=MSO_ANCHOR.MIDDLE)
     lanes = [
-        (1.8, 1.55, "GitHub Actions  ·  deploy.yml", ["paths-filter 로 바뀐 영역 판별", "`frontend/**` → npm ci · lint · build", "`backend/**` · `rpa/**` · requirements → pytest (22개)"], BRAND_LIGHT, BRAND_200),
+        (1.8, 1.55, "GitHub Actions  ·  deploy.yml", ["paths-filter 로 바뀐 영역 판별", "`frontend/**` → npm ci · lint · build", "`backend/**` · `rpa/**` · requirements → pytest (30개)"], BRAND_LIGHT, BRAND_200),
         (3.55, 1.05, "Render Static Site  ·  dataquill", ["Root Directory = frontend → frontend 변경 시에만 빌드", "SPA Rewrite: /* → /index.html"], PANEL, LINE),
         (4.8, 1.05, "Render Web Service (Docker)  ·  dataquill-api", ["Build Filter: `backend/**` · `rpa/**` · requirements.txt", "헬스 체크 /api/health · PORT 환경 변수로 기동"], PANEL, LINE),
     ]
@@ -709,7 +710,8 @@ def s14_docs(prs):
 │   └── 2026-11-17_발표자료_구성안.md
 ├── 산출물/  (01 기획분석 ~ 05 피드백)
 ├── 프로젝트_진행일지_1~5단계.hwpx
-├── scripts/build_presentation.py
+├── scripts/  (발표자료 · 화면 캡처)
+├── video/  (10분 발표·시연 영상)
 ├── assets/screenshots/
 ├── pdf/프로젝트_발표자료.pdf
 └── 프로젝트_발표자료.pptx
@@ -789,18 +791,18 @@ def s16_qna(prs, qrs):
                                       {"size": 20, "bold": True, "color": BRAND_200})])
     rows = [("서비스", "https://dataquill.onrender.com"), ("API 문서", "https://dataquill-api.onrender.com/docs"),
             ("GitHub", "https://github.com/fsclass-n/dataquill"), ("일반 사용자", "user@dataquill.io  /  User1234!"),
-            ("관리자", "admin@dataquill.io  /  Admin1234!")]
+            ("테스트 관리자", "admin@dataquill.io  /  Admin1234!  (조회 전용)")]
     for i, (label, value) in enumerate(rows):
         y = 3.0 + i * 0.52
         textbox(s, 0.9, y, 1.6, 0.45, [(label, {"size": 13, "bold": True, "color": "A5B4FC"})], anchor=MSO_ANCHOR.MIDDLE)
         textbox(s, 2.5, y, 5.6, 0.45, [(value, {"size": 13, "color": WHITE, "mono": True})], anchor=MSO_ANCHOR.MIDDLE)
     textbox(s, 0.9, 5.85, 7.2, 0.8, [
-        ("검증: pytest 22개 · 운영 점검(로그인 · CORS · OAuth Redirect · Gemini 파싱 · 엑셀 적재)", {"size": 12, "color": "C7D2FE"}),
+        ("검증: pytest 30개 · 운영 점검(로그인 · CORS · OAuth Redirect · Gemini 파싱 · 엑셀 적재)", {"size": 12, "color": "C7D2FE"}),
         ("로그인 화면의 테스트 계정 버튼으로 가입 없이 바로 체험할 수 있습니다.", {"size": 12, "color": "C7D2FE"}),
     ])
     qr_block(s, qrs, 8.35, 3.05)
     notes(s, """
-화면의 테스트 계정 버튼으로 바로 들어가 보실 수 있습니다. 관리자 계정으로 들어가시면 모니터링과 권한 관리까지 확인하실 수 있습니다.
+화면의 테스트 계정 버튼으로 바로 들어가 보실 수 있습니다. 테스트 관리자 계정으로 들어가시면 모니터링과 회원 관리 화면을 조회하실 수 있습니다.
 질문 받겠습니다.
 """)
 
@@ -816,7 +818,7 @@ def s17_appendix(prs):
         ["왜 TiDB 인가?", "MySQL 호환이라 코드 변경 없음, 무료 관리형 Serverless. URL 만 바꿔 MySQL 로 이전 가능"],
         ["파싱 정확도는?", "샘플 단위 검증까지 완료(운영 샘플 신뢰도 0.98). 정답셋 구축 후 측정 예정이라 수치로 주장하지 않음"],
         ["개인정보 보안은?", "업로드 크기 · 확장자 제한, 본인 문서만 조회, 비밀 값 저장소 외부 관리. 암호화 저장 · 보존 정책은 개선 과제"],
-        ["테스트 전략은?", "API 통합 테스트 22개(인증 · OAuth state · 업로드→파싱→엑셀 · 권한 · 통계 · Gemini 재시도), 외부 키 격리"],
+        ["테스트 전략은?", "API 통합 테스트 30개(인증 · OAuth state · 업로드→파싱→엑셀 · 권한 · 읽기 전용 관리자 · 통계 · Gemini 재시도), 외부 키 격리"],
         ["무료 플랜 콜드 스타트는?", "유휴 시 잠듦 → 데모 전 /api/health 로 깨움. 운영 전환 시 유료 플랜 또는 헬스 체크 핑"],
     ]
     table(s, 0.6, 1.8, 12.1, rows, [3.1, 9.0], size=11, row_h=0.5)

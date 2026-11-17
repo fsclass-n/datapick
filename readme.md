@@ -28,9 +28,9 @@
 
 <br/>
 
-[![Live Demo](https://img.shields.io/badge/%E2%96%B6%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%20%EB%8D%B0%EB%AA%A8%20%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-dataquill.onrender.com-4F46E5?style=for-the-badge&logo=render&logoColor=white)](https://dataquill.onrender.com)
+[![발표·시연 영상](https://img.shields.io/badge/%E2%96%B6%20%EB%B0%9C%ED%91%9C%C2%B7%EC%8B%9C%EC%97%B0%20%EC%98%81%EC%83%81%20%EB%B3%B4%EA%B8%B0-10%EB%B6%84%20%C2%B7%20MP4-E11D48?style=for-the-badge&logo=youtube&logoColor=white)](https://github.com/fsclass-n/dataquill/raw/main/docs/video/3%EC%A1%B0_final.mp4)
 
-<sub>로그인 화면의 테스트 계정 버튼으로 바로 체험할 수 있습니다. (무료 플랜 특성상 첫 요청은 서버 기동으로 30초 정도 걸릴 수 있습니다)</sub>
+<sub>PPT 발표와 운영 서비스 실시연(일반 사용자 · 테스트 관리자 계정 비교)을 담은 10분 영상입니다. 서비스는 로그인 화면의 테스트 계정 버튼으로 바로 체험할 수 있습니다.</sub>
 
 </div>
 
@@ -74,6 +74,20 @@
 | **ERP 자동 타이핑** | Playwright가 웹 ERP 전표 화면에 값을 입력·저장하고, ERP가 발급한 **전표번호를 확인한 뒤에만 성공**으로 기록 |
 | **대시보드 · 모니터링** | 사용자 KPI·일별 처리 추이, 관리자용 AI 파싱 성공률·RPA 성공률·최근 실패 목록 |
 | **인증 · 권한** | 이메일 가입(JWT), Google·Naver·Kakao OAuth, 운영 관리자 / 읽기 전용 테스트 관리자 / 일반 사용자 |
+
+### 발표·시연 영상 구성 (10:00)
+
+<img src="docs/video/video-thumbnail.png" alt="발표·시연 영상 썸네일" width="640"/>
+
+| 시간 | 구간 | 내용 |
+| --- | --- | --- |
+| 00:00 | PPT 발표 | 문제 정의 · 아키텍처 · 파이프라인 · AI 정형화 · 보안 · 관리자 · CI/CD · 트러블슈팅 (1~14장) |
+| 03:00 | 일반 사용자 시연 | 스캔 영수증 PDF 업로드 → Gemini 해석 → 검수 저장 → 엑셀 적재 · ERP 자동 타이핑(전표번호) → 청구 메일 → `/admin/users` 차단 |
+| 06:30 | 테스트 관리자 시연 | 읽기 전용 배너 → 모니터링(방금 처리한 문서 집계) → 회원 관리 → 비활성 업로드 → 실제 API 403 응답 → 운영 관리자 토큰 로그인 |
+| 08:24 | 운영 근거 | Swagger `/docs` · `/api/health` · GitHub Actions |
+| 09:00 | 클로징 | 회고(한계 · 다음 단계) · 링크 (15~16장) |
+
+<sub>운영 서비스(dataquill.onrender.com)에서 녹화했으며, 내레이션은 신경망 합성 음성입니다. 자막 [`3조_final.srt`](docs/video/3조_final.srt) · 대본·연출 가이드 [`영상_대본_및_연출가이드.md`](docs/video/영상_대본_및_연출가이드.md)</sub>
 
 <table>
   <tr>
@@ -315,6 +329,7 @@ dataquill/
 │   ├── md/                      # 작업일별 기록 (결정 · 검증 · 이슈)
 │   ├── 산출물/ · 프로젝트_진행일지_*.hwpx
 │   ├── pdf/                     # 진행일지 · 산출물 · 발표자료 PDF
+│   ├── video/                   # 10분 발표·시연 영상 · 자막 · 하이라이트 · 제작 도구(tools/)
 │   ├── scripts/ · tools/        # 발표자료 · 문서 생성 스크립트
 │   └── assets/                  # 화면 캡처 · QR
 ├── .github/workflows/deploy.yml # 변경 영역별 테스트·빌드·배포

@@ -62,3 +62,12 @@
 - 한글 HTML 가져오기는 CSS 대부분과 `&#x27;` 를 무시 → `html.escape(..., quote=False)`, 한글이 섞인 아스키 다이어그램 대신 표 사용
 - 내용은 `docs/md` 작업 기록·코드에서 확인된 사실만 사용 (검증되지 않은 수치 금지)
 - Windows 에서 `pip install -r requirements.txt` 가 cp949 디코딩 오류를 내면 `PYTHONUTF8=1` 로 실행 (requirements 에 한글 주석)
+
+## 발표·시연 영상 (docs/video)
+- 산출물: `3조_final.mp4`(10:00, 1080p30, ≤95MB, 저장소에 커밋) · `3조_final.srt` · `3조_highlight.mp4`(60초) · `video-thumbnail.png` · `영상_대본_및_연출가이드.md`. `build/` 는 git 제외
+- 대본·시간의 단일 기준: `docs/video/tools/video_scenes.py` (합계 정확히 600초, 영문 용어는 읽는 문장에 한글 발음)
+- 순서: `tts.py` → `record_demo.py` → `docs/scripts/capture_screens.py` → `build_presentation.py` → `export_slides.ps1` → `compose.py --rebuild` → `check_final.py` → `gen_guide.py`
+- 합성 음성 패키지는 `.venv` 에만 설치(`PYTHONUTF8=1 .venv/Scripts/pip install edge-tts==7.3.1`). `requirements.txt` 를 바꾸면 Render 백엔드가 재배포되므로 넣지 않음
+- 녹화는 설치된 Edge(`channel="msedge"`) + CDP 스크린캐스트(프레임 타임스탬프). Playwright 기본 녹화는 실제 시간과 어긋나므로 쓰지 않음
+- `record_demo.py` 는 공개 테스트 일반 사용자의 문서를 지우고 2건(가상 영수증 스캔 PDF, 샘플 청구 메일)을 새로 처리함 (Gemini 호출 발생). 스캔 PDF 는 Gemini 멀티모달 경로라 정확하고 빠름(이미지 업로드는 Tesseract 경로라 60초 이상 · 품목 오인식)
+- 장면 동작이 장면 길이를 넘으면 녹화 로그에 `!!` 경고 → 끝부분이 잘리므로 동작을 줄이고 해당 클립(`build/clips/<id>.mp4`)만 지운 뒤 `compose.py` 재실행
