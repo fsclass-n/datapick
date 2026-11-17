@@ -6,18 +6,21 @@ import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
 import { Badge, EmptyState, LoadingBlock, PageHeader, Spinner, StatCard } from '../../components/ui'
 import { PROVIDER_LABELS, dateOnly, dateTime } from '../../utils/format'
+import { READ_ONLY_HINT, TEST_ACCOUNT_EMAILS } from '../../utils/roles'
 
-function RoleToggle({ user, self, busy, onChange }) {
+function RoleToggle({ user, self, busy, readOnly, onChange }) {
   const isAdmin = user.role === 'admin'
+  const fixed = TEST_ACCOUNT_EMAILS.includes(user.email)
+  const reason = readOnly ? READ_ONLY_HINT : fixed ? '공개 테스트 계정의 권한은 고정되어 있습니다.' : self ? '본인의 권한은 변경할 수 없습니다.' : null
   return (
     <button
       type="button"
       role="switch"
       aria-checked={isAdmin}
       aria-label={`${user.name} 관리자 권한`}
-      disabled={self || busy}
+      disabled={!!reason || busy}
       onClick={() => onChange(user, isAdmin ? 'user' : 'admin')}
-      title={self ? '본인의 권한은 변경할 수 없습니다.' : isAdmin ? '일반 사용자로 변경' : '관리자로 변경'}
+      title={reason || (isAdmin ? '일반 사용자로 변경' : '운영 관리자로 변경')}
       className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition disabled:cursor-not-allowed disabled:opacity-40 ${isAdmin ? 'bg-brand-600' : 'bg-slate-300'}`}
     >
       <span className={`inline-flex size-5 items-center justify-center rounded-full bg-white text-[10px] text-brand-600 shadow transition ${isAdmin ? 'translate-x-5.5' : 'translate-x-0.5'}`}>
@@ -28,7 +31,7 @@ function RoleToggle({ user, self, busy, onChange }) {
 }
 
 export default function AdminUsers() {
-  const { user: me } = useAuth()
+  const { user: me, readOnly } = useAuth()
   const toast = useToast()
   const [users, setUsers] = useState(null)
   const [query, setQuery] = useState('')
@@ -58,7 +61,7 @@ export default function AdminUsers() {
     }
   }
 
-  const admins = users?.filter((u) => u.role === 'admin').length ?? 0
+  const admins = users?.filter((u) => u.role !== 'user').length ?? 0
 
   return (
     <>
@@ -66,7 +69,7 @@ export default function AdminUsers() {
 
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatCard icon={faUsers} label="조회된 회원" value={users ? `${users.length}명` : '-'} />
-        <StatCard icon={faUserShield} label="관리자" value={users ? `${admins}명` : '-'} tone="amber" />
+        <StatCard icon={faUserShield} label="관리자 (운영 + 테스트)" value={users ? `${admins}명` : '-'} tone="amber" />
         <StatCard icon={faUserGear} label="일반 사용자" value={users ? `${users.length - admins}명` : '-'} tone="green" />
       </div>
 
@@ -78,7 +81,8 @@ export default function AdminUsers() {
           </div>
           <select className="input sm:w-40" value={role} onChange={(e) => setRole(e.target.value)} aria-label="권한 필터">
             <option value="">전체 권한</option>
-            <option value="admin">관리자</option>
+            <option value="admin">운영 관리자</option>
+            <option value="test_admin">테스트 관리자</option>
             <option value="user">일반 사용자</option>
           </select>
         </div>
@@ -120,7 +124,7 @@ export default function AdminUsers() {
                       <td className="px-5 py-3.5 text-slate-600">{dateTime(u.last_login_at)}</td>
                       <td className="px-5 py-3.5"><Badge status={u.role} /></td>
                       <td className="px-5 py-3.5 text-center">
-                        <RoleToggle user={u} self={u.id === me.id} busy={busyId === u.id} onChange={changeRole} />
+                        <RoleToggle user={u} self={u.id === me.id} busy={busyId === u.id} readOnly={readOnly} onChange={changeRole} />
                       </td>
                     </tr>
                   ))}
@@ -136,7 +140,7 @@ export default function AdminUsers() {
                     <p className="flex items-center gap-2 font-medium text-slate-800">{u.name} <Badge status={u.role} /></p>
                     <p className="truncate text-xs text-slate-500">{u.email} · {PROVIDER_LABELS[u.provider]} · 문서 {u.document_count}</p>
                   </div>
-                  <RoleToggle user={u} self={u.id === me.id} busy={busyId === u.id} onChange={changeRole} />
+                  <RoleToggle user={u} self={u.id === me.id} busy={busyId === u.id} readOnly={readOnly} onChange={changeRole} />
                 </li>
               ))}
             </ul>

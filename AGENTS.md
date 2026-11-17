@@ -35,6 +35,18 @@
 - 진행 내용은 `docs/md/`에 마크다운으로 누적 기록
 - `.env` 값 뒤에 인라인 주석 금지 (빈 값 뒤 주석이 값으로 읽힘)
 
+## 권한 모델 (2026-11-17 개편)
+- `admin`(운영 관리자): `/api/auth/admin-login` + `ADMIN_TOKEN` 으로만 진입, 전체 CRUD. 5회 실패/10분 차단(프로세스 메모리)
+- `test_admin`(테스트 관리자, admin@dataquill.io): 관리자 화면 조회만. `deps.get_current_user` 에서 GET/HEAD/OPTIONS 외 403
+- 공개 테스트 계정 권한은 `backend/app/test_accounts.py` 기준으로 기동 시 복원, 권한 변경 API 로 변경 불가
+- 프런트 Mock(`src/api/mock.js`)도 같은 규칙을 따라야 함 (DB 키 `dq_mock_db_v2`)
+
+## UI 구조
+- 모든 페이지 공통 `components/layout/SiteLayout` (Header · Footer · 원형 Top 버튼), `/` 는 항상 메인(랜딩) `pages/Home`
+- 앱 · 정책 페이지는 `PageContainer` 안에서 렌더링 (container-page + page-y)
+- 디자인 토큰: `index.css` 의 text-display/title/heading/body/caption, `container-page`, `section-y`, `page-y`, `eyebrow`
+  (Tailwind 기본 유틸리티와 이름이 겹치지 않게 주의: `overline` 은 text-decoration 이라 사용 금지)
+
 ## 결정 사항
 - 소셜 로그인(Google/Naver/Kakao): 실제 OAuth 연동 (백엔드 콜백 구현, Client ID/Secret 필요)
 - 2026-11-17: 1단계 프런트엔드 완성 + 백엔드/RPA/AI 파이프라인 구현, 배포 설정 파일 작성 (실배포 전)

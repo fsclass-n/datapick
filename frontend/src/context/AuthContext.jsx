@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { api, tokenStore } from '../api/client'
+import { ADMIN_ROLES } from '../utils/roles'
 
 const AuthContext = createContext(null)
 
@@ -26,6 +27,13 @@ export function AuthProvider({ children }) {
     return me
   }, [])
 
+  const adminLogin = useCallback(async (token) => {
+    const { access_token, user: me } = await api('/api/auth/admin-login', { method: 'POST', body: { token } })
+    tokenStore.set(access_token)
+    setUser(me)
+    return me
+  }, [])
+
   const register = useCallback(async (name, email, password) => {
     const { access_token, user: me } = await api('/api/auth/register', { method: 'POST', body: { name, email, password } })
     tokenStore.set(access_token)
@@ -47,8 +55,22 @@ export function AuthProvider({ children }) {
   }, [logout])
 
   const value = useMemo(
-    () => ({ user, loading, isAdmin: user?.role === 'admin', login, register, logout, loginWithToken }),
-    [user, loading, login, register, logout, loginWithToken],
+    () => ({
+      user,
+      loading,
+      // 관리자 화면 접근 (운영 관리자 + 테스트 관리자)
+      isAdmin: ADMIN_ROLES.includes(user?.role),
+      // 전체 CRUD 권한 (ADMIN_TOKEN 으로 로그인한 운영 관리자)
+      isOperator: user?.role === 'admin',
+      // 테스트 관리자: 조회만 가능
+      readOnly: user?.role === 'test_admin',
+      login,
+      adminLogin,
+      register,
+      logout,
+      loginWithToken,
+    }),
+    [user, loading, login, adminLogin, register, logout, loginWithToken],
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

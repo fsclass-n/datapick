@@ -12,6 +12,8 @@ os.environ.update(
     GEMINI_API_KEY="",
     SEED_TEST_ACCOUNTS="true",
     SECRET_KEY="test-secret",
+    ADMIN_TOKEN="test-admin-token-0123456789",
+    ADMIN_EMAIL="operator@dataquill.io",
     **{f"{p}_CLIENT_{k}": "" for p in ("GOOGLE", "NAVER", "KAKAO") for k in ("ID", "SECRET")},
 )
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -40,4 +42,11 @@ def user_headers(client):
 
 @pytest.fixture(scope="session")
 def admin_headers(client):
+    res = client.post("/api/auth/admin-login", json={"token": "test-admin-token-0123456789"})
+    assert res.status_code == 200, res.text
+    return {"Authorization": f"Bearer {res.json()['access_token']}"}
+
+
+@pytest.fixture(scope="session")
+def test_admin_headers(client):
     return _login(client, "admin@dataquill.io", "Admin1234!")

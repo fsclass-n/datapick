@@ -16,6 +16,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { IS_MOCK, api, download } from '../api/client'
 import { useToast } from '../context/ToastContext'
+import { useAuth } from '../context/AuthContext'
+import { READ_ONLY_HINT } from '../utils/roles'
 import { Badge, EmptyState, LoadingBlock, PageHeader, Spinner } from '../components/ui'
 import { DOC_TYPE_LABELS, SOURCE_LABELS, dateTime, won } from '../utils/format'
 import { sourceIcon } from '../utils/icons'
@@ -47,6 +49,7 @@ const FIELDS = [
 
 function Intake({ onCreated }) {
   const toast = useToast()
+  const { readOnly } = useAuth()
   const [tab, setTab] = useState('file')
   const [dragging, setDragging] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -108,11 +111,17 @@ function Intake({ onCreated }) {
           onDrop={(e) => {
             e.preventDefault()
             setDragging(false)
-            uploadFiles([...e.dataTransfer.files])
+            if (!readOnly) uploadFiles([...e.dataTransfer.files])
           }}
-          onClick={() => !busy && inputRef.current.click()}
-          className={`flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed px-6 py-10 text-center transition ${
-            dragging ? 'border-brand-500 bg-brand-50' : 'border-slate-200 hover:border-brand-300 hover:bg-slate-50'
+          onClick={() => !busy && !readOnly && inputRef.current.click()}
+          title={readOnly ? READ_ONLY_HINT : undefined}
+          aria-disabled={readOnly}
+          className={`flex flex-col items-center rounded-xl border-2 border-dashed px-6 py-10 text-center transition ${
+            readOnly
+              ? 'cursor-not-allowed border-slate-200 bg-slate-50 opacity-60'
+              : dragging
+                ? 'cursor-pointer border-brand-500 bg-brand-50'
+                : 'cursor-pointer border-slate-200 hover:border-brand-300 hover:bg-slate-50'
           }`}
         >
           <span className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-xl text-brand-600">
@@ -145,7 +154,7 @@ function Intake({ onCreated }) {
             <button type="button" className="btn-ghost" onClick={() => setEmail({ title: '11월 클라우드 청구 메일', text: SAMPLE_EMAIL })}>
               <FontAwesomeIcon icon={faKeyboard} /> 샘플 채우기
             </button>
-            <button type="submit" className="btn-primary" disabled={busy}>
+            <button type="submit" className="btn-primary" disabled={busy || readOnly} title={readOnly ? READ_ONLY_HINT : undefined}>
               {busy ? <Spinner /> : <FontAwesomeIcon icon={faWandMagicSparkles} />} AI 해석 실행
             </button>
           </div>
@@ -157,6 +166,8 @@ function Intake({ onCreated }) {
 
 function DocumentDetail({ docId, onChanged, onDeleted, onClose }) {
   const toast = useToast()
+  const { readOnly } = useAuth()
+  const lock = readOnly ? { title: READ_ONLY_HINT } : {}
   const [doc, setDoc] = useState(null)
   const [draft, setDraft] = useState({})
   const [busy, setBusy] = useState(null)
@@ -290,13 +301,13 @@ function DocumentDetail({ docId, onChanged, onDeleted, onClose }) {
         )}
 
         <div className="flex flex-wrap gap-2">
-          <button className="btn-secondary" onClick={save} disabled={!!busy}>
+          <button className="btn-secondary" onClick={save} disabled={!!busy || readOnly} {...lock}>
             {busy === 'save' ? <Spinner /> : <FontAwesomeIcon icon={faFloppyDisk} />} 검수 저장
           </button>
-          <button className="btn-secondary" onClick={reparse} disabled={!!busy}>
+          <button className="btn-secondary" onClick={reparse} disabled={!!busy || readOnly} {...lock}>
             {busy === 'reparse' ? <Spinner /> : <FontAwesomeIcon icon={faArrowsRotate} />} 재해석
           </button>
-          <button className="btn-ghost ml-auto text-rose-600 hover:bg-rose-50" onClick={remove} disabled={!!busy}>
+          <button className="btn-ghost ml-auto text-rose-600 hover:bg-rose-50" onClick={remove} disabled={!!busy || readOnly} {...lock}>
             <FontAwesomeIcon icon={faTrashCan} /> 삭제
           </button>
         </div>
@@ -305,10 +316,10 @@ function DocumentDetail({ docId, onChanged, onDeleted, onClose }) {
           <h3 className="mb-1 text-sm font-semibold">RPA 자동 입력</h3>
           <p className="mb-3 text-xs text-slate-500">검수한 값을 엑셀 원장에 적재하거나, Playwright 로봇이 ERP 전표 화면에 직접 타이핑합니다.</p>
           <div className="grid gap-2 sm:grid-cols-2">
-            <button className="btn-primary bg-emerald-600 hover:bg-emerald-700" onClick={() => runRpa('excel')} disabled={!parsed || !!busy}>
+            <button className="btn-primary bg-emerald-600 hover:bg-emerald-700" onClick={() => runRpa('excel')} disabled={!parsed || !!busy || readOnly} {...lock}>
               {busy === 'excel' ? <Spinner /> : <FontAwesomeIcon icon={faFileExcel} />} 엑셀 원장 적재
             </button>
-            <button className="btn-primary" onClick={() => runRpa('erp')} disabled={!parsed || !!busy}>
+            <button className="btn-primary" onClick={() => runRpa('erp')} disabled={!parsed || !!busy || readOnly} {...lock}>
               {busy === 'erp' ? <Spinner /> : <FontAwesomeIcon icon={faKeyboard} />} ERP 자동 타이핑
             </button>
           </div>

@@ -1,7 +1,9 @@
 // VITE_API_URL 이 비어 있을 때(Netlify 단독 배포 1단계) 사용하는 브라우저 내 목업 API.
 // 실제 백엔드(FastAPI)와 동일한 경로·응답 형태를 localStorage 로 흉내 낸다.
 
-const DB_KEY = 'dq_mock_db_v1'
+const DB_KEY = 'dq_mock_db_v2'
+const ADMIN_ROLES = ['admin', 'test_admin']
+const TEST_ACCOUNT_EMAILS = ['user@dataquill.io', 'admin@dataquill.io']
 const PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/
 
 const fail = (status, message) => {
@@ -20,7 +22,7 @@ const VENDORS = ['스타벅스 강남R점', '쿠팡(주)', '네이버클라우�
 function seed() {
   const users = [
     { id: 1, email: 'user@dataquill.io', name: '테스트 사용자', password: 'User1234!', role: 'user', provider: 'local', created_at: daysAgo(30), last_login_at: null },
-    { id: 2, email: 'admin@dataquill.io', name: '테스트 관리자', password: 'Admin1234!', role: 'admin', provider: 'local', created_at: daysAgo(30), last_login_at: null },
+    { id: 2, email: 'admin@dataquill.io', name: '테스트 관리자', password: 'Admin1234!', role: 'test_admin', provider: 'local', created_at: daysAgo(30), last_login_at: null },
     { id: 3, email: 'kim.hr@acme.co.kr', name: '김인사', password: null, role: 'user', provider: 'google', created_at: daysAgo(12), last_login_at: daysAgo(1) },
     { id: 4, email: 'lee.fin@acme.co.kr', name: '이재무', password: null, role: 'user', provider: 'naver', created_at: daysAgo(8), last_login_at: daysAgo(2) },
     { id: 5, email: 'park@acme.co.kr', name: '박회계', password: null, role: 'user', provider: 'kakao', created_at: daysAgo(4), last_login_at: daysAgo(0) },
@@ -179,7 +181,12 @@ function computeStats(db, userId) {
       .map(({ id, filename, error, created_at }) => ({ id, filename, error, created_at })),
   }
   if (!userId) {
-    result.users = { total: db.users.length, admins: db.users.filter((u) => u.role === 'admin').length, by_provider: count(db.users, 'provider') }
+    result.users = {
+      total: db.users.length,
+      admins: db.users.filter((u) => u.role === 'admin').length,
+      test_admins: db.users.filter((u) => u.role === 'test_admin').length,
+      by_provider: count(db.users, 'provider'),
+    }
   }
   return result
 }
@@ -193,7 +200,8 @@ export async function mockRequest(path, { method, body, token }) {
   const id = Number(pathname.match(/\/(\d+)/)?.[1])
   const done = (value) => (save(db), value)
 
-  if (route === 'GET /api/auth/providers') return { google: false, naver: false, kakao: false }
+  if (route === 'GET /api/auth/providers') return { google: false, naver: false, kakao: false, admin_token: false }
+  if (route === 'POST /api/auth/admin-login') fail(503, 'Mock 모드에서는 운영 관리자 로그인을 사용할 수 없습니다.')
   if (route === 'POST /api/auth/login') {
     const user = db.users.find((u) => u.email === body.email?.toLowerCase() && u.password && u.password === body.password)
     if (!user) fail(401, '이메일 또는 비밀번호가 올바르지 않습니다.')
@@ -209,8 +217,11 @@ export async function mockRequest(path, { method, body, token }) {
   }
 
   const user = currentUser(db, token)
+  if (user.role === 'test_admin' && method !== 'GET') {
+    fail(403, '테스트 관리자 계정은 읽기 전용입니다. 데이터 생성·수정·삭제는 운영 관리자만 할 수 있습니다.')
+  }
   const findDoc = () => {
-    const doc = db.documents.find((d) => d.id === id && (d.user_id === user.id || user.role === 'admin'))
+    const doc = db.documents.find((d) => d.id === id && (d.user_id === user.id || ADMIN_ROLES.includes(user.role)))
     if (!doc) fail(404, '문서를 찾을 수 없습니다.')
     return doc
   }
@@ -276,7 +287,7 @@ export async function mockRequest(path, { method, body, token }) {
     }
   }
 
-  if (user.role !== 'admin') fail(403, '관리자 권한이 필요합니다.')
+  if (!ADMIN_ROLES.includes(user.role)) fail(403, '관리자 권한이 필요합니다.')
   switch (route) {
     case 'GET /api/admin/users': {
       const q = (params.get('q') || '').toLowerCase()
@@ -289,6 +300,7 @@ export async function mockRequest(path, { method, body, token }) {
       const target = db.users.find((u) => u.id === id)
       if (!target) fail(404, '사용자를 찾을 수 없습니다.')
       if (target.id === user.id && body.role !== 'admin') fail(400, '본인의 관리자 권한은 해제할 수 없습니다.')
+      if (TEST_ACCOUNT_EMAILS.includes(target.email)) fail(400, '공개된 테스트 계정의 권한은 변경할 수 없습니다.')
       target.role = body.role
       return done(publicUser(target))
     }

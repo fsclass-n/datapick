@@ -110,7 +110,7 @@ export default function AdminMonitoring() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard icon={faUsers} label="전체 회원" value={`${users.total}명`} sub={`관리자 ${users.admins}명`} />
+        <StatCard icon={faUsers} label="전체 회원" value={`${users.total}명`} sub={`운영 관리자 ${users.admins}명 · 테스트 관리자 ${users.test_admins ?? 0}명`} />
         <StatCard icon={faBrain} label="AI 파싱" value={`${d.parsed + d.failed}건`} sub={`성공 ${d.parsed} · 실패 ${d.failed}`} tone="green" />
         <StatCard icon={faFileExcel} label="엑셀 적재" value={`${rpa.by_target.excel || 0}건`} tone="amber" />
         <StatCard icon={faKeyboard} label="ERP 타이핑" value={`${rpa.by_target.erp || 0}건`} sub={`RPA 실패 ${rpa.failed}건`} tone="rose" />

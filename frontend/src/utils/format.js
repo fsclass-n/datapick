@@ -21,5 +21,5 @@ export const dateTime = (iso) =>
 export const dateOnly = (iso) => (iso ? new Date(iso).toLocaleDateString('ko-KR') : '-')
 
 export const SOURCE_LABELS = { pdf: 'PDF', image: '이미지', email: '이메일', text: '텍스트' }
-export const PROVIDER_LABELS = { local: '이메일', google: 'Google', naver: '네이버', kakao: '카카오' }
+export const PROVIDER_LABELS = { local: '이메일', google: 'Google', naver: '네이버', kakao: '카카오', admin_token: '관리자 토큰' }
 export const DOC_TYPE_LABELS = { receipt: '영수증', invoice: '세금계산서', email: '이메일', other: '기타' }

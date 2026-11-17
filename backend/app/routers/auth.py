@@ -1,4 +1,6 @@
 import secrets
+import time
+from collections import defaultdict, deque
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -10,12 +12,15 @@ from ..config import settings
 from ..database import get_db
 from ..deps import get_current_user
 from ..models import User, utcnow
-from ..schemas import LoginIn, RegisterIn, TokenOut, UserOut
+from ..schemas import AdminLoginIn, LoginIn, RegisterIn, TokenOut, UserOut
 from ..security import PASSWORD_RULE, create_token, hash_password, is_valid_password, verify_password
 from ..services import oauth
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 STATE_COOKIE = "dq_oauth_state"
+ADMIN_LOGIN_MAX_FAILURES = 5
+ADMIN_LOGIN_WINDOW_SECONDS = 600
+ADMIN_LOGIN_FAILURES: dict[str, deque] = defaultdict(deque)
 
 
 def issue_token(db: Session, user: User) -> TokenOut:
@@ -45,6 +50,36 @@ def login(body: LoginIn, db: Session = Depends(get_db)):
     return issue_token(db, user)
 
 
+def _recent_failures(client_ip: str) -> deque:
+    failures = ADMIN_LOGIN_FAILURES[client_ip]
+    while failures and failures[0] < time.monotonic() - ADMIN_LOGIN_WINDOW_SECONDS:
+        failures.popleft()
+    return failures
+
+
+@router.post("/admin-login", response_model=TokenOut)
+def admin_login(body: AdminLoginIn, request: Request, db: Session = Depends(get_db)):
+    """운영 관리자 로그인: 서버 환경 변수 ADMIN_TOKEN 과 일치해야 전체 CRUD 권한을 받는다."""
+    if not settings.admin_token:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "운영 관리자 로그인이 설정되지 않았습니다. (ADMIN_TOKEN)")
+    client_ip = request.client.host if request.client else "unknown"
+    failures = _recent_failures(client_ip)
+    if len(failures) >= ADMIN_LOGIN_MAX_FAILURES:
+        raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "인증 실패가 많아 잠시 차단되었습니다. 10분 후 다시 시도해 주세요.")
+    if not secrets.compare_digest(body.token.encode(), settings.admin_token.encode()):
+        failures.append(time.monotonic())
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "관리자 토큰이 올바르지 않습니다.")
+    failures.clear()
+
+    user = db.scalar(select(User).where(User.email == settings.admin_email))
+    if not user:
+        user = User(email=settings.admin_email, name="운영 관리자", provider="admin_token")
+        db.add(user)
+    user.role = "admin"
+    db.flush()
+    return issue_token(db, user)
+
+
 @router.get("/me", response_model=UserOut)
 def me(user: User = Depends(get_current_user)):
     return user
@@ -52,7 +87,7 @@ def me(user: User = Depends(get_current_user)):
 
 @router.get("/providers")
 def providers():
-    return {name: oauth.is_configured(name) for name in oauth.PROVIDERS}
+    return {**{name: oauth.is_configured(name) for name in oauth.PROVIDERS}, "admin_token": bool(settings.admin_token)}
 
 
 def _frontend_error(message: str) -> RedirectResponse:

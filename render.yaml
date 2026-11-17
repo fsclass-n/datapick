@@ -20,6 +20,10 @@ services:
         value: production
       - key: SECRET_KEY
         generateValue: true
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: ADMIN_EMAIL
+        value: operator@dataquill.io
       - key: FRONTEND_URL
         value: https://dataquill.onrender.com
       - key: BACKEND_URL

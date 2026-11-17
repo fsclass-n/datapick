@@ -13,6 +13,20 @@
   --color-brand-700: #4338ca;
   --color-brand-900: #1e1b4b;
 
+  /* 타이포 스케일 (화면 전체 공통) */
+  --text-display: 3.5rem;
+  --text-display--line-height: 1.12;
+  --text-display--letter-spacing: -0.03em;
+  --text-title: 2rem;
+  --text-title--line-height: 1.25;
+  --text-title--letter-spacing: -0.02em;
+  --text-heading: 1.25rem;
+  --text-heading--line-height: 1.4;
+  --text-body: 0.9375rem;
+  --text-body--line-height: 1.7;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.5;
+
   --color-naver: #03c75a;
   --color-kakao: #fee500;
 
@@ -59,4 +73,20 @@
 }
 @utility label {
   @apply mb-1.5 block text-sm font-medium text-slate-700;
+}
+
+/* 레이아웃 표준: 컨테이너 폭 1280px, 좌우 여백 16/24/32px */
+@utility container-page {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+/* 랜딩 섹션 상하 여백 */
+@utility section-y {
+  @apply py-16 sm:py-20 lg:py-24;
+}
+/* 앱 화면 상하 여백 */
+@utility page-y {
+  @apply py-8 sm:py-10;
+}
+@utility eyebrow {
+  @apply text-xs font-semibold tracking-[0.18em] text-brand-600 uppercase;
 }

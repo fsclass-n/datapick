@@ -42,7 +42,7 @@ def test_login_failure(client):
 
 
 def test_oauth_unconfigured_redirects_to_login(client):
-    assert client.get("/api/auth/providers").json() == {"google": False, "naver": False, "kakao": False}
+    assert client.get("/api/auth/providers").json() == {"google": False, "naver": False, "kakao": False, "admin_token": True}
     res = client.get("/api/auth/oauth/google/login", follow_redirects=False)
     assert res.status_code == 307
     assert "oauth_error" in parse_qs(urlparse(res.headers["location"]).query)
@@ -115,9 +115,10 @@ def test_admin_user_management_and_stats(client, admin_headers):
     target = next(u for u in users if u["email"] == "new@example.com")
     res = client.patch(f"/api/admin/users/{target['id']}/role", headers=admin_headers, json={"role": "admin"})
     assert res.json()["role"] == "admin"
-    assert client.get("/api/admin/users?role=admin", headers=admin_headers).json()[-1]["email"] == "new@example.com"
+    admins = {u["email"] for u in client.get("/api/admin/users?role=admin", headers=admin_headers).json()}
+    assert admins == {"new@example.com", "operator@dataquill.io"}
 
-    me = next(u for u in users if u["email"] == "admin@dataquill.io")
+    me = next(u for u in users if u["email"] == "operator@dataquill.io")
     res = client.patch(f"/api/admin/users/{me['id']}/role", headers=admin_headers, json={"role": "user"})
     assert res.status_code == 400
 
@@ -162,3 +163,75 @@ def test_gemini_retries_transient_errors(monkeypatch, failures, code, ok, calls)
         with pytest.raises(parser.ParseError):
             parser.parse_with_gemini("text")
     assert fake.calls == calls
+
+
+def test_admin_token_login_issues_full_admin(client, admin_headers):
+    me = client.get("/api/auth/me", headers=admin_headers).json()
+    assert me["role"] == "admin" and me["provider"] == "admin_token"
+
+
+def test_admin_token_rejects_wrong_token_and_rate_limits(client):
+    from backend.app.routers import auth
+
+    auth.ADMIN_LOGIN_FAILURES.clear()
+    for _ in range(auth.ADMIN_LOGIN_MAX_FAILURES):
+        assert client.post("/api/auth/admin-login", json={"token": "wrong"}).status_code == 401
+    res = client.post("/api/auth/admin-login", json={"token": "test-admin-token-0123456789"})
+    assert res.status_code == 429
+    auth.ADMIN_LOGIN_FAILURES.clear()
+
+
+def test_admin_token_disabled_when_not_configured(client, monkeypatch):
+    from backend.app.config import settings
+
+    monkeypatch.setattr(settings, "admin_token", "")
+    assert client.post("/api/auth/admin-login", json={"token": "anything"}).status_code == 503
+
+
+def test_seeded_test_admin_is_read_only_role(client, test_admin_headers):
+    me = client.get("/api/auth/me", headers=test_admin_headers).json()
+    assert me["role"] == "test_admin"
+
+
+def test_test_admin_can_view_admin_pages(client, test_admin_headers):
+    assert client.get("/api/admin/users", headers=test_admin_headers).status_code == 200
+    assert client.get("/api/admin/stats", headers=test_admin_headers).status_code == 200
+    assert client.get("/api/documents", headers=test_admin_headers).status_code == 200
+
+
+def test_test_admin_writes_are_blocked(client, test_admin_headers, admin_headers):
+    users = client.get("/api/admin/users", headers=admin_headers).json()
+    target = next(u for u in users if u["email"] == "user@dataquill.io")
+    blocked = [
+        client.patch(f"/api/admin/users/{target['id']}/role", headers=test_admin_headers, json={"role": "admin"}),
+        client.post("/api/documents/text", headers=test_admin_headers, json={"text": "합계: 1,000원 2026-11-17"}),
+        client.post("/api/documents/upload", headers=test_admin_headers, files={"file": ("a.txt", b"x", "text/plain")}),
+        client.delete("/api/documents/1", headers=test_admin_headers),
+        client.post("/api/documents/1/rpa", headers=test_admin_headers, json={"target": "excel"}),
+    ]
+    assert [r.status_code for r in blocked] == [403] * 5
+    assert "읽기 전용" in blocked[0].json()["detail"]
+    assert client.get("/api/admin/users", headers=admin_headers).json()[0]["role"] == "user"
+
+
+def test_test_accounts_roles_cannot_be_changed(client, admin_headers):
+    users = client.get("/api/admin/users", headers=admin_headers).json()
+    for email in ("admin@dataquill.io", "user@dataquill.io"):
+        target = next(u for u in users if u["email"] == email)
+        res = client.patch(f"/api/admin/users/{target['id']}/role", headers=admin_headers, json={"role": "admin"})
+        assert res.status_code == 400, email
+
+
+def test_seed_restores_test_account_roles(client):
+    from sqlalchemy import select
+
+    from backend.app.database import SessionLocal
+    from backend.app.main import seed_test_accounts
+    from backend.app.models import User
+
+    with SessionLocal() as db:
+        db.scalar(select(User).where(User.email == "admin@dataquill.io")).role = "admin"
+        db.commit()
+    seed_test_accounts()
+    with SessionLocal() as db:
+        assert db.scalar(select(User).where(User.email == "admin@dataquill.io")).role == "test_admin"

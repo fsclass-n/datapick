@@ -11,7 +11,7 @@ from rpa import erp_typer, excel_writer, extract
 
 from ..config import settings
 from ..database import get_db
-from ..deps import get_current_user
+from ..deps import ADMIN_ROLES, get_current_user
 from ..models import Document, RpaJob, User, utcnow
 from ..schemas import DocumentDetailOut, DocumentOut, RpaIn, RpaJobOut, TextDocumentIn
 from ..services import parser, stats
@@ -26,7 +26,7 @@ def _ledger_path(user_id: int) -> Path:
 
 def _get_document(db: Session, doc_id: int, user: User) -> Document:
     doc = db.get(Document, doc_id)
-    if not doc or (doc.user_id != user.id and user.role != "admin"):
+    if not doc or (doc.user_id != user.id and user.role not in ADMIN_ROLES):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "문서를 찾을 수 없습니다.")
     return doc
 

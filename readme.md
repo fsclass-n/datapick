@@ -51,12 +51,16 @@ cd frontend && npm install && npm run dev        # http://localhost:5173
 - 데모 ERP 화면(RPA 타이핑 대상): http://localhost:8000/erp-demo
 - Docker: `docker compose up --build`
 
-### 테스트 계정 (SEED_TEST_ACCOUNTS=true 일 때 자동 생성)
+### 계정과 권한
 
-| 구분 | 이메일 | 비밀번호 |
+| 구분 | 진입 방법 | 권한 |
 | --- | --- | --- |
-| 일반 사용자 | user@dataquill.io | User1234! |
-| 관리자 | admin@dataquill.io | Admin1234! |
+| 운영 관리자 | `/admin/login` 에서 서버 환경 변수 `ADMIN_TOKEN` 입력 | 모든 데이터 생성 · 수정 · 삭제, 회원 권한 변경 |
+| 테스트 관리자 | 로그인 화면 버튼 (`admin@dataquill.io` / `Admin1234!`) | 관리자 화면 조회만 가능, 모든 쓰기 요청은 서버에서 403 |
+| 일반 사용자 | 이메일 가입 · OAuth · 테스트 버튼 (`user@dataquill.io` / `User1234!`) | 본인 문서 업로드 · 검수 · RPA |
+
+- 테스트 계정은 `SEED_TEST_ACCOUNTS=true` 일 때 자동 생성되며, 비밀번호가 공개되어 있으므로 서버 기동 시마다 권한이 고정값으로 되돌아가고 권한 변경 API 로도 바꿀 수 없습니다.
+- 읽기 전용은 `deps.get_current_user` 한 곳에서 강제합니다 (`test_admin` 의 GET 외 요청 → 403).
 
 ### Mock 모드
 

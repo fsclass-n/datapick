@@ -9,17 +9,14 @@ from .database import Base, SessionLocal, engine
 from .models import User
 from .routers import admin, auth, documents, erp_demo
 from .security import hash_password
-
-TEST_ACCOUNTS = [
-    {"email": "user@dataquill.io", "name": "테스트 사용자", "password": "User1234!", "role": "user"},
-    {"email": "admin@dataquill.io", "name": "테스트 관리자", "password": "Admin1234!", "role": "admin"},
-]
+from .test_accounts import TEST_ACCOUNTS
 
 
 def seed_test_accounts() -> None:
     with SessionLocal() as db:
         for account in TEST_ACCOUNTS:
-            if not db.scalar(select(User).where(User.email == account["email"])):
+            user = db.scalar(select(User).where(User.email == account["email"]))
+            if not user:
                 db.add(
                     User(
                         email=account["email"],
@@ -28,6 +25,9 @@ def seed_test_accounts() -> None:
                         password_hash=hash_password(account["password"]),
                     )
                 )
+            elif user.role != account["role"]:
+                # 공개 계정이 승격된 채로 남지 않도록 기동 시마다 권한을 되돌린다
+                user.role = account["role"]
         db.commit()
 
 

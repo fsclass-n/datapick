@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faArrowRight,
@@ -7,6 +7,7 @@ import {
   faCircleExclamation,
   faComment,
   faEnvelope,
+  faEye as faEyeIcon,
   faEye,
   faEyeSlash,
   faFileInvoice,
@@ -21,13 +22,13 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { IS_MOCK, api, oauthLoginUrl } from '../api/client'
-import { Logo } from '../components/Layout'
+import Logo from '../components/layout/Logo'
 import { Spinner } from '../components/ui'
 import { PASSWORD_RULES, isValidEmail, isValidPassword } from '../utils/format'
 
 const TEST_ACCOUNTS = {
-  user: { email: 'user@dataquill.io', password: 'User1234!', label: '일반 사용자', icon: faUser },
-  admin: { email: 'admin@dataquill.io', password: 'Admin1234!', label: '관리자', icon: faUserShield },
+  user: { email: 'user@dataquill.io', password: 'User1234!', label: '일반 사용자', desc: '문서 업로드 · RPA 체험', icon: faUser },
+  admin: { email: 'admin@dataquill.io', password: 'Admin1234!', label: '테스트 관리자', desc: '관리자 화면 · 읽기 전용', icon: faEyeIcon },
 }
 
 const SOCIAL = [
@@ -44,7 +45,7 @@ const PIPELINE = [
 
 function BrandPanel() {
   return (
-    <div className="relative hidden overflow-hidden bg-brand-900 lg:flex lg:w-1/2 lg:flex-col lg:justify-between lg:p-12 xl:p-16">
+    <div className="relative hidden overflow-hidden bg-brand-900 lg:flex lg:w-[46%] lg:flex-col lg:justify-between lg:gap-10 lg:p-10 xl:p-12">
       <div className="absolute -top-32 -left-32 size-96 rounded-full bg-brand-600/40 blur-3xl" />
       <div className="absolute -right-24 bottom-0 size-96 rounded-full bg-fuchsia-500/20 blur-3xl" />
       <div
@@ -57,7 +58,7 @@ function BrandPanel() {
       </div>
 
       <div className="relative">
-        <h2 className="text-4xl leading-tight font-bold text-white xl:text-5xl">
+        <h2 className="text-3xl leading-tight font-bold text-white xl:text-4xl">
           서류는 AI가 읽고,
           <br />
           입력은 <span className="bg-gradient-to-r from-brand-200 to-fuchsia-300 bg-clip-text text-transparent">로봇이 합니다.</span>
@@ -110,7 +111,7 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const [params, setParams] = useSearchParams()
-  const [mode, setMode] = useState('login')
+  const [mode, setMode] = useState(() => (params.get('mode') === 'signup' ? 'signup' : 'login'))
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [touched, setTouched] = useState(false)
@@ -127,7 +128,7 @@ export default function Login() {
   }, [])
 
   useEffect(() => {
-    if (params.has('oauth_error')) setParams({}, { replace: true })
+    if (params.has('oauth_error') || params.has('mode')) setParams({}, { replace: true })
   }, [params, setParams])
 
   if (user) return <Navigate to={location.state?.from || '/dashboard'} replace />
@@ -168,14 +169,11 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen bg-white">
+    <div className="mx-auto flex max-w-6xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-900/5">
       <BrandPanel />
 
-      <div className="flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8">
+      <div className="flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-10 lg:py-12">
         <div className="w-full max-w-md animate-fade-in">
-          <div className="mb-8 lg:hidden">
-            <Logo />
-          </div>
 
           <h1 className="text-2xl font-bold sm:text-3xl">{isSignup ? '계정 만들기' : '다시 오신 것을 환영합니다'}</h1>
           <p className="mt-2 text-sm text-slate-500">
@@ -197,7 +195,7 @@ export default function Login() {
                   </span>
                   <span className="min-w-0 leading-tight">
                     <span className="block text-sm font-semibold text-slate-800">{account.label}</span>
-                    <span className="block text-xs text-slate-500">테스트 계정 로그인</span>
+                    <span className="block text-xs text-slate-500">{account.desc}</span>
                   </span>
                 </button>
               ))}
@@ -327,9 +325,14 @@ export default function Login() {
             </button>
           </p>
 
-          <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-slate-400">
-            <FontAwesomeIcon icon={faKeyboard} /> 테스트 계정은 클릭 한 번으로 자동 입력 후 로그인됩니다.
-          </p>
+          <div className="mt-8 flex flex-col items-center gap-2 border-t border-slate-100 pt-6 text-xs text-slate-400">
+            <p className="flex items-center gap-1.5">
+              <FontAwesomeIcon icon={faKeyboard} /> 테스트 계정은 클릭 한 번으로 자동 입력 후 로그인됩니다.
+            </p>
+            <Link to="/admin/login" className="flex items-center gap-1.5 font-semibold text-slate-500 hover:text-brand-600">
+              <FontAwesomeIcon icon={faUserShield} /> 운영 관리자 로그인 (관리자 토큰)
+            </Link>
+          </div>
         </div>
       </div>
     </div>

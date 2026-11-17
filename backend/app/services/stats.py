@@ -77,6 +77,7 @@ def compute(db: Session, user_id: int | None = None, days: int = 14) -> dict:
         result["users"] = {
             "total": len(users),
             "admins": sum(u.role == "admin" for u in users),
+            "test_admins": sum(u.role == "test_admin" for u in users),
             "by_provider": dict(Counter(u.provider for u in users)),
         }
     return result
