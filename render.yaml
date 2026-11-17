@@ -1,13 +1,13 @@
-# Render Blueprint (Dashboard > New > Blueprint 로 연결)
-# main 푸시 시 buildFilter 경로가 바뀐 경우에만 자동 배포된다.
+# Render Blueprint (Dashboard > New > Blueprint 로 연결하거나, 대시보드 수동 설정의 기준으로 사용)
+# main 푸시 시 각 서비스의 buildFilter 경로가 바뀐 경우에만 해당 서비스가 자동 배포된다.
 services:
+  # ---------- 백엔드 API: https://dataquill-api.onrender.com ----------
   - type: web
-    name: dataquill
+    name: dataquill-api
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: .
     plan: free
-    region: singapore
     healthCheckPath: /api/health
     autoDeploy: true
     buildFilter:
@@ -21,17 +21,21 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: FRONTEND_URL
-        value: https://dataquill.netlify.app
-      - key: BACKEND_URL
         value: https://dataquill.onrender.com
+      - key: BACKEND_URL
+        value: https://dataquill-api.onrender.com
       - key: CORS_ORIGINS
-        value: https://dataquill.netlify.app
+        value: https://dataquill.onrender.com,http://localhost:5173
       - key: ERP_URL
         value: http://localhost:10000/erp-demo
-      - key: DATABASE_URL
-        sync: false
       - key: DB_SSL
         value: "true"
+      - key: SEED_TEST_ACCOUNTS
+        value: "true"
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: DATABASE_URL
+        sync: false
       - key: GEMINI_API_KEY
         sync: false
       - key: GOOGLE_CLIENT_ID
@@ -46,3 +50,23 @@ services:
         sync: false
       - key: KAKAO_CLIENT_SECRET
         sync: false
+
+  # ---------- 프런트엔드: https://dataquill.onrender.com ----------
+  - type: web
+    name: dataquill
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/dist
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - frontend/**
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://dataquill-api.onrender.com
+      - key: NODE_VERSION
+        value: "22"

@@ -6,8 +6,9 @@ PDF 영수증·이메일 본문 같은 비정형 데이터를 AI(OCR + Gemini)�
 | 구분 | URL |
 | --- | --- |
 | GitHub | https://github.com/fsclass-n/dataquill |
-| Frontend (Netlify) | https://dataquill.netlify.app |
-| Backend API (Render) | https://dataquill.onrender.com |
+| Frontend (Render Static Site) | https://dataquill.onrender.com |
+| Backend API (Render Web Service) | https://dataquill-api.onrender.com |
+| Frontend (Netlify, 보조) | https://dataquill.netlify.app |
 
 ## 처리 흐름
 
@@ -68,11 +69,15 @@ cd frontend && npm install && npm run dev        # http://localhost:5173
 cd frontend && npm run lint && npm run build
 ```
 
-## 배포
+## 배포 (Render, main 푸시 시 자동 배포)
 
-- **CI/CD**: `.github/workflows/deploy.yml` 이 변경된 영역만 검증 후 배포합니다.
-  - `frontend/**` → lint·build → Netlify CLI 배포 (`NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID`, `vars.VITE_API_URL`)
-  - `backend/**`, `rpa/**`, `requirements.txt` → pytest → Render Deploy Hook (`RENDER_DEPLOY_HOOK_URL`)
-- **Render**: `render.yaml` Blueprint (Docker, `autoDeploy: false`). 비밀 값은 대시보드에 직접 등록합니다.
-- **Netlify**: `frontend/netlify.toml` (SPA 리다이렉트). Actions 로 배포하므로 Netlify 자체 Git 빌드는 중지(Stop builds)합니다.
-- **OAuth Redirect URI**: `{BACKEND_URL}/api/auth/oauth/{google|naver|kakao}/callback`
+`render.yaml` 이 두 서비스의 기준 설정입니다. 각 서비스는 자기 영역 파일이 바뀐 경우에만 배포됩니다(Build Filters).
+
+| 서비스 | 유형 | 배포 트리거 경로 |
+| --- | --- | --- |
+| `dataquill-api` | Web Service (Docker `backend/Dockerfile`, 또는 Python 네이티브) | `backend/**`, `rpa/**`, `requirements.txt` |
+| `dataquill` | Static Site (`frontend/dist`, `/*` → `/index.html` Rewrite) | `frontend/**` |
+
+- GitHub Actions(`deploy.yml`)는 변경 영역 테스트·빌드를 수행합니다. 배포 Secrets 가 없으면 배포 단계는 건너뜁니다.
+- OAuth Redirect URI: `https://dataquill-api.onrender.com/api/auth/oauth/{google|naver|kakao}/callback`
+- 환경 변수 구분은 `.env.example` 의 `[RENDER]`(백엔드) / `[RENDER-FE]`(프런트) 표기를 따릅니다.

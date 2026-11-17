@@ -30,7 +30,7 @@ class Settings:
 
     frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
     backend_url = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
-    cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",") if o.strip()]
+    cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,https://dataquill.onrender.com").split(",") if o.strip()]
 
     gemini_api_key = os.getenv("GEMINI_API_KEY", "")
     gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")

@@ -1,5 +1,6 @@
 # 빌드 컨텍스트: 저장소 루트 (backend/ + rpa/ + requirements.txt)
-FROM python:3.11-slim
+# Debian 12(bookworm) 고정: Playwright 1.52 의 --with-deps 는 Debian 11/12 만 지원 (trixie 에서 설치 실패)
+FROM python:3.11-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
