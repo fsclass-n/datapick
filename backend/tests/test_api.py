@@ -131,3 +131,34 @@ def test_erp_demo_voucher(client):
     assert "전표 입력" in client.get("/erp-demo").text
     res = client.post("/erp-demo/api/vouchers", json={"vendor": "A", "date": "2026-11-17", "total_amount": 1000})
     assert res.json()["voucher_no"].startswith("JV-")
+
+
+class _FakeModels:
+    def __init__(self, failures, code=503):
+        self.failures, self.code, self.calls = failures, code, 0
+
+    def generate_content(self, **_):
+        from google.genai import errors
+
+        self.calls += 1
+        if self.calls <= self.failures:
+            raise errors.APIError(self.code, {"error": {"code": self.code, "message": "high demand", "status": "UNAVAILABLE"}})
+        return type("R", (), {"text": '{"document_type": "receipt", "vendor": "A", "total_amount": 1000}'})()
+
+
+@pytest.mark.parametrize("failures, code, ok, calls", [(2, 503, True, 3), (9, 503, False, 4), (1, 400, False, 1)])
+def test_gemini_retries_transient_errors(monkeypatch, failures, code, ok, calls):
+    from google import genai
+
+    from backend.app.services import parser
+
+    fake = _FakeModels(failures, code)
+    monkeypatch.setattr(genai, "Client", lambda **_: type("C", (), {"models": fake})())
+    monkeypatch.setattr(parser, "RETRY_DELAYS", (0, 0, 0))
+    monkeypatch.setattr(parser.settings, "gemini_api_key", "test")
+    if ok:
+        assert parser.parse_with_gemini("text")["total_amount"] == 1000
+    else:
+        with pytest.raises(parser.ParseError):
+            parser.parse_with_gemini("text")
+    assert fake.calls == calls

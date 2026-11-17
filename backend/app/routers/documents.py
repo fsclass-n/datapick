@@ -152,7 +152,8 @@ def run_rpa(doc_id: int, body: RpaIn, user: User = Depends(get_current_user), db
             rows = excel_writer.append_rows(_ledger_path(doc.user_id), [excel_writer.to_row(doc.id, doc.parsed)])
             job.message = f"엑셀 원장에 적재했습니다. (총 {rows}행)"
         else:
-            url = os.getenv("ERP_URL", f"{settings.backend_url}/erp-demo")
+            # 미설정 시 같은 컨테이너의 데모 ERP (Render 는 PORT=10000, 로컬은 8000)
+            url = os.getenv("ERP_URL") or f"http://127.0.0.1:{os.getenv('PORT', '8000')}/erp-demo"
             headless = os.getenv("RPA_HEADLESS", "true").lower() != "false"
             voucher = erp_typer.type_record(doc.parsed, url, headless=headless)
             job.message = f"ERP 전표 입력 완료 (전표번호 {voucher})"

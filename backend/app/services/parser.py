@@ -7,6 +7,7 @@ GEMINI_API_KEY 가 있으면 Gemini 로 해석하고(이미지·스캔 PDF는 �
 from __future__ import annotations
 
 import re
+import time
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -39,6 +40,10 @@ class ParseError(RuntimeError):
     pass
 
 
+RETRYABLE_STATUS = {429, 500, 503, 504}
+RETRY_DELAYS = (2, 5, 10)
+
+
 PROMPT = """당신은 회계 전표 입력 담당자입니다. 아래 문서(영수증, 세금계산서, 거래 이메일 등)를 읽고
 ERP 전표 입력에 필요한 값을 JSON 으로 추출하세요.
 - 금액은 쉼표와 통화 기호를 제거한 정수로 표기합니다.
@@ -50,6 +55,7 @@ ERP 전표 입력에 필요한 값을 JSON 으로 추출하세요.
 
 def parse_with_gemini(text: str, file_bytes: bytes | None = None, mime_type: str | None = None) -> dict:
     from google import genai
+    from google.genai import errors as genai_errors
     from google.genai import types
 
     client = genai.Client(api_key=settings.gemini_api_key)
@@ -58,18 +64,23 @@ def parse_with_gemini(text: str, file_bytes: bytes | None = None, mime_type: str
         contents.append(types.Part.from_bytes(data=file_bytes, mime_type=mime_type))
     if text:
         contents.append(f"[문서 텍스트]\n{text[:30000]}")
-    try:
-        response = client.models.generate_content(
-            model=settings.gemini_model,
-            contents=contents,
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                response_schema=ParsedDocument,
-                temperature=0,
-            ),
-        )
-    except Exception as exc:
-        raise ParseError(f"Gemini 호출 실패: {exc}") from exc
+    config = types.GenerateContentConfig(
+        response_mime_type="application/json",
+        response_schema=ParsedDocument,
+        temperature=0,
+    )
+    for attempt, delay in enumerate((*RETRY_DELAYS, None)):
+        try:
+            response = client.models.generate_content(model=settings.gemini_model, contents=contents, config=config)
+            break
+        except genai_errors.APIError as exc:
+            if exc.code in RETRYABLE_STATUS and delay is not None:
+                time.sleep(delay)
+                continue
+            hint = " (일시적인 과부하입니다. 잠시 후 '재해석'을 눌러 주세요.)" if exc.code in RETRYABLE_STATUS else ""
+            raise ParseError(f"Gemini 호출 실패 ({exc.code}, {attempt + 1}회 시도): {exc.message or exc.status}{hint}") from exc
+        except Exception as exc:
+            raise ParseError(f"Gemini 호출 실패: {exc}") from exc
     if not response.text:
         raise ParseError("Gemini 가 빈 응답을 반환했습니다.")
     return ParsedDocument.model_validate_json(response.text).model_dump()

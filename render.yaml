@@ -26,8 +26,6 @@ services:
         value: https://dataquill-api.onrender.com
       - key: CORS_ORIGINS
         value: https://dataquill.onrender.com,http://localhost:5173
-      - key: ERP_URL
-        value: http://localhost:10000/erp-demo
       - key: DB_SSL
         value: "true"
       - key: SEED_TEST_ACCOUNTS
