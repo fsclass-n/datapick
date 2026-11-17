@@ -18,6 +18,9 @@
 - Mock 모드 빌드 확인: `VITE_API_URL= npx vite build --outDir <임시폴더>`
 - ERP 타이핑용 브라우저: `.venv/Scripts/python -m playwright install chromium`
 - npm 의존성 추가 시 `--before=<7일 전 날짜>` 사용
+- 발표자료 재생성: `.venv/Scripts/python docs/scripts/build_presentation.py` → `docs/프로젝트_발표자료.pptx` (노트에 발표 스크립트)
+  - PDF: PowerPoint COM 으로 내보내기 (`docs/pdf/프로젝트_발표자료.pdf`), 화면 캡처는 `docs/assets/screenshots/`
+  - 캡처는 별도 데모 인스턴스(백엔드 :8001 + 임시 SQLite, 프런트 :5180)에서 촬영. 5174 포트는 다른 프로젝트(fashionpick)가 사용 중
 
 ## 구조 메모
 - Python 패키지 루트는 저장소 루트 (`backend.app`, `rpa` 를 import). Docker 빌드 컨텍스트도 루트
