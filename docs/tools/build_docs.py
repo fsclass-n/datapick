@@ -144,26 +144,29 @@ JOURNAL = {
             "- 모든 페이지 공통 레이아웃과 디자인 토큰 표준화, 발표자료 · 10분 발표 영상 · README · 진행일지 · 산출물 완성"],
         5: ["- 실제로 구현 · 검증되지 않은 수치(정확도, 고객사 로고 등)와 가짜 사업자 정보는 화면 · 문서에 넣지 않음",
             "- 권한은 화면이 아닌 서버에서 강제"],
-        6: ["[완료] 전역 레이아웃: SiteLayout(헤더 · 푸터 · 원형 Top 버튼), 첫 접속은 항상 메인, 로그인 상태별 헤더 메뉴, 테스트 관리자 '읽기 전용' 배너",
-            "[완료] 메인 페이지(Hero · 지원 형식 · 작동 방식 · 기능 · 활용 사례 · 보안 · FAQ), 디자인 토큰 표준화, 이용약관 · 개인정보처리방침 신설",
+        6: ["[완료] 전역 레이아웃 SiteLayout(헤더 · 푸터 · 원형 Top), 첫 접속 메인, 상태별 헤더 메뉴, 읽기 전용 배너",
+            "[완료] 도메인 맞춤 메인 페이지, 디자인 토큰 표준화, 이용약관 · 개인정보처리방침 신설",
             "[완료] 권한 모델: 운영 관리자는 ADMIN_TOKEN 로그인(5회 실패 시 10분 차단), test_admin 은 쓰기 요청 403, 테스트 계정 권한은 기동 시 복원 · 변경 불가",
             "[완료] 발표자료(16장 + 부록, 발표자 노트) · 10분 발표 · 시연 영상(자막 포함) · 60초 하이라이트 제작, GitHub Pages 포트폴리오 공개",
             "[완료] README 재작성, 진행일지 · 산출물 표준 디자인으로 재작성 및 PDF 변환"],
         7: ["[완료] 발표자료 화면 캡처를 운영 서비스에서 재촬영해 개편 후 기준으로 갱신",
             "[향후 과제] RPA 작업 큐 분리 · 원본 스토리지 이전 · 정량 정확도 평가"],
         8: ["[완료] 권한 테스트 8개 추가, pytest 30개 통과, 프런트 lint 오류 0 · build 성공",
-            "[완료] 로컬 데모 인스턴스 Playwright 점검 16항목 통과, 포트폴리오 페이지 22항목 점검 통과(제자리 영상 재생 · 챕터 이동 · 모바일)",
+            "[완료] 화면 점검 16항목 · 포트폴리오 페이지 22항목(제자리 영상 재생 · 모바일) 통과",
             "[완료] 피드백 반영 내역 · 요구사항 충족 여부 · 운영 방법 · 회고 · 향후 계획 작성(산출물 05)"],
         9: ["- 회고: 대체 경로 설계(텍스트 → OCR → Vision, Gemini → 규칙)와 화면 · 서버 양쪽 검증이 안정성에 효과적",
-            "- 실패 원인 대부분이 외부 의존성(기본 이미지, LLM 가용성, 플랫폼 포트) → 처음부터 버전 고정 · 재시도 필요"],
+            "- 실패 원인 대부분이 외부 의존성 → 처음부터 버전 고정 · 재시도 설계 필요"],
         10: ["- 공개된 테스트 관리자 계정이 실제 관리자 권한을 가져 누구나 회원 권한 변경 가능(개편으로 해소)",
-             "- 새로고침 후 문서 시각이 9시간 이르게 표시(TiDB 에서 시간대 없는 값으로 읽힘) — 미수정"],
+             "- 새로고침 후 문서 시각이 9시간 이르게 표시(시간대 정보 누락) — 미수정"],
         11: ["[미해결] 문서 목록 · 상세의 시각 표시 오류(응답 직렬화 시 UTC 시간대 부여 예정)",
-             "[미해결] 운영 서버 ADMIN_TOKEN 미등록 → 운영 관리자 로그인 비활성(테스트 관리자는 읽기 전용으로 정상)",
+             "[미해결] 운영 서버 ADMIN_TOKEN 미등록 → 운영 관리자 로그인 비활성",
              "[향후 과제] RPA 작업 큐, 원본 스토리지 이전, Alembic, 정답셋 기반 정확도 측정, 실제 ERP 커넥터"],
         12: ["고도화 — RPA 비동기 작업 큐, 원본 스토리지 이전, 정량 정확도 평가, 실제 ERP · 조직 단위 권한"],
     },
 }
+
+
+JOURNAL_CONTENT_PARA = "2"   # 원본 양식에서 내용 셀(왼쪽 정렬)이 쓰는 문단 모양
 
 
 def _para_xml(text: str, para_pr: str, char_pr: str) -> str:
@@ -189,7 +192,22 @@ def fill_journal(template: Path, out: Path, rows: dict) -> None:
         body = "".join(_para_xml(t, p.group(1), p.group(2)) for t in rows[row])
         return re.sub(r"(<hp:subList[^>]*>).*?(</hp:subList>)", lambda s: s.group(1) + body + s.group(2), tc, count=1, flags=re.S)
 
-    items["Contents/section0.xml"] = re.sub(r"<hp:tc .*?</hp:tc>", repl, xml, flags=re.S).encode("utf-8")
+    xml = re.sub(r"<hp:tc .*?</hp:tc>", repl, xml, flags=re.S)
+    # 표준 스타일: 셀 내부 여백 상하 2mm · 좌우 2.5mm (표 틀 · 행 · 열은 그대로)
+    xml = re.sub(r'<hp:(cellMargin|inMargin) left="\d+" right="\d+" top="\d+" bottom="\d+"/>',
+                 lambda m: f'<hp:{m.group(1)} left="709" right="709" top="567" bottom="567"/>', xml)
+    xml = xml.replace('hasMargin="0"', 'hasMargin="1"')
+    items["Contents/section0.xml"] = xml.encode("utf-8")
+    # 표준 스타일: 셀 본문 문단(왼쪽 정렬) 줄 간격 130%(원본 양식 값) · 항목 아래 1pt → 1쪽 양식 유지
+    header = items["Contents/header.xml"].decode("utf-8")
+    content_pp = re.search(r'<hp:cellAddr colAddr="1" rowAddr="6"', xml) and JOURNAL_CONTENT_PARA
+    def tune(m):
+        pp = m.group(0)
+        if f'id="{content_pp}"' not in pp:
+            return pp
+        pp = re.sub(r'<hh:lineSpacing type="PERCENT" value="\d+"', '<hh:lineSpacing type="PERCENT" value="130"', pp)
+        return re.sub(r'<hc:next value="\d+"', '<hc:next value="100"', pp)
+    items["Contents/header.xml"] = re.sub(r"<hh:paraPr id=.*?</hh:paraPr>", tune, header, flags=re.S).encode("utf-8")
     with zipfile.ZipFile(out, "w") as z:
         for name, data in items.items():
             z.writestr(infos[name], data, compress_type=zipfile.ZIP_STORED if name == "mimetype" else zipfile.ZIP_DEFLATED)

@@ -22,7 +22,7 @@ from pathlib import Path
 
 PAGE_WIDTH, MARGIN_LR = 59528, 4535
 TEXT_WIDTH = PAGE_WIDTH - MARGIN_LR * 2          # 50458 HWPUNIT (= 약 178mm)
-TABLE_WIDTH = TEXT_WIDTH - 120
+TABLE_WIDTH = TEXT_WIDTH                         # 본문 양쪽 여백 라인에 맞춤
 CELL_MARGIN = {"left": 709, "right": 709, "top": 567, "bottom": 567}   # 2.5mm / 2mm
 
 PRIMARY, INK, MUTED = "#1B5E3B", "#222222", "#6B7280"
@@ -64,10 +64,10 @@ PARA = {
     "body": (0, "LEFT", 0, 400, 160, 0, 0, False, False, "none"),
     "bullet": (1, "LEFT", 0, 250, 160, 600, -1000, False, False, "none"),
     "title": (2, "CENTER", 0, 300, 130, 0, 0, True, True, "none"),
-    "h1": (3, "LEFT", 1400, 800, 130, 0, 0, True, True, "none"),
-    "h2": (4, "LEFT", 800, 400, 130, 0, 0, True, True, "none"),
-    "h3": (5, "LEFT", 600, 300, 130, 0, 0, True, True, "none"),
-    "caption": (6, "LEFT", 150, 600, 140, 0, 0, False, False, "none"),
+    "h1": (3, "LEFT", 1400, 1000, 160, 0, 0, True, True, "none"),
+    "h2": (4, "LEFT", 800, 400, 160, 0, 0, True, True, "none"),
+    "h3": (5, "LEFT", 600, 300, 160, 0, 0, True, True, "none"),
+    "caption": (6, "LEFT", 150, 600, 130, 0, 0, False, False, "none"),
     "cell_l": (7, "LEFT", 0, 0, 140, 0, 0, False, False, "none"),
     "cell_c": (8, "CENTER", 0, 0, 140, 0, 0, False, False, "none"),
     "cell_r": (9, "RIGHT", 0, 0, 140, 0, 0, False, False, "none"),
@@ -78,10 +78,12 @@ PARA = {
     "first": (14, "LEFT", 0, 0, 100, 0, 0, False, False, "none"),
     "page_no": (15, "CENTER", 0, 0, 120, 0, 0, False, False, "none"),
     # 쪽 하단에 제목만 남는 경우(2차 배치 검사에서 발견) 제목 앞에서 쪽을 나눔
-    "h1_pb": (16, "LEFT", 0, 800, 130, 0, 0, True, True, "none"),
-    "h2_pb": (17, "LEFT", 0, 400, 130, 0, 0, True, True, "none"),
-    "h3_pb": (18, "LEFT", 0, 300, 130, 0, 0, True, True, "none"),
-    "table_inline": (19, "LEFT", 200, 700, 100, 0, 0, False, False, "none"),
+    "h1_pb": (16, "LEFT", 0, 1000, 160, 0, 0, True, True, "none"),
+    "h2_pb": (17, "LEFT", 0, 400, 160, 0, 0, True, True, "none"),
+    "h3_pb": (18, "LEFT", 0, 300, 160, 0, 0, True, True, "none"),
+    # 표 아래 → 다음 제목: 표 문단 아래 16pt + 대제목 위 14pt ≈ 본문 2줄(30pt)
+    "table_inline": (19, "LEFT", 200, 1600, 100, 0, 0, False, False, "none"),
+    "table_tight": (20, "LEFT", 200, 0, 100, 0, 0, False, False, "none"),
 }
 
 FONT_FACES = ["맑은 고딕", "Consolas"]
@@ -176,6 +178,19 @@ def _p(text: str, para: str, char: str, strong: str | None = None) -> str:
             f"{_runs(text, char, strong or char)}</hp:p>")
 
 
+NUMERIC = re.compile(r"^[-+]?[\d,]+(\.\d+)?\s*(%|원|건|개|쪽|KB|MB)?$")
+
+
+def _auto_align(values) -> str:
+    """숫자 · 금액 = 오른쪽, 짧은 단어 · 코드 · 분류 = 가운데, 서술형 = 왼쪽"""
+    texts = [re.sub(r"\*\*|`", "", str(v)).strip() for v in values if str(v).strip()]
+    if texts and all(NUMERIC.match(t) for t in texts):
+        return "R"
+    if texts and max(len(t) for t in texts) <= 10 and not any(chr(10) in t for t in texts):
+        return "C"
+    return "L"
+
+
 class Document:
     def __init__(self, running_title: str, break_before: frozenset = frozenset()):
         self.running_title = running_title
@@ -218,7 +233,7 @@ class Document:
     # 표
     def table(self, head, rows, widths=None, align=None, label_col=False, zebra=True):
         cols = len(head)
-        align = align or ["L"] * cols
+        align = align or [_auto_align([r[i] for r in rows]) for i in range(cols)]
         if widths is None:
             avg = [sum(len(re.sub(r"\*\*|`", "", str(r[i]))) for r in [head, *rows]) / (len(rows) + 1) for i in range(cols)]
             widths = [min(max(a, 5), 48) for a in avg]
@@ -231,7 +246,7 @@ class Document:
                 bf, para, char, strong = "th", "cell_c", "th", "th"
             else:
                 bf = "td_label" if (label_col and c == 0) else ("td_zebra" if zebra and r % 2 == 0 else "td")
-                para = {"L": "cell_l", "C": "cell_c", "R": "cell_r"}[align[c]]
+                para = "cell_c" if (label_col and c == 0) else {"L": "cell_l", "C": "cell_c", "R": "cell_r"}[align[c]]
                 char, strong = ("td_b", "td_b") if (label_col and c == 0) else ("td", "td_accent")
             lines = str(value).split("\n")
             paras = "".join(_p(line, para, char, strong) for line in lines)
@@ -276,20 +291,22 @@ class Document:
                f'<hp:outMargin left="0" right="0" top="0" bottom="{"0" if inline else "@@OUT_BOTTOM@@"}"/>'
                f'<hp:inMargin left="{CELL_MARGIN["left"]}" right="{CELL_MARGIN["right"]}" top="{CELL_MARGIN["top"]}" bottom="{CELL_MARGIN["bottom"]}"/>'
                f"{trs}</hp:tbl>")
-        self.body.append(("table", f'<hp:p id="0" paraPrIDRef="{PARA["table_inline" if inline else "table"][0]}" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">'
+        self.body.append(("table", f'<hp:p id="0" paraPrIDRef="{"@@TPARA@@" if inline else PARA["table"][0]}" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">'
                                    f'<hp:run charPrIDRef="{CHAR["body"][0]}">{tbl}<hp:t/></hp:run></hp:p>'))
 
     # 표는 본문 위에 떠 있는 개체라 다음 문단의 '위 여백' 이 적용되지 않는다 → 표 바깥 아래 여백으로 간격 확보
     # 15행 이하 표는 쪽을 나누지 않음 → 제목 + 제목 행만 페이지 하단에 남는 현상 방지
     SPLIT_ROWS = 15
-    GAP_AFTER_TABLE = {"h1": 1400, "h2": 1000, "h3": 900, "table": 700, "caption": 150, None: 0}
+    GAP_AFTER_TABLE = {"h1": 3000, "h2": 2400, "h3": 2200, "table": 1600, "caption": 150, None: 0}
 
     def _body_xml(self) -> str:
         out = []
         for i, (kind, xml) in enumerate(self.body):
             if kind == "table":
                 nxt = self.body[i + 1][0] if i + 1 < len(self.body) else None
-                xml = xml.replace("@@OUT_BOTTOM@@", str(self.GAP_AFTER_TABLE.get(nxt, 700)))
+                xml = xml.replace("@@OUT_BOTTOM@@", str(self.GAP_AFTER_TABLE.get(nxt, 1000)))
+                # 캡션은 표에 붙여 둠
+                xml = xml.replace("@@TPARA@@", str(PARA["table_tight" if nxt == "caption" else "table_inline"][0]))
             out.append(xml)
         return "".join(out)
 
