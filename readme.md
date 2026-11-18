@@ -4,13 +4,13 @@
 
 ### 생성형 AI × RPA 기반 데이터 입력 자동화 플랫폼
 
-<a href="https://fsclass-n.github.io/dataquill/"><img src="https://img.shields.io/badge/PORTFOLIO-fsclass--n.github.io%2Fdataquill-6366F1?style=for-the-badge&logo=githubpages&logoColor=white" alt="포트폴리오 웹사이트" /></a>
-<a href="https://dataquill.onrender.com"><img src="https://img.shields.io/badge/LIVE-dataquill.onrender.com-A3E635?style=for-the-badge&logo=render&logoColor=black" alt="라이브 서비스" /></a>
+**영수증 · 세금계산서 · 거래 이메일 같은 비정형 문서를 AI가 읽어 정형화하고,<br/>사람이 검수한 값을 RPA 로봇이 ERP 전표 화면과 엑셀 원장에 대신 입력합니다.**
 
-**포트폴리오 웹사이트 → [https://fsclass-n.github.io/dataquill/](https://fsclass-n.github.io/dataquill/)**<br/>
-10분 온라인 발표 · 시연 영상, 60초 하이라이트, 처리 파이프라인, 권한 설계, 트러블슈팅을 한 페이지에서 볼 수 있습니다.
+<a href="https://fsclass-n.github.io/dataquill/">
+  <img src="docs/assets/portfolio-banner.jpg" alt="DataQuill 포트폴리오 — fsclass-n.github.io/dataquill" width="900"/>
+</a>
 
-**영수증·세금계산서·거래 이메일 같은 비정형 문서를 AI가 읽어 정형화하고,<br/>RPA 로봇이 ERP 화면과 엑셀 원장에 대신 입력합니다.**
+**🔗 포트폴리오 → [fsclass-n.github.io/dataquill](https://fsclass-n.github.io/dataquill/)**
 
 <br/>
 
@@ -18,6 +18,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-1.52-2EAD33?style=for-the-badge&logo=playwright&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google_Gemini-Structured_Output-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)
 <br/>
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)
@@ -25,88 +26,80 @@
 ![TiDB](https://img.shields.io/badge/TiDB_Cloud-MySQL-E30C34?style=for-the-badge&logo=tidb&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Render-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-[![CI/CD](https://img.shields.io/github/actions/workflow/status/fsclass-n/dataquill/deploy.yml?branch=main&style=flat-square&label=CI%2FCD)](https://github.com/fsclass-n/dataquill/actions/workflows/deploy.yml)
+[![CI/CD](https://img.shields.io/github/actions/workflow/status/fsclass-n/dataquill/deploy.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/fsclass-n/dataquill/actions/workflows/deploy.yml)
 ![Tests](https://img.shields.io/badge/pytest-30%20passed-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
-[![License](https://img.shields.io/github/license/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill)
 [![Issues](https://img.shields.io/github/issues/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/issues)
 [![Last Commit](https://img.shields.io/github/last-commit/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/commits/main)
-[![Repo Size](https://img.shields.io/github/repo-size/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill)
+![Repo Size](https://img.shields.io/github/repo-size/fsclass-n/dataquill?style=flat-square)
+![Top Language](https://img.shields.io/github/languages/top/fsclass-n/dataquill?style=flat-square)
 
-<br/>
-
-[![발표·시연 영상](https://img.shields.io/badge/%E2%96%B6%20%EB%B0%9C%ED%91%9C%C2%B7%EC%8B%9C%EC%97%B0%20%EC%98%81%EC%83%81%20%EB%B3%B4%EA%B8%B0-10%EB%B6%84%20%C2%B7%20MP4-E11D48?style=for-the-badge&logo=youtube&logoColor=white)](https://github.com/fsclass-n/dataquill/raw/main/docs/video/3%EC%A1%B0_final.mp4)
-
-<sub>PPT 발표와 운영 서비스 실시연(일반 사용자 · 테스트 관리자 계정 비교)을 담은 10분 영상입니다. 서비스는 로그인 화면의 테스트 계정 버튼으로 바로 체험할 수 있습니다.</sub>
+[**라이브 서비스**](https://dataquill.onrender.com) · [**API 문서 (Swagger)**](https://dataquill-api.onrender.com/docs) · [**포트폴리오**](https://fsclass-n.github.io/dataquill/) · [**발표자료 (PDF)**](docs/pdf/프로젝트_발표자료.pdf)
 
 </div>
+
+> **테스트 계정** — 로그인 화면의 버튼 한 번으로 체험할 수 있습니다.<br/>
+> 일반 사용자 `user@dataquill.io / User1234!` · 테스트 관리자(읽기 전용) `admin@dataquill.io / Admin1234!`<br/>
+> 무료 플랜이라 첫 접속 시 서버가 깨어나는 데 1분 정도 걸릴 수 있습니다.
 
 ---
 
 ## 목차
 
-1. [프로젝트 개요](#1-프로젝트-개요)
-2. [주요 기능](#2-주요-기능)
+1. [Overview](#1-overview)
+2. [Key Features](#2-key-features)
 3. [Architecture & Data Pipeline](#3-architecture--data-pipeline)
 4. [Key Technical Challenges & Solutions](#4-key-technical-challenges--solutions)
 5. [Tech Stack](#5-tech-stack)
 6. [API Architecture](#6-api-architecture)
 7. [Directory Structure](#7-directory-structure)
-8. [계정과 권한 모델](#8-계정과-권한-모델)
-9. [로컬 실행 · 검증](#9-로컬-실행--검증)
-10. [배포 · CI/CD](#10-배포--cicd)
-11. [한계와 향후 계획](#11-한계와-향후-계획)
+8. [Roles & Permissions](#8-roles--permissions)
+9. [Getting Started](#9-getting-started)
+10. [Testing & Quality](#10-testing--quality)
+11. [Deployment & CI/CD](#11-deployment--cicd)
+12. [Documents](#12-documents)
+13. [Limitations & Roadmap](#13-limitations--roadmap)
 
 ---
 
-## 1. 프로젝트 개요
+## 1. Overview
 
-| 구분 | 내용 |
-| --- | --- |
-| **문제** | 경리·총무 담당자는 영수증과 청구 메일을 보고 **ERP에 한 번, 엑셀 원장에 또 한 번** 손으로 입력합니다. 문서 형식이 제각각이라 규칙(정규식)만으로는 자동화가 어렵고, 사내 ERP는 연동 API가 없는 경우가 많습니다. |
-| **해결** | 형식 문제는 **생성형 AI(Gemini 구조화 출력)** 로, API가 없는 문제는 **사람처럼 화면에 입력하는 RPA(Playwright)** 로 풉니다. AI가 틀릴 수 있으므로 둘 사이에 **사람 검수 단계**를 일부러 넣었습니다. |
-| **흐름** | 업로드 → 텍스트 추출(PDF·OCR·이메일) → AI 정형화 → 사용자 검수·수정 → 엑셀 원장 적재 / ERP 자동 타이핑 |
-| **성격** | K-Digital 심화 과정 「생성형 AI와 AWS 클라우드를 활용한 풀스택 & 자동화 실무 개발」 Final Project (3조) |
+| 문제 | 현상 | DataQuill 의 해결 |
+| --- | --- | --- |
+| **이중 수기 입력** | 같은 영수증 · 청구 메일을 ERP 에 한 번, 엑셀 원장에 또 한 번 입력 | 한 번 추출한 값을 엑셀 원장 적재 + ERP 자동 타이핑 |
+| **비정형 문서** | 거래처마다 양식이 달라 정규식 규칙이 쉽게 깨짐 | Gemini 구조화 출력(Pydantic 스키마 강제) |
+| **스캔본 · 사진** | 텍스트 레이어가 없어 일반 추출 불가 | 텍스트 레이어 → Tesseract OCR → Gemini 멀티모달 단계적 대체 |
+| **API 없는 레거시 ERP** | 연동 API 가 없어 사람이 화면에 입력 | Playwright 로봇이 화면에 입력하고 전표번호로 성공 확인 |
+| **AI 환각** | 문서에 없는 값을 그럴듯하게 생성 | `없는 값은 null` 규칙 + 신뢰도 표시 + **사람 검수 후에만 입력** |
 
----
+- **기간 · 인원**: 1인 풀스택(기획 · 백엔드 · 프런트엔드 · RPA · 배포 · 문서 · 영상) — 홍기흥
+- **결과**: 운영 서비스 · API · 자동 테스트 30개 · 10분 발표 영상 · 발표자료 · 진행일지/산출물(HWPX · PDF)
 
-## 2. 주요 기능
+## 2. Key Features
+
+[![▶ 10분 발표 · 시연 영상 보기](https://img.shields.io/badge/%E2%96%B6%20%EB%B0%9C%ED%91%9C%20%C2%B7%20%EC%8B%9C%EC%97%B0%20%EC%98%81%EC%83%81%20%EB%B3%B4%EA%B8%B0-10%EB%B6%84%20%C2%B7%20GitHub%20Pages-6366F1?style=for-the-badge&logo=githubpages&logoColor=white)](https://fsclass-n.github.io/dataquill/#screening)
+
+<sub>포트폴리오 페이지에서 바로 재생됩니다(다운로드 없음) — 챕터 17개로 원하는 장면 이동, 60초 하이라이트 포함.</sub>
 
 | 기능 | 설명 |
 | --- | --- |
-| **다양한 입력 형식** | PDF, 이미지(JPG·PNG·WEBP·TIFF 등), EML, HTML, TXT 업로드(최대 10MB) 및 이메일 본문 붙여넣기 |
-| **AI 구조화 추출** | 거래처·사업자번호·거래일자·합계·부가세·결제수단·품목·적요를 JSON으로 추출하고, 신뢰도(confidence)를 함께 표시 |
-| **사람 검수** | 추출 결과를 화면에서 수정·저장(서버에서 같은 스키마로 재검증), 재해석 지원 |
-| **엑셀 원장 적재** | 문서 ID 기준으로 교체(upsert)해 여러 번 적재해도 중복 행이 생기지 않음, 원장 파일 다운로드 |
-| **ERP 자동 타이핑** | Playwright가 웹 ERP 전표 화면에 값을 입력·저장하고, ERP가 발급한 **전표번호를 확인한 뒤에만 성공**으로 기록 |
-| **대시보드 · 모니터링** | 사용자 KPI·일별 처리 추이, 관리자용 AI 파싱 성공률·RPA 성공률·최근 실패 목록 |
-| **인증 · 권한** | 이메일 가입(JWT), Google·Naver·Kakao OAuth, 운영 관리자 / 읽기 전용 테스트 관리자 / 일반 사용자 |
-
-### 발표·시연 영상 구성 (10:00)
-
-<img src="docs/video/video-thumbnail.png" alt="발표·시연 영상 썸네일" width="640"/>
-
-| 시간 | 구간 | 내용 |
-| --- | --- | --- |
-| 00:00 | PPT 발표 | 문제 정의 · 아키텍처 · 파이프라인 · AI 정형화 · 보안 · 관리자 · CI/CD · 트러블슈팅 (1~14장) |
-| 03:00 | 일반 사용자 시연 | 스캔 영수증 PDF 업로드 → Gemini 해석 → 검수 저장 → 엑셀 적재 · ERP 자동 타이핑(전표번호) → 청구 메일 → `/admin/users` 차단 |
-| 06:30 | 테스트 관리자 시연 | 읽기 전용 배너 → 모니터링(방금 처리한 문서 집계) → 회원 관리 → 비활성 업로드 → 실제 API 403 응답 → 운영 관리자 토큰 로그인 |
-| 08:24 | 운영 근거 | Swagger `/docs` · `/api/health` · GitHub Actions |
-| 09:00 | 클로징 | 회고(한계 · 다음 단계) · 링크 (15~16장) |
-
-<sub>운영 서비스(dataquill.onrender.com)에서 녹화했으며, 내레이션은 신경망 합성 음성입니다. 자막 [`3조_final.srt`](docs/video/3조_final.srt) · 대본·연출 가이드 [`영상_대본_및_연출가이드.md`](docs/video/영상_대본_및_연출가이드.md)</sub>
+| **6가지 입력** | PDF · 이미지(JPG · PNG · WEBP · TIFF 등) · EML · HTML · TXT 업로드(최대 10MB) + 이메일 본문 붙여넣기 |
+| **AI 구조화 추출** | 거래처 · 사업자번호 · 거래일자 · 합계 · 부가세 · 결제수단 · 품목 · 적요를 JSON 으로, 신뢰도(confidence)와 함께 |
+| **사람 검수** | 화면에서 수정 · 저장(서버가 같은 스키마로 재검증 → 422), 재해석 |
+| **엑셀 원장 적재** | 문서 ID 기준 upsert — 여러 번 적재해도 중복 행 없음, `.xlsx` 다운로드 |
+| **ERP 자동 타이핑** | Playwright 가 전표 화면에 입력 · 저장하고 **ERP 가 발급한 전표번호를 확인해야 성공** 기록 |
+| **대시보드 · 모니터링** | KPI · 최근 14일 추이(KST), 관리자용 AI 파싱 성공률 · RPA 성공률 · 최근 실패 |
+| **인증 · 권한** | 이메일 가입(JWT) · Google · Naver · Kakao OAuth, 운영 관리자 / 읽기 전용 테스트 관리자 / 일반 사용자 |
 
 <table>
   <tr>
-    <td align="center"><img src="docs/assets/screenshots/documents.png" alt="문서 처리 화면" width="420"/><br/><sub>문서 업로드 · AI 추출 결과 검수 · RPA 실행</sub></td>
-    <td align="center"><img src="docs/assets/screenshots/erp_demo.png" alt="데모 ERP 전표 입력" width="420"/><br/><sub>로봇이 입력한 데모 ERP 전표 (전표번호 발급)</sub></td>
+    <td align="center"><img src="docs/assets/screenshots/documents.png" alt="문서 처리" width="420"/><br/><sub>업로드 · AI 추출 결과 검수 · RPA 실행</sub></td>
+    <td align="center"><img src="docs/assets/screenshots/erp_demo.png" alt="데모 ERP" width="420"/><br/><sub>로봇이 입력한 ERP 전표(전표번호 발급)</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/assets/screenshots/monitoring_top.png" alt="관리자 모니터링" width="420"/><br/><sub>관리자 모니터링 (파싱·RPA 성공률)</sub></td>
-    <td align="center"><img src="docs/assets/screenshots/dashboard.png" alt="대시보드" width="420"/><br/><sub>사용자 대시보드</sub></td>
+    <td align="center"><img src="docs/assets/screenshots/monitoring_top.png" alt="모니터링" width="420"/><br/><sub>관리자 모니터링(파싱 · RPA 성공률)</sub></td>
+    <td align="center"><img src="docs/assets/screenshots/admin_users.png" alt="회원 관리" width="420"/><br/><sub>회원 관리 · 권한(테스트 관리자는 읽기 전용)</sub></td>
   </tr>
 </table>
-
----
 
 ## 3. Architecture & Data Pipeline
 
@@ -114,196 +107,113 @@
 
 ```mermaid
 flowchart LR
-    U["Browser"] -->|HTTPS| FE["React 19 SPA<br/>Render Static Site"]
-    FE -->|"REST + Bearer JWT<br/>(CORS 허용 도메인 제한)"| API
-
-    subgraph BE["FastAPI · Render Web Service (Docker)"]
-        API["routers<br/>auth · documents · admin"]
-        SVC["services<br/>parser · oauth · stats"]
-        subgraph RPA["rpa 패키지 (CLI 단독 실행 가능)"]
-            EX["extract.py<br/>pypdf · Tesseract · EML/HTML"]
-            XL["excel_writer.py<br/>pandas + openpyxl"]
-            TY["erp_typer.py<br/>Playwright + Chromium"]
-        end
-        ERP["/erp-demo<br/>데모 ERP 화면"]
-        API --> SVC
-        API --> EX
-        API --> XL
-        API --> TY
-        TY -->|자동 타이핑| ERP
+    U([User Browser]) -- HTTPS · Bearer JWT --> FE["Frontend<br/>React 19 · Vite · Tailwind v4<br/>Render Static Site"]
+    FE -- REST · CORS --> API["Backend · FastAPI<br/>Render Web Service (Docker)"]
+    subgraph API_BOX [backend.app + rpa]
+        API --> R1[routers<br/>auth · documents · admin · erp_demo]
+        R1 --> S1[services<br/>parser · oauth · stats]
+        R1 --> RPA[rpa<br/>extract · excel_writer · erp_typer]
     end
-
-    SVC -->|구조화 출력| GM["Google Gemini API"]
-    SVC -->|Authorization Code| OA["OAuth<br/>Google · Naver · Kakao"]
-    API -->|"SQLAlchemy (TLS)"| DB[("TiDB Cloud Serverless<br/>MySQL 호환")]
+    S1 -- SQLAlchemy · TLS --> DB[(TiDB Cloud<br/>Serverless)]
+    S1 -- structured output --> LLM[[Google Gemini API]]
+    R1 -- Authorization Code --> OA[[Google · Naver · Kakao]]
+    RPA -- Playwright --> ERP[Web ERP<br/>/erp-demo]
+    RPA -- pandas · openpyxl --> XL[(Excel Ledger)]
 ```
-
-- **프론트·백엔드 분리 배포**: 화면만 바뀌었을 때 Chromium이 포함된 무거운 백엔드 이미지를 다시 빌드하지 않습니다.
-- **`rpa` 패키지 분리**: 웹 계층(`backend.app`)과 자동화 계층(`rpa`)을 나눠, 나중에 별도 워커로 옮기기 쉽게 했습니다.
-- **무상태 컨테이너 + 관리형 DB**: 재배포해도 데이터는 TiDB에 남습니다. 로컬·테스트는 같은 코드로 SQLite를 씁니다.
 
 ### 3.2 Document Processing Pipeline
 
 ```mermaid
-flowchart LR
-    A["업로드 / 본문 입력"] --> B{"텍스트 추출<br/>extract.py"}
-    B -->|"PDF 텍스트 레이어"| T["원문 텍스트"]
-    B -->|"이미지 → Tesseract OCR"| T
-    B -->|"EML · HTML → 본문 정리"| T
-    B -->|"텍스트 20자 미만<br/>(스캔본 · OCR 없음)"| V["원본 파일 그대로<br/>Gemini 멀티모달"]
-    T --> P{"AI 정형화<br/>parser.py"}
+flowchart TD
+    A[업로드 · 메일 본문] -->|확장자 · 10MB 검사| B{텍스트 레이어?}
+    B -->|20자 이상| T[pypdf 텍스트]
+    B -->|스캔본 · 이미지| C{Tesseract 설치?}
+    C -->|kor+eng OCR 성공| T
+    C -->|실패 · 미설치| V[원본 바이트 → Gemini 멀티모달]
+    T --> P{GEMINI_API_KEY?}
     V --> P
-    P -->|"API 키 있음"| G["Gemini 구조화 출력<br/>temperature 0 · 재시도"]
-    P -->|"API 키 없음"| R["규칙 기반 파서<br/>(정규식 · 신뢰도 산출)"]
-    G --> S["ParsedDocument<br/>(Pydantic 검증)"]
-    R --> S
-    S --> H["사람 검수 · 수정<br/>PATCH 재검증"]
-    H --> X["엑셀 원장 upsert"]
-    H --> E["ERP 자동 타이핑<br/>전표번호 확인"]
+    P -->|있음| G["Gemini 구조화 출력<br/>response_schema = ParsedDocument<br/>temperature 0 · 429/5xx 백오프 재시도"]
+    P -->|없음| RB[규칙 기반 파서<br/>정규식 + 신뢰도 산출]
+    G --> D[(documents.parsed JSON)]
+    RB --> D
+    D --> H[사람 검수 PATCH<br/>같은 스키마로 재검증]
+    H -->|parsed 상태만| X[엑셀 원장 upsert]
+    H -->|parsed 상태만| E[ERP 타이핑 → 전표번호 확인]
+    X --> J[(rpa_jobs 이력)]
+    E --> J
+    J --> M[대시보드 · 모니터링 집계]
 ```
-
-| 단계 | 모듈 | 처리 | 실패 시 |
-| --- | --- | --- | --- |
-| ① 추출 | `rpa/extract.py` | 가장 싸고 정확한 방법부터: 텍스트 레이어 → OCR → LLM 멀티모달 | 지원하지 않는 형식은 415, 추출 실패는 다음 단계로 대체 |
-| ② 정형화 | `services/parser.py` | Gemini에 Pydantic 모델을 응답 스키마로 전달, 없는 값은 null | 429·5xx는 2s → 5s → 10s 재시도, 키 없으면 규칙 파서 |
-| ③ 검수 | `routers/documents.py` | 화면에서 수정한 값을 같은 스키마로 다시 검증 | 형식 오류는 422 |
-| ④ 입력 | `rpa/excel_writer.py`, `rpa/erp_typer.py` | 엑셀 upsert, ERP 화면 입력 후 결과 요소 확인 | 실패 사유를 작업 이력(`rpa_jobs`)에 기록 |
-
----
 
 ## 4. Key Technical Challenges & Solutions
 
 ### Challenge 1. 형식이 제각각인 문서에서 신뢰할 수 있는 값 뽑기
 
-> **Problem** — 같은 영수증이라도 텍스트 PDF, 스캔 PDF, 사진, 이메일 본문 등 형태가 다릅니다. 프롬프트로 "JSON으로 답해 줘"라고만 하면 필드가 빠지거나 형식이 깨지고, 회계 데이터에서 가장 위험한 **AI가 지어낸 값(환각)** 도 막기 어렵습니다.
-
-**Solution**
-
-| 전략 | 구현 |
-| --- | --- |
-| **단계적 추출** | 텍스트 레이어 → Tesseract(kor+eng) → Gemini 멀티모달 순으로 대체 (`MIN_TEXT_LENGTH = 20`) |
-| **스키마 하나로 통일** | `ParsedDocument`(Pydantic)를 **Gemini 응답 스키마이자 API 검증 모델**로 함께 사용 → 한쪽만 고치면 됨 |
-| **환각 통제 3단계** | 프롬프트("문서에 없는 값은 추측하지 말고 null") + `temperature=0` + **사람 검수** |
-| **대체 경로** | API 키가 없거나 장애가 나도 서비스가 멈추지 않도록 규칙 기반 파서 제공 (찾은 핵심 필드 수로 신뢰도 산출) |
-
-```python
-config = types.GenerateContentConfig(
-    response_mime_type="application/json",
-    response_schema=ParsedDocument,   # API 검증에 쓰는 같은 Pydantic 모델
-    temperature=0,
-)
-for attempt, delay in enumerate((*RETRY_DELAYS, None)):          # 2s → 5s → 10s
-    try:
-        response = client.models.generate_content(model=settings.gemini_model, contents=contents, config=config)
-        break
-    except genai_errors.APIError as exc:
-        if exc.code in RETRYABLE_STATUS and delay is not None:   # 429·500·503·504 만 재시도
-            time.sleep(delay)
-            continue
-        raise ParseError(...)                                    # 400 같은 요청 오류는 즉시 실패
-return ParsedDocument.model_validate_json(response.text).model_dump()
-```
-
-> **Result** — 운영 환경 샘플 영수증에서 거래처·사업자번호·금액·부가세·품목이 정상 추출되었습니다(신뢰도 0.98). 정량 정확도는 정답셋이 없어 측정하지 않았으며, 향후 과제로 두었습니다.
-
----
+- **문제** — 거래처마다 양식이 달라 규칙이 깨지고, 스캔본은 글자가 없으며, LLM 은 없는 값을 지어낼 수 있음
+- **해결**
+  - **단계적 추출**: 가장 싸고 정확한 방법부터 — 텍스트 레이어(20자 이상) → Tesseract(kor+eng) → 원본 멀티모달
+  - **스키마 공유**: `ParsedDocument`(Pydantic) 하나를 Gemini `response_schema` 와 API 검증 모델로 함께 사용 → 형식 오류가 구조적으로 차단
+  - **환각 통제**: 프롬프트 `문서에 없는 값은 null`, `temperature=0`, 신뢰도 표시, 사람 검수 후에만 RPA 실행(아니면 409)
+  - **대체 경로**: 키가 없거나 장애 시 규칙 파서(`confidence = 0.2 + 0.15 × 찾은 필드 수 + 0.1(품목)`), 일시 오류(429 · 500 · 503 · 504)만 2 · 5 · 10초 백오프
+- **결과** — 운영 샘플 영수증에서 거래처 · 사업자번호 · 금액 · 부가세 · 품목 정상 추출(신뢰도 0.98). 정량 정확도는 정답셋 구축 후 측정 예정이라 주장하지 않음
 
 ### Challenge 2. "눌렀는데 저장 안 됨"을 막는 RPA 설계
 
-> **Problem** — RPA는 버튼 클릭까지는 성공해도 실제로는 저장되지 않는 경우가 흔합니다. 또 사용자가 적재 버튼을 여러 번 누르면 엑셀에 같은 행이 쌓입니다.
-
-**Solution**
-
-- **결과 검증**: 클릭으로 끝내지 않고, ERP 결과 요소의 `data-status="ok"`와 **발급된 전표번호**를 확인해야 성공으로 기록합니다.
-- **화면 구조와 코드 분리**: `FIELD_SELECTORS` 맵만 바꾸면 다른 ERP 화면에 붙일 수 있고, `python -m rpa.erp_typer`로 단독 실행도 됩니다.
-- **멱등 적재**: 엑셀 원장은 **문서 ID 기준으로 기존 행을 교체**하므로 몇 번을 적재해도 결과가 같습니다.
-- **읽을 수 있는 실패 메시지**: Chromium 미설치 같은 환경 오류를 안내 문구로 바꿔 작업 이력에 남깁니다.
-
-```python
-page.click(SUBMIT_SELECTOR)
-result = page.wait_for_selector("#result[data-status]", timeout=10_000)
-if result.get_attribute("data-status") != "ok":
-    raise ErpTypingError(result.inner_text() or "ERP 가 입력을 거부했습니다.")
-return result.get_attribute("data-voucher")          # 전표번호를 받아야 성공
-```
-
-> **Result** — 운영 환경에서 Playwright가 데모 ERP에 입력하고 전표번호(`JV-YYYYMMDD-NNNN`)를 받아 오는 전 과정을 확인했습니다.
-
----
+- **문제** — 화면 자동화는 클릭만으로는 성공 여부를 알 수 없고, 화면 구조가 바뀌면 깨지며, 재실행 시 중복 데이터가 생김
+- **해결**
+  - **결과 검증**: 저장 후 ERP 결과 요소의 `data-status="ok"` 와 `data-voucher`(전표번호)를 확인해야 성공 기록
+  - **화면-코드 분리**: `FIELD_SELECTORS` 맵만 바꾸면 다른 ERP 화면에 적용, CLI(`python -m rpa.erp_typer`) 단독 실행 가능
+  - **멱등 적재**: 엑셀 원장은 문서 ID 기준 행 교체 → 여러 번 적재해도 1행
+  - **운영 친화 오류**: Chromium 미설치 등 환경 오류를 읽을 수 있는 문장으로 바꿔 작업 이력에 기록
+  - **실행 최적화**: 헤드리스 기본(`RPA_HEADLESS`), `wait_for_selector` 로 고정 대기 없이 결과 요소만 기다림, 같은 컨테이너의 `127.0.0.1:$PORT` 로 접속
 
 ### Challenge 3. 공개 테스트 계정이 실제 관리자 권한을 갖던 보안 문제
 
-> **Problem** — 포트폴리오 체험용으로 로그인 화면에 비밀번호를 공개한 관리자 계정이 **실제 관리자 권한**을 갖고 있어, 누구나 회원 권한을 바꿀 수 있었습니다.
-
-**Solution**
-
-| 역할 | 진입 | 권한 |
-| --- | --- | --- |
-| `admin` 운영 관리자 | `/admin/login`에서 서버 환경 변수 `ADMIN_TOKEN` 입력 | 전체 CRUD, 회원 권한 변경 |
-| `test_admin` 테스트 관리자 | 로그인 화면 버튼 | 관리자 화면 **조회만**, 쓰기 요청은 403 |
-| `user` 일반 사용자 | 가입 · OAuth · 테스트 버튼 | 본인 문서만 |
-
-- **단일 진입점에서 강제**: `deps.get_current_user`에서 `test_admin`의 GET/HEAD/OPTIONS 외 요청을 403으로 막아, **새 API를 추가해도 자동 적용**됩니다.
-- **토큰 검증**: `secrets.compare_digest`로 비교하고, 같은 IP에서 5회 실패하면 10분간 차단(429), 토큰이 설정되지 않으면 503.
-- **공개 계정 보호**: 테스트 계정 권한은 서버가 뜰 때마다 고정값으로 되돌리고, 권한 변경 API로도 바꿀 수 없습니다.
-
-> **Result** — 권한 관련 테스트 8개(토큰 로그인·차단·미설정, 조회 허용, 쓰기 차단, 권한 고정·복원)를 추가했고 전체 **pytest 30개가 통과**합니다.
-
----
+- **문제** — 로그인 화면에 비밀번호가 공개된 관리자 계정으로 누구나 회원 권한을 바꿀 수 있었음
+- **해결**
+  - 운영 관리자는 서버 환경 변수 `ADMIN_TOKEN` 으로만 로그인(`compare_digest`, 같은 IP 5회 실패 시 10분 차단, 미설정 시 503)
+  - 테스트 관리자는 `deps.get_current_user` **단일 진입점**에서 GET · HEAD · OPTIONS 외 요청을 403 → 새 API 를 추가해도 자동 적용
+  - 공개 계정 권한은 서버 기동 시 복원, 권한 변경 API 로 변경 불가(400) — 테스트 8개로 회귀 방지
 
 ### Challenge 4. 로컬에서는 되고 운영에서만 실패하는 문제들
 
-| 증상 | 원인 분석 | 해결 · 재발 방지 |
+| 증상 | 원인 (근거) | 조치 |
 | --- | --- | --- |
-| 코드 변경 없이 Docker 빌드 실패 (`ttf-ubuntu-font-family` 설치 불가) | `python:3.11-slim` 태그가 Debian 13으로 바뀜. Playwright 1.52 소스(`nativeDeps.ts`)를 확인하니 의존성 목록이 Debian 11/12까지만 있음 | `python:3.11-slim-bookworm`으로 **기본 이미지 OS 고정** |
-| 키를 넣지 않았는데 AI·OAuth가 "설정됨" | `.env`의 `KEY=   # 주석`에서 **빈 값 뒤 주석이 값으로 읽힘** | 주석을 별도 줄로 이동, 규칙 문서화. 헬스 체크에 파서 종류를 노출해 둔 덕분에 발견 |
-| TiDB 연결 실패 `1105 insecure transport` | TiDB Serverless는 TLS 필수 | `DB_SSL=true` + certifi CA. 운영 DB는 건드리지 않고 **임시 DB로 검증 후 삭제** |
-| 운영 첫 점검에서 Gemini 503 | 사용량 폭주 시 일시 오류 | 429·5xx만 백오프 재시도, 재시도 횟수를 검증하는 테스트 추가 |
-| 운영에서만 ERP 타이핑 연결 거부 | Render 컨테이너는 `PORT=10000`인데 `localhost:8000`으로 접속 | 기본 대상 주소를 `127.0.0.1:$PORT`로 변경 |
-| `/login` 새로고침 시 404 | 정적 호스팅에 SPA 라우팅 규칙 없음 | `/*` → `/index.html` Rewrite |
-
----
+| 코드 변경 없이 Docker 빌드 실패 | `python:3.11-slim` 이 Debian 13 으로 변경, Playwright 1.52 는 Debian 11/12 만 지원(소스 `nativeDeps.ts` 확인) | `python:3.11-slim-bookworm` 고정 |
+| 키가 없는데 AI · OAuth 가 '설정됨' | `.env` 빈 값 뒤 인라인 주석을 python-dotenv 가 값으로 읽음(헬스 체크 `parser` 노출로 발견) | 주석 분리, 테스트에서 외부 키 격리 |
+| TiDB `1105 insecure transport` | TiDB Serverless 는 TLS 필수 | `DB_SSL=true` + certifi CA, 운영 DB 대신 임시 DB 로 검증 후 삭제 |
+| Gemini `503 high demand` | 사용량 폭주 시 일시 오류 | 429/5xx 만 백오프 재시도 + 가짜 클라이언트 테스트 3개 |
+| 운영 ERP 타이핑 연결 거부 | Render 컨테이너는 `PORT=10000` | 기본 대상 `127.0.0.1:$PORT` |
+| `/login` 새로고침 404 | 정적 호스팅 SPA 규칙 없음 | `/* → /index.html` Rewrite |
 
 ## 5. Tech Stack
 
-| 구분 | 기술 | 선택 이유 |
-| --- | --- | --- |
-| **Backend** | ![Python](https://img.shields.io/badge/Python_3.11-3776AB?style=flat-square&logo=python&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white) ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy_2.0-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white) ![Pydantic](https://img.shields.io/badge/Pydantic_v2-E92063?style=flat-square&logo=pydantic&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white) | Pydantic으로 요청 검증·응답 모델·LLM 출력 스키마를 한 번에 정의, `/docs` 자동 생성 |
-| **AI** | ![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white) ![Tesseract](https://img.shields.io/badge/Tesseract_OCR-3C8DBC?style=flat-square) | 구조화 출력(response_schema)과 멀티모달(스캔본·이미지) 지원 |
-| **RPA / Data** | ![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=flat-square&logo=playwright&logoColor=white) ![pandas](https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas&logoColor=white) ![openpyxl](https://img.shields.io/badge/openpyxl-217346?style=flat-square) ![pypdf](https://img.shields.io/badge/pypdf-555555?style=flat-square) ![BeautifulSoup](https://img.shields.io/badge/BeautifulSoup4-43B02A?style=flat-square) | API 없는 ERP 화면 자동 입력, 엑셀 원장 관리, PDF·HTML 텍스트 추출 |
-| **Frontend** | ![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/Vite_8-646CFF?style=flat-square&logo=vite&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind_v4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white) ![Recharts](https://img.shields.io/badge/Recharts_3-22B5BF?style=flat-square) ![React Router](https://img.shields.io/badge/React_Router_7-CA4245?style=flat-square&logo=reactrouter&logoColor=white) | 페이지 단위 코드 스플리팅(단일 885KB → 메인 416KB), 디자인 토큰(`@utility`) |
-| **Database** | ![TiDB](https://img.shields.io/badge/TiDB_Cloud-E30C34?style=flat-square&logo=tidb&logoColor=white) ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white) | 운영은 관리형 MySQL 호환 DB(TLS), 로컬·테스트는 URL만 바꿔 SQLite |
-| **Infra / DevOps** | ![Render](https://img.shields.io/badge/Render-46E3B7?style=flat-square&logo=render&logoColor=black) ![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=flat-square&logo=netlify&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white) | 변경 영역만 검증·배포(paths-filter · Build Filter) |
-
----
+| 영역 | 기술 |
+| --- | --- |
+| **Backend** | Python 3.11 · FastAPI 0.115 · SQLAlchemy 2.0 · Pydantic v2 · PyJWT · Uvicorn |
+| **AI** | Google Gemini (`google-genai`) — 구조화 출력 · 멀티모달 |
+| **RPA · Data** | Playwright 1.52 · pandas · openpyxl · pypdf · pytesseract(Tesseract kor+eng) · BeautifulSoup4 |
+| **Frontend** | React 19 · Vite 8 · Tailwind CSS v4 · React Router 7 · Recharts · FontAwesome |
+| **Database** | TiDB Cloud Serverless(MySQL 호환, TLS) / SQLite(로컬 · 테스트) |
+| **Infra · DevOps** | Docker · Render(Web Service · Static Site) · Netlify(보조) · GitHub Actions · GitHub Pages |
+| **Test** | pytest · FastAPI TestClient · Playwright 화면 점검 |
 
 ## 6. API Architecture
 
-FastAPI 라우터(웹 계층) → 서비스(AI 파싱·OAuth·통계) → `rpa` 패키지(자동화 계층)로 역할을 나눴습니다. 인증·권한은 의존성(`deps.py`) 한 곳에서 처리합니다.
-
 | Method | Endpoint | 설명 | 권한 |
 | --- | --- | --- | --- |
-| `POST` | `/api/auth/register` · `/api/auth/login` | 이메일 가입 · 로그인 (JWT 발급) | - |
-| `POST` | `/api/auth/admin-login` | `ADMIN_TOKEN` 운영 관리자 로그인 (5회 실패 시 10분 차단) | - |
-| `GET` | `/api/auth/oauth/{provider}/login` · `/callback` | Google · Naver · Kakao OAuth (state 쿠키 CSRF 검증) | - |
-| `GET` | `/api/auth/me` · `/api/auth/providers` | 내 정보 · 활성화된 OAuth 제공자 | 로그인 |
+| `POST` | `/api/auth/register` · `/login` | 이메일 가입 · 로그인(JWT) | 누구나 |
+| `POST` | `/api/auth/admin-login` | `ADMIN_TOKEN` 운영 관리자 로그인 | 토큰 |
+| `GET` | `/api/auth/oauth/{provider}/login` · `/callback` | OAuth(state 쿠키 CSRF 검증) | 누구나 |
+| `GET` | `/api/auth/me` · `/providers` | 내 정보 · 활성 제공자 | 로그인 |
 | `GET` | `/api/dashboard` | 사용자 KPI · 일별 추이 | 로그인 |
-| `GET` | `/api/documents` | 내 문서 목록 (상태 필터) | 로그인 |
-| `POST` | `/api/documents/upload` | 파일 업로드 → 추출 → AI 정형화 | 로그인 |
-| `POST` | `/api/documents/text` | 이메일 본문 입력 → AI 정형화 | 로그인 |
-| `GET` · `PATCH` · `DELETE` | `/api/documents/{id}` | 상세 · 검수 수정(스키마 재검증) · 삭제 | 본인 |
-| `POST` | `/api/documents/{id}/reparse` | 재해석 | 본인 |
-| `POST` | `/api/documents/{id}/rpa` | 엑셀 적재 또는 ERP 자동 타이핑 (`target: excel \| erp`) | 본인 |
+| `GET` `POST` | `/api/documents` · `/upload` · `/text` | 목록 · 업로드 · 메일 본문 입력 | 로그인 |
+| `GET` `PATCH` `DELETE` | `/api/documents/{id}` | 상세 · 검수 수정 · 삭제 | 본인 · 관리자 |
+| `POST` | `/api/documents/{id}/reparse` · `/rpa` | 재해석 · 엑셀/ERP 입력 | 본인 · 관리자 |
 | `GET` | `/api/documents/ledger.xlsx` | 엑셀 원장 다운로드 | 로그인 |
-| `GET` · `PATCH` | `/api/admin/users` · `/api/admin/users/{id}/role` | 회원 목록 · 권한 변경 | 관리자 |
-| `GET` | `/api/admin/stats` | 파싱·RPA 성공률, 분포, 최근 실패 | 관리자 |
-| `GET` | `/api/health` | 상태 · 현재 파서 종류(gemini / rules) | - |
+| `GET` `PATCH` | `/api/admin/users` · `/users/{id}/role` · `/stats` | 회원 관리 · 권한 변경 · 통계 | 관리자 |
+| `GET` | `/api/health` | 상태 · 현재 파서 종류 | 누구나 |
 
-> 전체 명세: https://dataquill-api.onrender.com/docs (Swagger UI)
-
-**데이터 모델**: `users`(역할·OAuth 식별자) 1:N `documents`(원문·추출 결과 JSON·상태·파서) 1:N `rpa_jobs`(대상·결과·메시지)
-
----
+오류 규약: `401` 인증 · `403` 권한/읽기 전용 · `404` 타인 문서 · `409` 중복 가입/파싱 전 RPA · `413/415` 용량/형식 · `422` 검증 · `429` 토큰 차단
 
 ## 7. Directory Structure
 
@@ -311,118 +221,89 @@ FastAPI 라우터(웹 계층) → 서비스(AI 파싱·OAuth·통계) → `rpa` 
 dataquill/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py              # 앱 생성, CORS, 테스트 계정 시드(권한 복원)
-│   │   ├── config.py            # 루트 .env 단일 설정
+│   │   ├── main.py              # 앱 생성 · CORS · 테이블 생성 · 테스트 계정 시드/권한 복원
+│   │   ├── config.py            # 루트 .env 하나로 설정
 │   │   ├── database.py          # SQLAlchemy 엔진 (SQLite / TiDB + TLS)
-│   │   ├── deps.py              # 인증·권한 단일 진입점 (test_admin 쓰기 차단)
-│   │   ├── security.py          # PBKDF2-SHA256(26만 회) 해시, JWT(HS256)
-│   │   ├── models.py · schemas.py
+│   │   ├── deps.py · security.py# 인증 · 권한(테스트 관리자 쓰기 차단) · PBKDF2 · JWT
 │   │   ├── routers/             # auth · documents · admin · erp_demo
 │   │   └── services/            # parser(Gemini/규칙) · oauth · stats
-│   ├── tests/                   # pytest 30개 (외부 키 비움, 임시 DB)
-│   └── Dockerfile               # python:3.11-slim-bookworm + Tesseract(kor) + Chromium
-├── rpa/                         # 자동화 계층 (웹과 분리, CLI 단독 실행 가능)
-│   ├── extract.py               # PDF · OCR · EML · HTML 텍스트 추출
-│   ├── excel_writer.py          # 엑셀 원장 upsert
-│   └── erp_typer.py             # Playwright ERP 자동 타이핑 + 결과 검증
-├── frontend/
-│   └── src/
-│       ├── pages/               # Home · Login · Dashboard · Documents · admin/*
-│       ├── components/layout/   # SiteLayout · Header · Footer
-│       ├── api/                 # client.js (실 API) · mock.js (VITE_API_URL 미설정 시)
-│       └── context/             # Auth · Toast
-├── docs/
-│   ├── md/                      # 작업일별 기록 (결정 · 검증 · 이슈)
-│   ├── 산출물/ · 프로젝트_진행일지_*.hwpx
-│   ├── pdf/                     # 진행일지 · 산출물 · 발표자료 PDF
-│   ├── video/                   # 10분 발표·시연 영상 · 자막 · 하이라이트 · 제작 도구(tools/)
-│   ├── scripts/ · tools/        # 발표자료 · 문서 생성 스크립트
-│   └── assets/                  # 화면 캡처 · QR
-├── .github/workflows/deploy.yml # 변경 영역별 테스트·빌드·배포
-├── render.yaml · netlify.toml · docker-compose.yml
-└── requirements.txt · .env.example
+│   ├── tests/                   # pytest 30개 (임시 DB · 외부 키 격리)
+│   └── Dockerfile               # python:3.11-slim-bookworm + Tesseract + Chromium
+├── rpa/                         # extract(OCR) · excel_writer · erp_typer(Playwright)
+├── frontend/src/                # pages · components/layout · api(client · mock) · context
+├── docs/                        # md(작업 기록) · 진행일지/산출물(HWPX) · pdf · 발표자료 · video · tools
+├── index.html                   # GitHub Pages 포트폴리오 (단일 파일)
+├── render.yaml · docker-compose.yml · .github/workflows/deploy.yml
+└── requirements.txt             # 단일 Python 의존성 목록
 ```
 
----
+## 8. Roles & Permissions
 
-## 8. 계정과 권한 모델
+| 동작 | 운영 관리자 | 테스트 관리자 | 일반 사용자 |
+| --- | :---: | :---: | :---: |
+| 관리자 화면 조회 | ✅ | ✅ | ❌ |
+| 문서 업로드 · 검수 · 삭제 | ✅ | ❌ (403) | 본인 |
+| 엑셀 적재 · ERP 타이핑 | ✅ | ❌ (403) | 본인 |
+| 회원 권한 변경 | ✅ | ❌ (403) | ❌ |
+| 진입 방법 | `/admin/login` + `ADMIN_TOKEN` | 로그인 화면 버튼 | 가입 · OAuth · 테스트 버튼 |
 
-| 구분 | 진입 방법 | 권한 |
-| --- | --- | --- |
-| 운영 관리자 | `/admin/login` 에서 서버 환경 변수 `ADMIN_TOKEN` 입력 | 모든 데이터 생성 · 수정 · 삭제, 회원 권한 변경 |
-| 테스트 관리자 | 로그인 화면 버튼 (`admin@dataquill.io` / `Admin1234!`) | 관리자 화면 조회만 가능, 모든 쓰기 요청은 서버에서 403 |
-| 일반 사용자 | 이메일 가입 · OAuth · 테스트 버튼 (`user@dataquill.io` / `User1234!`) | 본인 문서 업로드 · 검수 · RPA |
-
-- 테스트 계정은 `SEED_TEST_ACCOUNTS=true` 일 때 자동 생성되며, 비밀번호가 공개되어 있으므로 서버 기동 시마다 권한이 고정값으로 되돌아가고 권한 변경 API 로도 바꿀 수 없습니다.
-
----
-
-## 9. 로컬 실행 · 검증
+## 9. Getting Started
 
 ```bash
-# 1) 환경 변수
-cp .env.example .env            # SECRET_KEY 변경, 필요 시 GEMINI_API_KEY / OAuth 키 입력
-
-# 2) 백엔드 (Python 3.11)
-py -3.11 -m venv .venv
-.venv/Scripts/pip install -r requirements.txt          # macOS/Linux: .venv/bin/pip
-.venv/Scripts/python -m playwright install chromium    # ERP 자동 타이핑용
-.venv/Scripts/python -m uvicorn backend.app.main:app --reload --port 8000
-
-# 3) 프런트엔드
-cd frontend && npm install && npm run dev               # http://localhost:5173
+cp .env.example .env                                    # SECRET_KEY 등 설정 (키가 없으면 규칙 파서 · Mock 모드로 동작)
+py -3.11 -m venv .venv && .venv/Scripts/pip install -r requirements.txt
+.venv/Scripts/python -m playwright install chromium
+.venv/Scripts/python -m uvicorn backend.app.main:app --reload --port 8000   # http://localhost:8000/docs
+cd frontend && npm install && npm run dev                                       # http://localhost:5173
 ```
 
-- API 문서: http://localhost:8000/docs · 데모 ERP(RPA 타이핑 대상): http://localhost:8000/erp-demo
-- Docker: `docker compose up --build`
-- **Mock 모드**: `VITE_API_URL` 을 비워 빌드하면 프런트엔드가 브라우저 내 목업 API(localStorage)로 동작합니다.
+Docker: `docker compose up --build` (backend 8000 · frontend 5173)
+
+## 10. Testing & Quality
 
 ```bash
-# 검증
-.venv/Scripts/python -m pytest backend/tests -q        # 30 passed
-cd frontend && npm run lint && npm run build
+.venv/Scripts/python -m pytest backend/tests -q   # 30 passed
+cd frontend && npm run lint && npm run build       # lint 오류 0 · build 성공
 ```
 
----
-
-## 10. 배포 · CI/CD
-
-| 구분 | URL | 플랫폼 |
-| --- | --- | --- |
-| Frontend | https://dataquill.onrender.com | Render Static Site (`/*` → `/index.html` Rewrite) |
-| Backend API | https://dataquill-api.onrender.com | Render Web Service (Docker `backend/Dockerfile`) |
-| Frontend (보조) | https://dataquill.netlify.app | Netlify |
-| Database | TiDB Cloud Serverless | MySQL 호환 · TLS |
-
-```text
-git push main
- ├─ GitHub Actions (deploy.yml) ── paths-filter 로 바뀐 영역 판별
- │    ├─ frontend/**                          → npm ci · lint · build
- │    └─ backend/** · rpa/** · requirements   → pip install · pytest
- ├─ Render Static Site   → frontend/** 변경 시에만 빌드
- └─ Render Web Service   → backend/** · rpa/** · requirements.txt 변경 시에만 빌드 (Build Filter)
-```
-
-- 문서만 고친 커밋은 어떤 서비스도 다시 빌드하지 않습니다.
-- 비밀 값은 `.env`(Git 제외)와 Render 대시보드에만 등록하고, `.env.example` 에 `[LOCAL]` / `[RENDER]` / `[RENDER-FE]` 로 등록 위치를 표시합니다.
-- OAuth Redirect URI: `https://dataquill-api.onrender.com/api/auth/oauth/{google|naver|kakao}/callback`
-
----
-
-## 11. 한계와 향후 계획
-
-| 현재 한계 | 개선 계획 |
+| 범위 | 내용 |
 | --- | --- |
-| RPA가 API 요청 안에서 동기로 실행 → 오래 걸리는 작업에 취약 | 작업 큐 + 워커 분리, 진행 상태 조회 (`rpa` 패키지가 이미 분리되어 있어 이전 비용이 낮음) |
-| 업로드 원본이 컨테이너 디스크에 저장 → 재배포 시 원본 유실 가능 | S3 같은 오브젝트 스토리지로 이전 |
-| 스키마 변경을 `create_all` 로 처리 | Alembic 마이그레이션 도입 |
-| 파싱 품질을 샘플 단위로만 검증 | 문서 유형별 정답셋으로 필드 단위 정확도 측정, 프롬프트·모델 비교 |
-| 데모 ERP 대상 검증 | 실제 ERP 커넥터(API 우선, 없으면 RPA), 조직(테넌트) 단위 권한 |
+| 회원 · OAuth | 비밀번호 규칙 6종, 가입 · 중복 · 로그인 실패, 미설정 제공자 · 위조 state |
+| 문서 · RPA | 업로드 → 파싱 → 엑셀, 메일 본문 · 검수 수정, 해석 불가 → failed · RPA 409, 미지원 형식 415, 데모 ERP 전표 |
+| 외부 장애 | Gemini 503 ×2 → 성공, ×9 → 4회 후 실패, 400 → 즉시 실패 |
+| 권한 | 관리자 403/401, 운영 관리자 토큰 · 5회 차단 · 미설정 503, 테스트 관리자 조회 허용 · 쓰기 5종 403, 공개 계정 권한 고정 · 기동 시 복원 |
 
----
+## 11. Deployment & CI/CD
+
+| 대상 | 주소 | 플랫폼 |
+| --- | --- | --- |
+| 서비스 | https://dataquill.onrender.com | Render Static Site (`/* → /index.html`) |
+| API | https://dataquill-api.onrender.com/docs | Render Web Service (Docker) |
+| 포트폴리오 | https://fsclass-n.github.io/dataquill/ | GitHub Pages |
+| DB | TiDB Cloud Serverless | MySQL 호환 · TLS |
+
+- **변경 영역만 검증 · 배포** — GitHub Actions `paths-filter` 로 `frontend/**` 는 lint · build, `backend/** · rpa/** · requirements.txt` 는 pytest. Render Build Filter 로 해당 서비스만 재배포 → 문서만 고친 커밋은 어떤 서비스도 다시 빌드하지 않음
+- **비밀 값** — 루트 `.env` 하나(Vite 는 `VITE_` 접두사만 노출), 운영 값은 Render 대시보드에만 등록
+- **Mock 모드** — `VITE_API_URL` 이 비면 브라우저 목업 API 로 동작(같은 권한 규칙) → 프런트 단독 배포 가능
+
+## 12. Documents
+
+| 문서 | 위치 |
+| --- | --- |
+| 발표자료 (16장 + 부록, 발표자 노트) | [`docs/프로젝트_발표자료.pptx`](docs/프로젝트_발표자료.pptx) · [PDF](docs/pdf/프로젝트_발표자료.pdf) |
+| 진행일지 1~5단계 · 산출물 01~05 | [`docs/`](docs) (HWPX) · [`docs/pdf/`](docs/pdf) (PDF) |
+| 작업 기록 (결정 · 검증 · 이슈) | [`docs/md/`](docs/md) |
+
+## 13. Limitations & Roadmap
+
+| 현재 한계 | 다음 단계 |
+| --- | --- |
+| RPA · LLM 호출이 API 요청 안에서 동기 실행 | 작업 큐 + 워커 분리(rpa 패키지가 이미 분리되어 이전 비용 낮음) |
+| 업로드 원본이 컨테이너 디스크에 저장 | S3 등 오브젝트 스토리지, 보존 기간 정책 |
+| 파싱 품질을 샘플 단위로만 검증 | 문서 유형별 정답셋으로 필드 단위 정확도 측정 |
+| `create_all` 로 스키마 관리 · 새로고침 후 시각 9시간 오차 | Alembic 도입, 응답 시각에 UTC 시간대 부여 |
+| 데모 ERP 대상 검증 · JWT 를 localStorage 에 저장 | 실제 ERP 커넥터(API 우선), HttpOnly 쿠키 인증 |
 
 <div align="center">
-
-**K-Digital 심화 Final Project · 3조** · 단계별 진행일지와 산출물은 [`docs/`](docs) · [`docs/pdf/`](docs/pdf) 에서 볼 수 있습니다.
-
+<sub>DataQuill · 홍기흥 · 개인 포트폴리오 프로젝트</sub>
 </div>
