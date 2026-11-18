@@ -1,0 +1,1090 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DataQuill · 생성형 AI × RPA 데이터 입력 자동화 | 홍기흥 포트폴리오</title>
+<meta name="description" content="영수증 · 세금계산서 · 거래 이메일을 AI가 읽어 정형화하고, RPA 로봇이 ERP와 엑셀에 대신 입력하는 1인 풀스택 프로젝트 DataQuill 포트폴리오." />
+<meta property="og:title" content="DataQuill — 서류는 AI가 읽고, 입력은 로봇이 합니다" />
+<meta property="og:description" content="생성형 AI × RPA 데이터 입력 자동화 플랫폼 · 10분 발표 · 시연 영상 포함" />
+<meta property="og:image" content="docs/video/video-thumbnail.png" />
+<meta name="theme-color" content="#070b16" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%236366f1%22/%3E%3Cpath d=%22M21.5 6.5c-6 1-10.5 6-11.5 13l-1.5 6 2-1.2c.8-2.4 2-4.3 3.6-5.6 3.4.3 6.6-2 7.4-5.4l-3 .4 3.4-2.4c.3-1.6.2-3.2-.4-4.8z%22 fill=%22white%22/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<style>
+/* ================================================================ tokens */
+:root{
+  --bg:#070b16; --bg-2:#0b1122; --panel:#0e1530; --panel-2:#121b3b; --line:#1d2850; --line-2:#2a3770;
+  --ink:#e8ecff; --ink-2:#aab3d9; --ink-3:#6f7aa8;
+  --indigo:#6366f1; --indigo-2:#818cf8; --cyan:#22d3ee; --lime:#a3e635; --amber:#fbbf24; --rose:#fb7185;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --display:"Space Grotesk","Pretendard Variable",Pretendard,sans-serif;
+  --sans:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --rail:132px; --radius:18px; --ease:cubic-bezier(.22,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15.5px;line-height:1.7;overflow-x:hidden;word-break:keep-all;overflow-wrap:break-word;
+  background-image:linear-gradient(rgba(99,102,241,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.06) 1px,transparent 1px);
+  background-size:48px 48px;background-attachment:fixed}
+img,video{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:var(--indigo);color:#fff}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+.mono{font-family:var(--mono)}
+.tag{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan)}
+.muted{color:var(--ink-2)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+main{padding-left:var(--rail)}
+section{position:relative;padding:120px 0}
+.sec-head{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:end;margin-bottom:56px}
+.sec-no{font-family:var(--display);font-size:clamp(64px,9vw,120px);line-height:.8;font-weight:700;color:transparent;-webkit-text-stroke:1px var(--line-2)}
+.sec-head h2{font-size:clamp(28px,3.6vw,44px);line-height:1.2;letter-spacing:-.02em;font-weight:800}
+.sec-head p{margin-top:10px;color:var(--ink-2);max-width:640px}
+.btn{display:inline-flex;align-items:center;gap:10px;height:50px;padding:0 22px;border-radius:12px;font-weight:700;font-size:15px;transition:transform .25s var(--ease),box-shadow .25s,background .25s,border-color .25s}
+.btn:hover{transform:translateY(-2px)}
+.btn-main{background:linear-gradient(135deg,var(--indigo),#8b5cf6);color:#fff;box-shadow:0 12px 32px -12px rgba(99,102,241,.8)}
+.btn-main:hover{box-shadow:0 18px 40px -12px rgba(99,102,241,.95)}
+.btn-ghost{border:1px solid var(--line-2);background:rgba(14,21,48,.6);backdrop-filter:blur(8px)}
+.btn-ghost:hover{border-color:var(--indigo-2)}
+.btn-live{background:var(--lime);color:#0b1122}
+.btn-live .dot{width:8px;height:8px;border-radius:50%;background:#0b1122;box-shadow:0 0 0 0 rgba(11,17,34,.6);animation:ping 1.8s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(11,17,34,.55)}80%,100%{box-shadow:0 0 0 9px rgba(11,17,34,0)}}
+.card{background:linear-gradient(180deg,rgba(18,27,59,.85),rgba(14,21,48,.85));border:1px solid var(--line);border-radius:var(--radius)}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+
+/* ================================================================ pipeline rail (desktop nav) */
+.rail{position:fixed;inset:0 auto 0 0;width:var(--rail);z-index:40;display:flex;flex-direction:column;align-items:center;padding:26px 0;border-right:1px solid var(--line);background:rgba(7,11,22,.82);backdrop-filter:blur(10px)}
+.rail .logo{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--indigo),#8b5cf6);color:#fff;font-size:19px;box-shadow:0 10px 26px -10px rgba(99,102,241,.9)}
+.rail .brand{margin-top:8px;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.02em}
+.rail ol{list-style:none;position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;gap:4px;margin:24px 0;width:100%}
+.rail ol::before,.rail .fill{content:"";position:absolute;left:34px;top:14px;bottom:14px;width:2px;background:var(--line)}
+.rail .fill{background:linear-gradient(var(--cyan),var(--indigo));bottom:auto;height:0;transition:height .2s linear;box-shadow:0 0 12px var(--cyan)}
+.rail li a{position:relative;display:flex;align-items:center;gap:12px;padding:9px 10px 9px 28px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--ink-3);transition:color .25s}
+.rail li a::before{content:"";flex:none;width:14px;height:14px;border-radius:50%;border:2px solid var(--line-2);background:var(--bg);transition:all .3s var(--ease);position:relative;z-index:1}
+.rail li a:hover{color:var(--ink)}
+.rail li a.active{color:var(--ink)}
+.rail li a.done::before{border-color:var(--indigo);background:var(--indigo)}
+.rail li a.active::before{border-color:var(--cyan);background:var(--cyan);box-shadow:0 0 0 5px rgba(34,211,238,.15),0 0 16px var(--cyan)}
+.rail li a span b{display:block;font-family:var(--sans);font-size:12px;letter-spacing:0;font-weight:700;color:inherit}
+.rail .ext{display:flex;flex-direction:column;gap:8px}
+.rail .ext a{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:1px solid var(--line-2);color:var(--ink-2);transition:all .25s}
+.rail .ext a:hover{color:#fff;border-color:var(--indigo-2)}
+
+.topbar{position:fixed;top:18px;right:24px;z-index:45;display:flex;gap:10px;align-items:center}
+.topbar .btn{height:42px;padding:0 16px;font-size:14px}
+.mobilebar,.sheet{display:none}
+
+/* ================================================================ 00 hero */
+#ingest{min-height:100vh;display:flex;align-items:center;padding:110px 0 80px;overflow:hidden}
+#ingest::before{content:"";position:absolute;width:780px;height:780px;right:-220px;top:-260px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.32),transparent 62%);pointer-events:none}
+#ingest::after{content:"";position:absolute;width:560px;height:560px;left:-200px;bottom:-260px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,.16),transparent 65%);pointer-events:none}
+.hero{display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center;position:relative;z-index:1}
+.hero>*{min-width:0}
+.prompt{display:inline-flex;align-items:center;gap:10px;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:8px 14px;border:1px solid var(--line-2);border-radius:999px;font-family:var(--mono);font-size:12.5px;color:var(--ink-2);background:rgba(14,21,48,.7)}
+.prompt i{color:var(--lime);font-size:8px}
+.hero h1{margin-top:26px;font-size:clamp(36px,4.5vw,64px);line-height:1.08;letter-spacing:-.035em;font-weight:800}
+.hero h1 .grad{background:linear-gradient(100deg,var(--cyan),var(--indigo-2) 45%,#c084fc);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h1 .strike{position:relative;color:var(--ink-3)}
+.hero h1 .strike::after{content:"";position:absolute;left:-2px;right:-2px;top:54%;height:5px;border-radius:3px;background:var(--rose);transform:scaleX(0);transform-origin:left;animation:strike 1s .9s var(--ease) forwards}
+@keyframes strike{to{transform:scaleX(1)}}
+.hero .lead{margin-top:24px;font-size:18px;color:var(--ink-2);max-width:560px}
+.hero .lead b{color:var(--ink)}
+.hero .actions{margin-top:36px;display:flex;flex-wrap:wrap;gap:12px}
+.hero .who{margin-top:34px;display:flex;align-items:center;gap:14px;font-size:14px;color:var(--ink-2)}
+.hero .who .av{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line-2);font-weight:800;color:var(--ink)}
+
+.console{position:relative;border-radius:22px;padding:1px;background:linear-gradient(160deg,var(--line-2),rgba(99,102,241,.6),var(--line))}
+.console-in{border-radius:21px;background:rgba(9,14,30,.94);overflow:hidden}
+.console-top{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--ink-3);white-space:nowrap}
+.console-top>span:not(.st){min-width:0;overflow:hidden;text-overflow:ellipsis}
+.console-top i{width:10px;height:10px;border-radius:50%;background:var(--line-2)}
+.console-top i:nth-child(1){background:#f87171}.console-top i:nth-child(2){background:#fbbf24}.console-top i:nth-child(3){background:#4ade80}
+.console-top .st{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--lime)}
+.console-top .st::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+.stages{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line)}
+.stages div{padding:10px 14px;font-family:var(--mono);font-size:11px;color:var(--ink-3);border-right:1px solid var(--line);position:relative;transition:color .3s}
+.stages div:last-child{border-right:0}
+.stages div::after{content:"";position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--cyan);transition:width .5s var(--ease)}
+.stages div.on{color:var(--ink)}
+.stages div.on::after{width:100%}
+.stages div.ok{color:var(--lime)}
+.stages div.ok::after{width:100%;background:var(--lime)}
+.panes{display:grid;grid-template-columns:1fr 1.1fr;min-height:318px}
+.pane{padding:16px;font-family:var(--mono);font-size:12.5px;line-height:1.85}
+.pane.raw{border-right:1px solid var(--line);color:var(--ink-2);background:repeating-linear-gradient(180deg,transparent 0 27px,rgba(99,102,241,.05) 27px 28px)}
+.pane .file{font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.pane .file i{color:var(--rose)}
+.caret::after{content:"▍";color:var(--cyan);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.json .k{color:#c4b5fd}.json .s{color:var(--lime)}.json .n{color:var(--amber)}.json .p{color:var(--ink-3)}
+.json div{opacity:0;transform:translateX(-6px);transition:all .35s var(--ease)}
+.json div.in{opacity:1;transform:none}
+.conf{margin-top:12px;display:flex;align-items:center;gap:10px;font-size:11px;color:var(--ink-3)}
+.conf .bar{flex:1;height:6px;border-radius:4px;background:var(--line);overflow:hidden}
+.conf .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--lime));transition:width 1.1s var(--ease)}
+.erp{border-top:1px solid var(--line);padding:14px 16px 16px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;position:relative}
+.erp label{font-family:var(--sans);font-size:10.5px;color:var(--ink-3);display:block;margin-bottom:4px}
+.erp .f{height:32px;border-radius:8px;border:1px solid var(--line-2);background:var(--bg-2);padding:0 9px;display:flex;align-items:center;font-family:var(--mono);font-size:11.5px;white-space:nowrap;overflow:hidden;transition:border-color .3s}
+.erp .f.typing{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(34,211,238,.12)}
+.stamp{position:absolute;right:18px;top:-22px;padding:6px 12px;border-radius:10px;border:2px solid var(--lime);color:var(--lime);font-family:var(--mono);font-size:12px;font-weight:700;background:rgba(7,11,22,.92);transform:rotate(-6deg) scale(.6);opacity:0;transition:all .45s cubic-bezier(.34,1.56,.64,1)}
+.stamp.in{opacity:1;transform:rotate(-6deg) scale(1)}
+.console .robot{position:absolute;left:-26px;bottom:44px;width:58px;height:58px;border-radius:16px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line-2);color:var(--cyan);font-size:22px;box-shadow:0 18px 40px -16px rgba(34,211,238,.6);animation:bob 3.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+
+.metrics{margin-top:72px;display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line);border-radius:16px;background:rgba(11,17,34,.75);backdrop-filter:blur(6px);position:relative;z-index:1}
+.metrics div{padding:18px 20px;border-right:1px solid var(--line)}
+.metrics div:last-child{border-right:0}
+.metrics b{display:block;font-family:var(--display);font-size:30px;line-height:1.1;font-weight:700}
+.metrics span{font-size:12.5px;color:var(--ink-3)}
+
+/* ================================================================ 01 problem */
+.problem{display:grid;grid-template-columns:1.05fr 1fr;gap:28px}
+.log{padding:24px;font-family:var(--mono);font-size:13px;line-height:2}
+.log .l{display:flex;gap:14px}
+.log .t{color:var(--ink-3)}
+.log .w{color:var(--amber)}.log .e{color:var(--rose)}.log .o{color:var(--lime)}.log .i{color:var(--cyan)}
+.pains{display:grid;gap:14px}
+.pain{padding:22px 24px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start}
+.pain .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:rgba(251,113,133,.1);color:var(--rose);border:1px solid rgba(251,113,133,.25)}
+.pain h3{font-size:17px;font-weight:700}
+.pain p{font-size:14px;color:var(--ink-2)}
+.answer{margin-top:28px;padding:26px 30px;display:flex;flex-wrap:wrap;align-items:center;gap:16px 26px;font-size:17px;border-color:rgba(99,102,241,.5);background:linear-gradient(90deg,rgba(99,102,241,.18),rgba(34,211,238,.06))}
+.answer .chip{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-weight:700;font-size:14px;background:rgba(7,11,22,.6);border:1px solid var(--line-2)}
+.answer .chip i{color:var(--cyan)}
+.answer .arrow{color:var(--ink-3)}
+
+/* ================================================================ 02 screening room */
+#screening{background:linear-gradient(180deg,transparent,rgba(5,8,18,.85) 12%,rgba(5,8,18,.85) 88%,transparent)}
+#screening .wrap{max-width:1440px}
+.theater{display:grid;grid-template-columns:minmax(0,3.1fr) minmax(290px,1fr);gap:24px;align-items:start}
+.player{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--line-2);box-shadow:0 40px 90px -40px rgba(99,102,241,.55)}
+.player.main{box-shadow:0 50px 120px -40px rgba(99,102,241,.75),0 0 0 1px rgba(99,102,241,.25)}
+.player video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;opacity:0;transition:opacity .5s var(--ease)}
+.player.playing video{opacity:1}
+.thumb{position:absolute;inset:0;width:100%;height:100%;text-align:left;transition:opacity .45s var(--ease),transform .6s var(--ease)}
+.thumb img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease),filter .5s}
+.thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,11,22,.05) 30%,rgba(7,11,22,.92));transition:opacity .4s}
+.thumb:hover img{transform:scale(1.035);filter:saturate(1.1)}
+.player.playing .thumb{opacity:0;pointer-events:none;transform:scale(1.02)}
+.thumb .play{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);z-index:2;width:92px;height:92px;border-radius:50%;display:grid;place-items:center;background:rgba(99,102,241,.92);color:#fff;font-size:30px;box-shadow:0 0 0 12px rgba(99,102,241,.22),0 20px 50px -10px rgba(0,0,0,.7);transition:transform .35s var(--ease)}
+.thumb .play i{margin-left:5px}
+.thumb:hover .play{transform:translate(-50%,-50%) scale(1.08)}
+.player.small .thumb .play{width:64px;height:64px;font-size:22px;box-shadow:0 0 0 8px rgba(99,102,241,.22)}
+.thumb .meta{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:22px 26px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+.thumb .meta h3{font-size:clamp(18px,2vw,26px);font-weight:800;line-height:1.25}
+.thumb .meta p{font-size:13px;color:var(--ink-2);margin-top:4px}
+.player.small .thumb .meta{padding:14px 16px}
+.player.small .thumb .meta h3{font-size:16px}
+.dur{flex:none;font-family:var(--mono);font-size:12.5px;padding:5px 10px;border-radius:8px;background:rgba(7,11,22,.78);border:1px solid var(--line-2)}
+.rec{position:absolute;left:18px;top:18px;z-index:2;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;padding:6px 10px;border-radius:8px;background:rgba(7,11,22,.75);border:1px solid var(--line-2)}
+.rec::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--rose);box-shadow:0 0 10px var(--rose)}
+.endcard,.errcard{position:absolute;inset:0;z-index:3;display:none;place-items:center;text-align:center;background:rgba(7,11,22,.86);backdrop-filter:blur(6px)}
+.player.ended .endcard,.player.error .errcard{display:grid}
+.endcard .row,.errcard .row{margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.endcard .btn,.errcard .btn{height:44px}
+.timeline{margin-top:16px;display:flex;gap:4px;height:46px}
+.timeline button{position:relative;border-radius:8px;background:var(--panel);border:1px solid var(--line);overflow:hidden;text-align:left;padding:0 10px;font-size:11.5px;color:var(--ink-2);white-space:nowrap;text-overflow:ellipsis;transition:border-color .25s,color .25s}
+.timeline button:hover{border-color:var(--indigo-2);color:var(--ink)}
+.timeline button .p{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,rgba(99,102,241,.45),rgba(34,211,238,.3));transition:width .25s linear}
+.timeline button span{position:relative;display:block;line-height:1.25;overflow:hidden;text-overflow:ellipsis}
+.timeline button span em{display:block;font-style:normal;font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+.timeline button.cur{border-color:var(--cyan);color:var(--ink)}
+.side{display:grid;gap:18px}
+.side .hl h4{font-size:14px;margin:12px 2px 0;display:flex;justify-content:space-between;color:var(--ink-2);font-weight:600}
+.chapters{padding:18px 8px 10px 18px}
+.chapters h4{display:flex;align-items:center;justify-content:space-between;padding-right:10px;font-size:14px;margin-bottom:8px}
+.chapters ul{list-style:none;max-height:330px;overflow-y:auto;padding-right:8px;scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+.chapters li button{width:100%;display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:start;text-align:left;padding:9px 10px;border-radius:10px;font-size:13.5px;line-height:1.45;color:var(--ink-2);transition:background .2s,color .2s}
+.chapters li button:hover{background:rgba(99,102,241,.12);color:var(--ink)}
+.chapters li button.cur{background:rgba(34,211,238,.1);color:var(--ink)}
+.chapters li button.cur b{color:var(--cyan)}
+.chapters li b{font-family:var(--mono);font-size:12px;color:var(--indigo-2);font-weight:500;padding-top:1px}
+.howto{margin-top:18px;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:13px;color:var(--ink-3)}
+.howto i{color:var(--indigo-2);margin-right:6px}
+
+/* ================================================================ 03 pipeline inspector */
+.inspector{display:grid;grid-template-columns:320px 1fr;gap:24px}
+.steps{display:flex;flex-direction:column;gap:8px;position:relative}
+.step{display:grid;grid-template-columns:44px 1fr;gap:14px;text-align:left;padding:16px;border-radius:14px;border:1px solid transparent;transition:all .3s var(--ease)}
+.step .n{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-family:var(--mono);font-size:13px;border:1px solid var(--line-2);color:var(--ink-3);background:var(--bg-2);transition:all .3s}
+.step h3{font-size:16px;font-weight:700;line-height:1.3}
+.step p{font-size:12.5px;color:var(--ink-3);font-family:var(--mono)}
+.step:hover{background:rgba(18,27,59,.6)}
+.step.on{border-color:var(--line-2);background:var(--panel)}
+.step.on .n{background:var(--indigo);border-color:var(--indigo);color:#fff;box-shadow:0 0 22px -4px var(--indigo)}
+.step .prog{grid-column:1/-1;height:2px;border-radius:2px;background:var(--line);overflow:hidden;display:none}
+.step.on .prog{display:block}
+.step .prog i{display:block;height:100%;width:0;background:var(--cyan)}
+.step.on .prog i{animation:prog 7s linear forwards}
+.paused .step.on .prog i{animation-play-state:paused}
+@keyframes prog{to{width:100%}}
+.viewer{overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.viewer .bar{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.viewer .bar .url{flex:1;padding:6px 12px;border-radius:8px;background:var(--bg-2);border:1px solid var(--line);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.viewer .stage{display:grid;grid-template-columns:1.55fr 1fr}
+.viewer .shot{position:relative;background:#f8fafc;min-height:360px;overflow:hidden}
+.viewer .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top left;opacity:0;transform:scale(1.03);transition:opacity .6s var(--ease),transform .9s var(--ease)}
+.viewer .shot img.on{opacity:1;transform:none}
+.viewer .shot img.contain{object-fit:contain;background:#eef1f7}
+.viewer .info{padding:26px;border-left:1px solid var(--line)}
+.viewer .info h3{font-size:22px;font-weight:800;line-height:1.3}
+.viewer .info ul{list-style:none;margin-top:16px;display:grid;gap:10px}
+.viewer .info li{display:grid;grid-template-columns:18px 1fr;gap:10px;font-size:14px;color:var(--ink-2)}
+.viewer .info li i{color:var(--lime);margin-top:5px;font-size:12px}
+.viewer .info .code{margin-top:18px;padding:12px 14px;border-radius:10px;background:var(--bg-2);border:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--cyan);word-break:break-all}
+.fade-swap{animation:swap .5s var(--ease)}
+@keyframes swap{from{opacity:0;transform:translateY(8px)}}
+
+/* ================================================================ 04 system */
+.arch{display:grid;grid-template-columns:1.25fr 1fr;gap:24px}
+.arch>*,.theater>*,.inspector>*,.problem>*{min-width:0}
+.node span,.inner div{overflow-wrap:anywhere}
+.diagram{padding:28px;position:relative}
+.node{position:relative;z-index:1;border:1px solid var(--line-2);border-radius:14px;background:var(--bg-2);padding:14px 16px}
+.node b{display:block;font-size:14.5px}
+.node span{display:block;font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.node.hot{border-color:rgba(99,102,241,.7);background:linear-gradient(180deg,rgba(99,102,241,.18),rgba(11,17,34,.9))}
+.flow{display:grid;gap:18px}
+.flow .row{display:grid;gap:12px}
+.flow .r3{grid-template-columns:repeat(3,1fr)}
+.link{position:relative;height:18px;margin:-9px 0}
+.link::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;background:repeating-linear-gradient(180deg,var(--cyan) 0 5px,transparent 5px 10px);background-size:2px 10px;animation:flowdown .9s linear infinite}
+@keyframes flowdown{to{background-position:0 10px}}
+.inner{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.inner div{border:1px dashed var(--line-2);border-radius:10px;padding:10px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.inner div b{font-family:var(--sans);color:var(--indigo-2);font-size:12.5px}
+.stack{padding:28px;display:grid;gap:20px;align-content:start}
+.stack h4{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;color:var(--ink-3);text-transform:uppercase;margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips span{padding:6px 12px;border-radius:9px;font-size:13px;border:1px solid var(--line-2);background:var(--bg-2)}
+.chips span i{margin-right:6px;color:var(--indigo-2)}
+.devices{margin-top:24px;display:grid;grid-template-columns:1.6fr repeat(3,minmax(0,.45fr));gap:16px;align-items:end}
+.devices figure{border-radius:16px;overflow:hidden;border:1px solid var(--line-2);background:#fff}
+.devices figure.phone{border-radius:22px;border-width:5px;border-color:#1f2a55}
+.devices figcaption{background:var(--panel);color:var(--ink-3);font-family:var(--mono);font-size:11px;padding:8px 12px}
+.devices .note{grid-column:1/-1;font-size:13px;color:var(--ink-3)}
+
+/* ================================================================ 05 access matrix */
+.matrix{overflow:auto}
+.matrix table{width:100%;border-collapse:collapse;min-width:720px}
+.matrix th,.matrix td{padding:16px 20px;border-bottom:1px solid var(--line);text-align:center;font-size:14.5px}
+.matrix th:first-child,.matrix td:first-child{text-align:left}
+.matrix thead th{font-size:13px;color:var(--ink-2);font-weight:600;vertical-align:bottom}
+.matrix thead th b{display:block;font-size:16px;color:var(--ink);margin-top:6px}
+.matrix thead th small{display:block;font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:2px;font-weight:400}
+.matrix .role{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:12px;font-size:16px}
+.matrix .r1{background:rgba(99,102,241,.18);color:var(--indigo-2)}
+.matrix .r2{background:rgba(251,191,36,.14);color:var(--amber)}
+.matrix .r3{background:rgba(163,230,53,.12);color:var(--lime)}
+.y{color:var(--lime)}.no{color:var(--rose)}.ro{color:var(--amber);font-family:var(--mono);font-size:12.5px}
+.matrix tbody tr:hover{background:rgba(99,102,241,.06)}
+.guard{margin-top:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.guard div{padding:18px 20px}
+.guard b{display:block;font-size:15px;margin-bottom:4px}
+.guard p{font-size:13.5px;color:var(--ink-2)}
+.guard code{font-family:var(--mono);font-size:12px;color:var(--cyan)}
+
+/* ================================================================ 06 incidents */
+.incidents{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.inc{padding:24px 26px;position:relative;overflow:hidden}
+.inc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sev)}
+.inc .hd{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.inc .sev{padding:3px 9px;border-radius:6px;font-weight:700;color:#0b1122;background:var(--sev)}
+.inc .stt{margin-left:auto;color:var(--lime)}
+.inc.open .stt{color:var(--amber)}
+.inc h3{margin-top:12px;font-size:18px;line-height:1.4}
+.inc dl{margin-top:14px;display:grid;grid-template-columns:62px 1fr;gap:8px 14px;font-size:14px}
+.inc dt{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);padding-top:3px}
+.inc dd{color:var(--ink-2)}
+.inc dd code{font-family:var(--mono);font-size:12.5px;color:var(--cyan);word-break:break-all}
+
+/* ================================================================ 07 artifacts */
+.files{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.file{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;padding:16px 18px;transition:border-color .25s,transform .25s var(--ease)}
+.file:hover{border-color:var(--indigo-2);transform:translateY(-2px)}
+.file .ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:18px;background:var(--bg-2);border:1px solid var(--line-2)}
+.file b{display:block;font-size:14.5px;line-height:1.35}
+.file span{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.file .go{color:var(--ink-3)}
+.file.feat{grid-column:span 2;border-color:rgba(99,102,241,.55);background:linear-gradient(120deg,rgba(99,102,241,.2),rgba(14,21,48,.9))}
+.ic.pdf{color:var(--rose)}.ic.vid{color:var(--cyan)}.ic.ppt{color:var(--amber)}.ic.code{color:var(--lime)}.ic.doc{color:var(--indigo-2)}
+
+/* ================================================================ outro */
+.outro{text-align:center;padding:130px 0 110px}
+.outro h2{font-size:clamp(32px,4.6vw,58px);line-height:1.15;letter-spacing:-.03em;font-weight:800}
+.outro p{margin:18px auto 0;max-width:620px;color:var(--ink-2)}
+.outro .actions{margin-top:36px;display:flex;justify-content:center;flex-wrap:wrap;gap:12px}
+.accounts{margin:44px auto 0;max-width:720px;display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:left}
+.accounts div{padding:14px 18px;font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.accounts b{display:block;font-family:var(--sans);font-size:14px;color:var(--ink);margin-bottom:2px}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:13px;color:var(--ink-3)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:center}
+footer a:hover{color:var(--ink)}
+.totop{position:fixed;right:24px;bottom:24px;z-index:40;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line-2);color:var(--ink);opacity:0;transform:translateY(12px);pointer-events:none;transition:all .35s var(--ease)}
+.totop.show{opacity:1;transform:none;pointer-events:auto}
+.totop:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* ================================================================ responsive */
+@media (max-width:1200px){
+  :root{--rail:0px}
+  .rail{display:none}
+  .topbar{display:none}
+  .mobilebar{display:flex;overflow:hidden;position:fixed;inset:0 0 auto 0;z-index:50;height:62px;align-items:center;gap:12px;padding:0 18px;background:rgba(7,11,22,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .mobilebar .logo{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(135deg,var(--indigo),#8b5cf6);color:#fff}
+  .mobilebar .brand{font-family:var(--display);font-weight:700}
+  .mobilebar .cur{font-family:var(--mono);font-size:11px;color:var(--cyan);margin-left:4px}
+  .mobilebar .sp{flex:1}
+  .mobilebar .btn{height:38px;padding:0 13px;font-size:13px}
+  .burger{width:42px;height:42px;border-radius:11px;border:1px solid var(--line-2);position:relative}
+  .burger i{position:absolute;left:11px;right:11px;height:2px;border-radius:2px;background:var(--ink);transition:all .3s var(--ease)}
+  .burger i:nth-child(1){top:14px}.burger i:nth-child(2){top:20px}.burger i:nth-child(3){top:26px}
+  .menu-open .burger i:nth-child(1){top:20px;transform:rotate(45deg)}
+  .menu-open .burger i:nth-child(2){opacity:0}
+  .menu-open .burger i:nth-child(3){top:20px;transform:rotate(-45deg)}
+  .sheet{display:block;position:fixed;inset:62px 0 0 0;z-index:49;background:rgba(7,11,22,.97);padding:22px 22px 40px;overflow-y:auto;transform:translateY(-12px);opacity:0;pointer-events:none;transition:all .35s var(--ease)}
+  .menu-open .sheet{opacity:1;transform:none;pointer-events:auto}
+  .sheet a{display:flex;align-items:baseline;gap:16px;padding:16px 4px;border-bottom:1px solid var(--line);font-size:20px;font-weight:700}
+  .sheet a em{font-style:normal;font-family:var(--mono);font-size:12px;color:var(--cyan);width:24px}
+  .sheet .btns{display:grid;gap:10px;margin-top:22px}
+  .sheet .btns .btn{justify-content:center}
+  .hero{grid-template-columns:1fr}
+  .console .robot{display:none}
+  .theater{grid-template-columns:1fr}
+  .side{grid-template-columns:1fr 1fr}
+  .inspector{grid-template-columns:1fr}
+  .steps{flex-direction:row;overflow-x:auto;padding-bottom:4px}
+  .step{min-width:210px}
+  .arch{grid-template-columns:1fr}
+}
+@media (max-width:860px){
+  section{padding:88px 0}
+  .wrap{padding:0 18px}
+  .sec-head{grid-template-columns:1fr;gap:8px}
+  .sec-no{font-size:64px}
+  .metrics{grid-template-columns:repeat(3,1fr)}
+  .metrics div:nth-child(3){border-right:0}
+  .metrics div:nth-child(-n+3){border-bottom:1px solid var(--line)}
+  .problem{grid-template-columns:1fr}
+  .side{grid-template-columns:1fr}
+  .timeline{height:auto;flex-wrap:wrap}
+  .timeline button{flex:1 1 30% !important;height:44px}
+  .viewer .stage{grid-template-columns:1fr}
+  .viewer .shot{min-height:240px;aspect-ratio:16/10}
+  .viewer .info{border-left:0;border-top:1px solid var(--line)}
+  .devices{grid-template-columns:repeat(3,1fr)}
+  .devices figure:first-child{grid-column:1/-1}
+  .guard{grid-template-columns:1fr}
+  .incidents{grid-template-columns:1fr}
+  .files{grid-template-columns:1fr}
+  .file.feat{grid-column:auto}
+  .accounts{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  body{font-size:15px}
+  .panes{grid-template-columns:1fr}
+  .pane.raw{border-right:0;border-bottom:1px solid var(--line)}
+  .erp{grid-template-columns:1fr 1fr}
+  .inner,.flow .r3{grid-template-columns:1fr}
+  .diagram,.stack{padding:20px}
+  .stamp{top:-16px}
+  .hero .lead{font-size:16px}
+  .btn{height:46px;padding:0 18px}
+  .thumb .play{width:70px;height:70px;font-size:24px}
+  .thumb .meta{padding:14px 16px}
+  .thumb .meta p{display:none}
+  .mobilebar .cur{display:none}
+  .mobilebar{gap:8px;padding:0 12px}
+  .mobilebar .btn{padding:0 11px;font-size:12.5px;gap:7px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+  .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ navigation -->
+<nav class="rail" aria-label="섹션 이동">
+  <a href="#ingest" class="logo" aria-label="맨 위로"><i class="fa-solid fa-feather-pointed"></i></a>
+  <span class="brand">DataQuill</span>
+  <ol id="railList"><span class="fill" id="railFill"></span></ol>
+  <div class="ext">
+    <a href="https://github.com/fsclass-n/dataquill" target="_blank" rel="noopener" title="GitHub 저장소" aria-label="GitHub 저장소"><i class="fa-brands fa-github"></i></a>
+    <a href="https://dataquill-api.onrender.com/docs" target="_blank" rel="noopener" title="API 문서 (Swagger)" aria-label="API 문서"><i class="fa-solid fa-code"></i></a>
+  </div>
+</nav>
+<div class="topbar">
+  <a class="btn btn-live" href="https://dataquill.onrender.com" target="_blank" rel="noopener"><span class="dot"></span>라이브 서비스</a>
+</div>
+<div class="mobilebar" id="mobilebar">
+  <a href="#ingest" class="logo" aria-label="맨 위로"><i class="fa-solid fa-feather-pointed"></i></a>
+  <span class="brand">DataQuill</span><span class="cur mono" id="mobileCur">00 · INGEST</span>
+  <span class="sp"></span>
+  <a class="btn btn-live" href="https://dataquill.onrender.com" target="_blank" rel="noopener"><span class="dot"></span>라이브 서비스</a>
+  <button class="burger" id="burger" aria-label="메뉴 열기" aria-expanded="false" aria-controls="sheet"><i></i><i></i><i></i></button>
+</div>
+<div class="sheet" id="sheet" aria-hidden="true">
+  <div id="sheetList"></div>
+  <div class="btns">
+    <a class="btn btn-main" href="#screening" data-play="full"><i class="fa-solid fa-circle-play"></i>온라인 발표 보기</a>
+    <a class="btn btn-ghost" href="https://github.com/fsclass-n/dataquill" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i>GitHub</a>
+  </div>
+</div>
+
+<main>
+<!-- ============================================================ 00 INGEST · hero -->
+<section id="ingest" data-stage="00" data-label="INGEST" data-name="소개">
+  <div class="wrap">
+    <div class="hero">
+      <div class="reveal">
+        <span class="prompt"><i class="fa-solid fa-circle"></i>$ dataquill run --input=receipt.pdf --target=erp,excel</span>
+        <h1>
+          서류는 <span class="grad">AI가 읽고</span>,<br />
+          입력은 <span class="grad">로봇이</span> 합니다.<br />
+          <span class="strike">손 타이핑</span>은 그만.
+        </h1>
+        <p class="lead">
+          <b>DataQuill</b>은 영수증 · 세금계산서 · 거래 이메일처럼 형식이 제각각인 문서를 <b>OCR + Gemini</b>로 정형화하고,
+          사람이 검수한 값을 <b>Playwright 로봇</b>이 ERP 전표 화면과 엑셀 원장에 대신 입력하는 B2B 자동화 서비스입니다.
+        </p>
+        <div class="actions">
+          <a class="btn btn-main" href="#screening" data-play="full"><i class="fa-solid fa-circle-play"></i>온라인 발표 보기</a>
+          <a class="btn btn-ghost" href="https://github.com/fsclass-n/dataquill" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i>GitHub</a>
+          <a class="btn btn-ghost" href="docs/pdf/프로젝트_발표자료.pdf" target="_blank" rel="noopener"><i class="fa-regular fa-file-pdf"></i>발표자료</a>
+        </div>
+        <div class="who"><span class="av">홍</span><span><b style="color:var(--ink)">홍기흥</b> · 1인 풀스택 (기획 · 프런트엔드 · 백엔드 · RPA · 배포 · 영상)</span></div>
+      </div>
+
+      <div class="console reveal" aria-label="문서가 정형 데이터와 ERP 전표로 바뀌는 과정을 보여 주는 애니메이션">
+        <div class="console-in">
+          <div class="console-top"><i></i><i></i><i></i><span>pipeline://sample_receipt_scan.pdf</span><span class="st" id="cStatus">RUNNING</span></div>
+          <div class="stages" id="cStages"><div>01 READ · OCR</div><div>02 PARSE · Gemini</div><div>03 TYPE · RPA</div></div>
+          <div class="panes">
+            <div class="pane raw"><div class="file"><i class="fa-solid fa-file-pdf"></i>스캔 영수증 · 영상 시연용 가상 문서</div><div id="cRaw"></div></div>
+            <div class="pane json" id="cJson"></div>
+          </div>
+          <div class="erp" id="cErp">
+            <span class="stamp" id="cStamp">✓ JV-20261117-0001</span>
+          </div>
+        </div>
+        <span class="robot" aria-hidden="true"><i class="fa-solid fa-robot"></i></span>
+      </div>
+    </div>
+
+    <div class="metrics reveal" id="metrics"></div>
+  </div>
+</section>
+
+<!-- ============================================================ 01 PROBLEM -->
+<section id="problem" data-stage="01" data-label="PROBLEM" data-name="문제 정의">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">01</span><div><span class="tag">Problem · 왜 만들었나</span><h2>같은 값을, 두 번, 손으로</h2><p>경리 · 총무 담당자는 영수증과 청구 메일을 보고 ERP에 한 번, 엑셀 원장에 또 한 번 입력합니다. 자동화가 어려웠던 이유를 로그로 정리했습니다.</p></div></div>
+    <div class="problem">
+      <div class="card log reveal" aria-label="문제 로그">
+        <div class="l"><span class="t">09:02</span><span class="i">INFO</span><span>메일함에 청구서 12건, 스캔 영수증 31장 도착</span></div>
+        <div class="l"><span class="t">09:05</span><span class="w">WARN</span><span>문서마다 양식이 다름 → 규칙(정규식) 추출 실패</span></div>
+        <div class="l"><span class="t">09:40</span><span class="w">WARN</span><span>ERP 화면에 수기 입력 중 · 오타 2건</span></div>
+        <div class="l"><span class="t">10:15</span><span class="w">WARN</span><span>같은 값을 엑셀 원장에 다시 입력 · 불일치 1건</span></div>
+        <div class="l"><span class="t">10:16</span><span class="e">ERROR</span><span>ERP 연동 API 없음 → 사람 말고는 입력 수단 없음</span></div>
+        <div class="l"><span class="t">10:16</span><span class="o">PLAN</span><span>해석은 생성형 AI, 입력은 RPA, 그 사이에 사람 검수</span></div>
+        <p class="muted" style="font-family:var(--sans);font-size:12px;margin-top:10px">※ 문제 상황을 설명하기 위한 예시 로그입니다.</p>
+      </div>
+      <div class="pains">
+        <div class="card pain reveal"><span class="ic"><i class="fa-solid fa-shuffle"></i></span><div><h3>비정형 입력</h3><p>영수증 · 세금계산서 · 청구 메일마다 형식이 달라 규칙 기반 자동화가 쉽게 깨집니다.</p></div></div>
+        <div class="card pain reveal"><span class="ic"><i class="fa-solid fa-clone"></i></span><div><h3>반복 · 이중 입력</h3><p>같은 거래를 ERP와 엑셀에 따로 입력해 시간이 들고 값이 어긋납니다.</p></div></div>
+        <div class="card pain reveal"><span class="ic"><i class="fa-solid fa-plug-circle-xmark"></i></span><div><h3>API 없는 레거시 ERP</h3><p>연동 API가 없으면 결국 누군가 화면에 직접 타이핑해야 합니다.</p></div></div>
+      </div>
+    </div>
+    <div class="card answer reveal">
+      <span class="chip"><i class="fa-solid fa-wand-magic-sparkles"></i>해석은 생성형 AI</span><span class="arrow">→</span>
+      <span class="chip"><i class="fa-solid fa-user-check"></i>사람의 검수 단계</span><span class="arrow">→</span>
+      <span class="chip"><i class="fa-solid fa-robot"></i>입력은 RPA 로봇</span>
+      <span class="muted" style="font-size:14px">AI가 틀릴 수 있기 때문에 검수(Human-in-the-loop)를 일부러 넣었습니다.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 02 SCREENING · video -->
+<section id="screening" data-stage="02" data-label="SCREENING" data-name="발표 · 시연 영상">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">02</span><div><span class="tag">Screening room · 온라인 발표</span><h2>10분 발표 · 시연, 그리고 60초 요약</h2><p>썸네일을 누르면 그 자리에서 바로 재생됩니다. 아래 타임라인이나 챕터를 누르면 해당 장면으로 이동합니다.</p></div></div>
+    <div class="theater">
+      <div class="reveal">
+        <div class="player main" data-media="full"></div>
+        <div class="timeline" id="timeline" aria-label="10분 영상 구간"></div>
+        <div class="howto"><span><i class="fa-solid fa-hand-pointer"></i>썸네일 클릭 = 제자리 재생</span><span><i class="fa-solid fa-sliders"></i>재생 · 음소거 · 전체 화면은 플레이어 컨트롤</span><span><i class="fa-solid fa-closed-captioning"></i>한국어 자막 포함(화면에 표시)</span></div>
+      </div>
+      <aside class="side">
+        <div class="reveal hl">
+          <div class="player small" data-media="highlight"></div>
+          <h4><span>바쁜 면접관을 위한 60초 하이라이트</span><span class="mono" style="color:var(--ink-3)">1:00</span></h4>
+        </div>
+        <div class="card chapters reveal">
+          <h4><span>챕터 · 10분 영상</span><span class="mono" style="font-size:11px;color:var(--ink-3)">click to seek</span></h4>
+          <ul id="chapters"></ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 03 PIPELINE · inspector -->
+<section id="pipeline" data-stage="03" data-label="PIPELINE" data-name="처리 파이프라인">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">03</span><div><span class="tag">Pipeline inspector · 핵심 기능</span><h2>문서 한 장이 지나가는 다섯 단계</h2><p>가장 싸고 정확한 방법부터 시도하고, 실패하면 다음 방법으로 넘어갑니다. 단계를 누르면 운영 서비스에서 캡처한 실제 화면을 볼 수 있습니다.</p></div></div>
+    <div class="inspector reveal" id="inspector">
+      <div class="steps" id="steps" role="tablist" aria-label="파이프라인 단계"></div>
+      <div class="card viewer">
+        <div class="bar"><i class="fa-solid fa-lock" style="color:var(--lime)"></i><span class="url" id="vUrl"></span><span id="vIdx">01 / 05</span></div>
+        <div class="stage">
+          <div class="shot" id="vShot"></div>
+          <div class="info" id="vInfo"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 04 SYSTEM · architecture -->
+<section id="system" data-stage="04" data-label="SYSTEM" data-name="아키텍처">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">04</span><div><span class="tag">System · 아키텍처와 기술 선택</span><h2>정적 프런트 · 무상태 API 컨테이너 · 관리형 DB</h2><p>기준은 세 가지였습니다. 혼자 끝까지 운영할 수 있는가, 로컬과 운영이 같은 코드로 도는가, 외부 서비스가 실패해도 대체 경로가 있는가.</p></div></div>
+    <div class="arch">
+      <div class="card diagram reveal">
+        <div class="flow">
+          <div class="node"><b><i class="fa-solid fa-display" style="color:var(--ink-3);margin-right:8px"></i>브라우저</b><span>HTTPS · Bearer JWT · OAuth state 쿠키</span></div>
+          <div class="link"></div>
+          <div class="node"><b>Frontend · React 19 + Vite 8 + Tailwind v4</b><span>Render Static Site → dataquill.onrender.com (Mock 모드 지원)</span></div>
+          <div class="link"></div>
+          <div class="node hot"><b>Backend · FastAPI + SQLAlchemy 2.0 (Docker)</b><span>Render Web Service → dataquill-api.onrender.com · Python 3.11 + Tesseract + Chromium</span>
+            <div class="inner">
+              <div><b>routers</b><br />auth · documents<br />admin · erp_demo</div>
+              <div><b>services</b><br />parser (Gemini/규칙)<br />oauth · stats</div>
+              <div><b>rpa/</b><br />extract (OCR)<br />excel_writer · erp_typer</div>
+            </div>
+          </div>
+          <div class="link"></div>
+          <div class="row r3">
+            <div class="node"><b>TiDB Cloud</b><span>MySQL 호환 · TLS 필수</span></div>
+            <div class="node"><b>Gemini API</b><span>구조화 출력 · 멀티모달</span></div>
+            <div class="node"><b>OAuth</b><span>Google · Naver · Kakao</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card stack reveal" id="stack"></div>
+    </div>
+    <div class="devices reveal">
+      <figure><img src="docs/assets/screenshots/dashboard.png" alt="데스크톱 대시보드 화면" loading="lazy" /><figcaption>desktop · 대시보드 (KPI · 일별 처리 추이)</figcaption></figure>
+      <figure class="phone"><img src="docs/assets/screenshots/mobile_login.png" alt="모바일 로그인 화면" loading="lazy" /></figure>
+      <figure class="phone"><img src="docs/assets/screenshots/mobile_closed.png" alt="모바일 대시보드 화면" loading="lazy" /></figure>
+      <figure class="phone"><img src="docs/assets/screenshots/mobile_drawer.png" alt="모바일 메뉴 드로어 화면" loading="lazy" /></figure>
+      <p class="note mono">responsive · 390px 모바일에서는 햄버거 ↔ X 전환과 우측 드로어 메뉴로 동작합니다. (운영 서비스 캡처)</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 05 ACCESS · roles -->
+<section id="access" data-stage="05" data-label="ACCESS" data-name="권한 설계">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">05</span><div><span class="tag">Access control · 권한 매트릭스</span><h2>버튼을 숨기는 건 편의, 경계는 서버</h2><p>세 역할의 권한을 API 단일 진입점(<span class="mono" style="color:var(--cyan)">deps.get_current_user</span>)에서 검사합니다. 새 API를 추가해도 같은 규칙이 자동으로 적용됩니다.</p></div></div>
+    <div class="card matrix reveal">
+      <table>
+        <thead><tr>
+          <th>동작</th>
+          <th><span class="role r1"><i class="fa-solid fa-user-shield"></i></span><b>운영 관리자</b><small>ADMIN_TOKEN 인증</small></th>
+          <th><span class="role r2"><i class="fa-solid fa-eye"></i></span><b>테스트 관리자</b><small>공개 계정 · 읽기 전용</small></th>
+          <th><span class="role r3"><i class="fa-solid fa-user"></i></span><b>일반 사용자</b><small>가입 · OAuth · 테스트 계정</small></th>
+        </tr></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+    </div>
+    <div class="guard">
+      <div class="card reveal"><b>쓰기 요청 일괄 차단</b><p><code>test_admin</code> 의 GET · HEAD · OPTIONS 외 요청은 403. 화면의 비활성 버튼과 별개로 서버가 막습니다.</p></div>
+      <div class="card reveal"><b>공개 계정 권한 고정</b><p>비밀번호가 공개된 테스트 계정은 권한 변경 API로 바꿀 수 없고, 서버 기동 시마다 원래 권한으로 복원됩니다.</p></div>
+      <div class="card reveal"><b>토큰 로그인 보호</b><p><code>compare_digest</code> 비교, 같은 IP 5회 실패 시 10분 차단, 토큰 미설정 시 운영 관리자 로그인 비활성.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 06 INCIDENTS -->
+<section id="incidents" data-stage="06" data-label="INCIDENTS" data-name="트러블슈팅">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">06</span><div><span class="tag">Incident reports · 트러블슈팅</span><h2>추측이 아니라 로그 · 소스 · 헬스 체크로</h2><p>개발과 배포 중 실제로 겪은 문제입니다. 증상 → 원인 → 조치 → 재발 방지 순서로 기록했고, 아직 고치지 못한 문제도 그대로 남겼습니다.</p></div></div>
+    <div class="incidents" id="incidentList"></div>
+  </div>
+</section>
+
+<!-- ============================================================ 07 ARTIFACTS -->
+<section id="artifacts" data-stage="07" data-label="ARTIFACTS" data-name="산출물">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-no">07</span><div><span class="tag">Artifacts · 문서와 산출물</span><h2>기획부터 피드백까지, 전부 공개</h2><p>단계별 진행일지와 산출물, 발표자료, 영상 원본을 저장소에 함께 보관합니다. 누르면 바로 열립니다.</p></div></div>
+    <div class="files" id="fileList"></div>
+  </div>
+</section>
+
+<section class="outro" aria-label="마무리">
+  <div class="wrap reveal">
+    <span class="tag">ready to run</span>
+    <h2>직접 업로드해 보세요.<br /><span style="color:var(--ink-3)">로봇이 대신 입력합니다.</span></h2>
+    <p>가입 없이 로그인 화면의 테스트 계정 버튼으로 바로 들어갈 수 있습니다. 무료 클라우드 플랜이라 첫 접속은 서버가 깨어나는 데 1분 정도 걸릴 수 있습니다.</p>
+    <div class="actions">
+      <a class="btn btn-live" href="https://dataquill.onrender.com" target="_blank" rel="noopener"><span class="dot"></span>라이브 서비스</a>
+      <a class="btn btn-main" href="#screening" data-play="full"><i class="fa-solid fa-circle-play"></i>온라인 발표 보기</a>
+      <a class="btn btn-ghost" href="https://dataquill-api.onrender.com/docs" target="_blank" rel="noopener"><i class="fa-solid fa-code"></i>API 문서</a>
+    </div>
+    <div class="accounts">
+      <div class="card"><b>일반 사용자</b>user@dataquill.io / User1234!</div>
+      <div class="card"><b>테스트 관리자 (읽기 전용)</b>admin@dataquill.io / Admin1234!</div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap" style="padding-left:calc(var(--rail) + 28px)">
+    <span>© 2026 DataQuill · 홍기흥 · 개인 포트폴리오 프로젝트</span>
+    <span style="display:flex;gap:18px;flex-wrap:wrap">
+      <a href="https://github.com/fsclass-n/dataquill" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> GitHub</a>
+      <a href="https://dataquill.onrender.com" target="_blank" rel="noopener">라이브 서비스</a>
+      <a href="https://github.com/fsclass-n/dataquill/issues" target="_blank" rel="noopener">문의 · Issues</a>
+    </span>
+  </div>
+</footer>
+<button class="totop" id="totop" aria-label="맨 위로 이동"><i class="fa-solid fa-arrow-up"></i></button>
+
+<script>
+/* =====================================================================
+ * 콘텐츠 데이터 — 영상 · 챕터 · 단계 · 사건 · 산출물은 여기만 고치면 됩니다.
+ *   영상 교체: MEDIA.full / MEDIA.highlight 의 src · poster 를 바꾸세요.
+ *   (저장소 상대 경로 또는 https:// 외부 URL 모두 가능, mp4(H.264/AAC) 권장)
+ * ===================================================================== */
+const MEDIA = {
+  full: {
+    src: 'docs/video/3조_final.mp4',
+    poster: 'docs/video/video-thumbnail.png',
+    title: '10분 온라인 발표 · 시연',
+    desc: 'PPT 발표 3분 → 운영 서비스 시연 → 권한 검증 → 운영 근거 → 회고',
+    duration: '10:00',
+    badge: 'ONLINE PRESENTATION',
+  },
+  highlight: {
+    src: 'docs/video/3조_highlight.mp4',
+    poster: 'docs/video/highlight-thumbnail.jpg',
+    title: '60초 하이라이트',
+    desc: '스캔 PDF 업로드 → Gemini 해석 → 검수 → RPA',
+    duration: '1:00',
+    badge: 'HIGHLIGHT',
+  },
+};
+
+// 10분 영상 구간 (영상_대본_및_연출가이드.md 타임라인 기준, 단위: 초)
+const SEGMENTS = [
+  { at: 0,   end: 180, label: 'PPT 발표' },
+  { at: 180, end: 390, label: '일반 사용자 시연' },
+  { at: 390, end: 504, label: '테스트 관리자 시연' },
+  { at: 504, end: 540, label: '운영 근거' },
+  { at: 540, end: 600, label: '회고 · 클로징' },
+];
+const CHAPTERS = [
+  [0, '문제 정의 — 같은 값을 두 번 손으로'],
+  [41, '아키텍처 · 기술 선택 기준'],
+  [66, '문서 해석 전략: 텍스트 → OCR → Gemini'],
+  [80, 'AI 환각 통제와 운영 지표'],
+  [154, '트러블슈팅 — Debian 13 Docker 빌드 실패'],
+  [180, '운영 서비스 시연 시작'],
+  [228, '스캔 영수증 PDF 업로드 → Gemini 해석'],
+  [282, '사람 검수 · 서버 재검증'],
+  [296, '엑셀 원장 적재 · ERP 자동 타이핑'],
+  [340, '이메일 청구서 해석'],
+  [370, '일반 사용자의 관리자 주소 접근 차단'],
+  [390, '테스트 관리자 · 읽기 전용 화면'],
+  [402, '모니터링 대시보드'],
+  [462, '실제 API 403 응답 확인'],
+  [476, '운영 관리자 토큰 로그인'],
+  [504, 'Swagger · 헬스 체크 · GitHub Actions'],
+  [540, '회고와 다음 단계'],
+];
+
+const METRICS = [
+  ['10:00', '발표 · 시연 영상'],
+  ['30', 'pytest 통과'],
+  ['6', '입력 형식'],
+  ['2', '적재 대상 (ERP · Excel)'],
+  ['3', 'OAuth 제공자'],
+  ['3', '권한 역할'],
+];
+
+const STEPS = [
+  {
+    no: '01', title: '수집', sub: 'upload · 10MB · 형식 검사', url: 'dataquill.onrender.com/documents',
+    shot: 'docs/assets/screenshots/documents.png',
+    head: '파일을 끌어다 놓거나, 메일 본문을 붙여 넣기',
+    points: ['PDF · JPG/PNG · EML · HTML · TXT · 메일 본문 6가지 입력', '확장자 화이트리스트와 10MB 제한을 서버에서 검사', '업로드와 동시에 해석이 시작되고 결과가 오른쪽 검수 패널에 열림'],
+    code: 'POST /api/documents/upload · /api/documents/text',
+  },
+  {
+    no: '02', title: '해석', sub: 'pypdf → Tesseract → Gemini', url: 'dataquill.onrender.com/documents?id=…',
+    shot: 'docs/video/video-thumbnail.png',
+    head: '가장 싸고 정확한 방법부터 단계적으로',
+    points: ['텍스트 레이어가 있으면 pypdf, 20자 미만이면 스캔본으로 판정', '스캔본 · 이미지는 Gemini 멀티모달로 원본을 직접 해석', 'Pydantic 스키마를 response_schema 로 넘겨 출력 형식을 강제', '429/5xx 는 2 · 5 · 10초 백오프 재시도, 키가 없으면 규칙 파서'],
+    code: 'services/parser.py · ParsedDocument (temperature 0)',
+  },
+  {
+    no: '03', title: '검수', sub: 'human-in-the-loop', url: 'dataquill.onrender.com/documents?id=…',
+    shot: 'docs/assets/screenshots/documents.png', position: 'right top',
+    head: 'AI 결과는 그대로 쓰지 않는다',
+    points: ['거래처 · 사업자번호 · 일자 · 합계 · 부가세 · 품목과 신뢰도 표시', '사람이 고친 값도 서버가 같은 스키마로 다시 검증 (틀리면 422)', '파싱이 완료된 문서만 RPA 실행 가능 (화면 비활성 + 서버 409)'],
+    code: 'PATCH /api/documents/{id}',
+  },
+  {
+    no: '04', title: '입력', sub: 'excel_writer · erp_typer', url: 'dataquill-api.onrender.com/erp-demo',
+    shot: 'docs/assets/screenshots/erp_demo.png', contain: true,
+    head: '로봇이 전표 화면에 타이핑하고, 전표번호로 성공을 확인',
+    points: ['엑셀 원장은 문서 ID 기준 교체 → 다시 적재해도 중복 행 없음', 'Playwright 가 셀렉터 맵(FIELD_SELECTORS)대로 ERP 칸을 채움', '버튼 클릭이 아니라 ERP 응답의 data-status 와 전표번호로 성공 판정'],
+    code: 'rpa/erp_typer.py · rpa/excel_writer.py',
+  },
+  {
+    no: '05', title: '관측', sub: 'monitoring · KPI', url: 'dataquill.onrender.com/admin/monitoring',
+    shot: 'docs/assets/screenshots/monitoring_top.png',
+    head: '로봇이 얼마나 잘 일하는지 숫자로 본다',
+    points: ['AI 파싱 성공률 = parsed ÷ (parsed + failed), 대기 문서는 분모 제외', 'RPA 성공률 · 일별 추이(KST 변환) · 소스 · 파서 · 가입 경로 분포', '최근 실패 문서와 원인을 바로 확인'],
+    code: 'GET /api/admin/stats',
+  },
+];
+
+const STACK = [
+  ['Backend', [['fa-brands fa-python', 'Python 3.11'], ['fa-solid fa-bolt', 'FastAPI'], ['fa-solid fa-database', 'SQLAlchemy 2.0'], ['fa-solid fa-key', 'PyJWT']]],
+  ['AI · RPA', [['fa-solid fa-wand-magic-sparkles', 'Gemini 구조화 출력'], ['fa-solid fa-robot', 'Playwright'], ['fa-solid fa-eye', 'Tesseract OCR'], ['fa-solid fa-table', 'pandas · openpyxl']]],
+  ['Frontend', [['fa-brands fa-react', 'React 19'], ['fa-solid fa-bolt-lightning', 'Vite 8'], ['fa-solid fa-wind', 'Tailwind CSS v4'], ['fa-solid fa-chart-pie', 'Recharts']]],
+  ['Infra', [['fa-brands fa-docker', 'Docker'], ['fa-solid fa-cloud', 'Render'], ['fa-solid fa-server', 'TiDB Cloud'], ['fa-brands fa-github', 'GitHub Actions']]],
+];
+
+// [동작, 운영 관리자, 테스트 관리자, 일반 사용자]  y=허용, n=차단, 그 외 문자열은 그대로 표시
+const MATRIX = [
+  ['관리자 화면 조회 (회원 · 모니터링)', 'y', 'y', 'n'],
+  ['문서 업로드 · 메일 본문 해석', 'y', 'n', '본인'],
+  ['검수 저장 · 재해석 · 삭제', 'y', 'n', '본인'],
+  ['엑셀 적재 · ERP 자동 타이핑', 'y', 'n', '본인'],
+  ['회원 권한 변경', 'y', 'n', 'n'],
+  ['다른 사용자 문서 열람', 'y', '조회만', 'n'],
+];
+
+const INCIDENTS = [
+  { id: 'INC-01', sev: 'HIGH', color: 'var(--rose)', title: '코드를 바꾸지 않았는데 Docker 빌드가 실패',
+    symptom: "playwright install --with-deps 에서 'ttf-ubuntu-font-family' 설치 실패",
+    cause: 'python:3.11-slim 이 Debian 13 으로 변경. Playwright 1.52 소스(nativeDeps.ts)는 Debian 11/12 만 지원',
+    fix: '<code>python:3.11-slim-bookworm</code> 로 기본 이미지 OS 고정', prevent: '움직이는 태그 대신 OS 버전을 명시' },
+  { id: 'INC-02', sev: 'CRITICAL', color: 'var(--rose)', title: '공개된 테스트 관리자 계정이 실제 관리자 권한을 가짐',
+    symptom: '로그인 화면에 비밀번호가 공개된 계정으로 회원 권한 변경 가능',
+    cause: '테스트 편의를 위한 계정과 실제 운영 권한이 분리되지 않음',
+    fix: '운영 관리자는 <code>ADMIN_TOKEN</code> 으로만, 테스트 관리자는 읽기 전용(쓰기 403)으로 분리', prevent: '공개 계정 권한을 기동 시 복원 · 변경 API 차단, 테스트 8개 추가' },
+  { id: 'INC-03', sev: 'HIGH', color: 'var(--amber)', title: '운영에서만 DB 접속 실패',
+    symptom: '<code>1105 insecure transport prohibited</code>',
+    cause: 'TiDB Cloud Serverless 는 TLS 필수',
+    fix: '<code>DB_SSL=true</code> + certifi CA 번들. 운영 DB 대신 임시 DB 로 전체 흐름 검증 후 삭제', prevent: 'AGENTS.md 에 운영 주의 사항으로 기록' },
+  { id: 'INC-04', sev: 'MEDIUM', color: 'var(--amber)', title: '키를 넣지 않았는데 AI · OAuth 가 "설정됨"',
+    symptom: '헬스 체크가 <code>parser: gemini</code>, OAuth 3종 활성으로 응답',
+    cause: '빈 값 뒤 인라인 주석(<code>KEY=   # 설명</code>)을 python-dotenv 가 값으로 읽음',
+    fix: '주석을 별도 줄로 이동, 테스트에서 외부 키를 비워 로컬 설정과 분리', prevent: '헬스 체크에 실제 파서 종류를 노출해 바로 발견' },
+  { id: 'INC-05', sev: 'MEDIUM', color: 'var(--amber)', title: '운영 첫 점검에서 Gemini 503 high demand',
+    symptom: '일시적 과부하 한 번에 문서가 즉시 실패 처리',
+    cause: '재시도 없이 첫 응답을 그대로 결과로 사용',
+    fix: '429/500/503/504 만 2 · 5 · 10초 백오프로 최대 4회, 400 은 즉시 실패', prevent: '가짜 클라이언트로 재시도 횟수를 검증하는 테스트 3개' },
+  { id: 'OPEN-01', sev: 'LOW', color: 'var(--cyan)', open: true, title: '새로고침 후 문서 시각이 9시간 이르게 표시',
+    symptom: '업로드 직후는 정상, 목록을 다시 불러오면 시각이 어긋남',
+    cause: 'TiDB 에서 읽은 created_at 이 시간대 없는 값으로 내려와 브라우저가 현지 시각으로 해석',
+    fix: '미수정 — 응답 직렬화 시 UTC 시간대를 붙일 예정', prevent: '일별 통계 집계는 UTC 기준으로 처리되어 영향 없음' },
+];
+
+const FILES = [
+  { feat: true, ic: 'vid', icon: 'fa-solid fa-film', title: '10분 발표 · 시연 영상 (원본 mp4)', meta: '1920×1080 · H.264 · 65MB', href: 'docs/video/3조_final.mp4' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '프로젝트 발표자료 (PDF)', meta: '17장 · 984KB', href: 'docs/pdf/프로젝트_발표자료.pdf' },
+  { ic: 'ppt', icon: 'fa-regular fa-file-powerpoint', title: '프로젝트 발표자료 (PPTX)', meta: '발표자 노트 포함 · 1.1MB', href: 'docs/프로젝트_발표자료.pptx' },
+  { ic: 'vid', icon: 'fa-solid fa-closed-captioning', title: '10분 영상 한국어 자막', meta: 'SRT · 125문장', href: 'docs/video/3조_final.srt' },
+  { ic: 'doc', icon: 'fa-solid fa-clapperboard', title: '영상 대본 및 연출 가이드', meta: '장면 38개 · Markdown', href: 'https://github.com/fsclass-n/dataquill/blob/main/docs/video/%EC%98%81%EC%83%81_%EB%8C%80%EB%B3%B8_%EB%B0%8F_%EC%97%B0%EC%B6%9C%EA%B0%80%EC%9D%B4%EB%93%9C.md' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '진행일지 1단계 · 기획분석', meta: 'PDF', href: 'docs/pdf/프로젝트_진행일지_1단계_기획분석.pdf' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '진행일지 2단계 · 설계', meta: 'PDF', href: 'docs/pdf/프로젝트_진행일지_2단계_설계.pdf' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '진행일지 3단계 · 구현', meta: 'PDF', href: 'docs/pdf/프로젝트_진행일지_3단계_구현.pdf' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '진행일지 4단계 · 배포', meta: 'PDF', href: 'docs/pdf/프로젝트_진행일지_4단계_배포.pdf' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '진행일지 5단계 · 피드백', meta: 'PDF', href: 'docs/pdf/프로젝트_진행일지_5단계_피드백.pdf' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '산출물 01 · 기획분석', meta: 'PDF', href: 'docs/pdf/01_기획분석_산출물.pdf' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '산출물 02 · 설계', meta: 'PDF', href: 'docs/pdf/02_설계_산출물.pdf' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '산출물 03 · 구현', meta: 'PDF', href: 'docs/pdf/03_구현_산출물.pdf' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '산출물 04 · 배포', meta: 'PDF', href: 'docs/pdf/04_배포_산출물.pdf' },
+  { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '산출물 05 · 피드백', meta: 'PDF', href: 'docs/pdf/05_피드백_산출물.pdf' },
+  { ic: 'code', icon: 'fa-brands fa-github', title: 'README · 소스 코드', meta: 'github.com/fsclass-n/dataquill', href: 'https://github.com/fsclass-n/dataquill' },
+];
+
+/* ===================================================================== helpers */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const url = (p) => (/^https?:/.test(p) ? p : encodeURI(p));
+const fmt = (t) => `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ===================================================================== in-place video players */
+const players = {};
+
+function buildPlayer(el) {
+  const key = el.dataset.media, m = MEDIA[key];
+  el.innerHTML = `
+    <button class="thumb" type="button" aria-label="${esc(m.title)} 재생 (${m.duration})">
+      <img src="${url(m.poster)}" alt="" loading="${key === 'full' ? 'eager' : 'lazy'}" />
+      <span class="rec">${esc(m.badge)}</span>
+      <span class="play"><i class="fa-solid fa-play"></i></span>
+      <span class="meta"><span><h3>${esc(m.title)}</h3><p>${esc(m.desc)}</p></span><span class="dur">${m.duration}</span></span>
+    </button>
+    <div class="endcard"><div><p style="font-weight:800;font-size:18px">재생이 끝났습니다</p>
+      <div class="row"><button class="btn btn-main" type="button" data-act="replay"><i class="fa-solid fa-rotate-right"></i>다시 재생</button>
+      <button class="btn btn-ghost" type="button" data-act="back"><i class="fa-regular fa-image"></i>썸네일로</button></div></div></div>
+    <div class="errcard"><div><p style="font-weight:800">영상을 불러오지 못했습니다</p><p class="muted" style="font-size:13px">네트워크 상태를 확인하거나 파일을 직접 열어 주세요.</p>
+      <div class="row"><a class="btn btn-ghost" href="${url(m.src)}" target="_blank" rel="noopener">파일 직접 열기</a>
+      <button class="btn btn-ghost" type="button" data-act="back">썸네일로</button></div></div></div>`;
+  const p = { el, key, video: null };
+  players[key] = p;
+  $('.thumb', el).addEventListener('click', () => play(key));
+  el.addEventListener('click', (e) => {
+    const act = e.target.closest('[data-act]')?.dataset.act;
+    if (act === 'replay') { el.classList.remove('ended'); p.video.currentTime = 0; p.video.play(); }
+    if (act === 'back') reset(key);
+  });
+}
+
+function mount(key) {
+  const p = players[key];
+  if (p.video) return p.video;
+  const v = document.createElement('video');
+  v.controls = true;
+  v.playsInline = true;
+  v.preload = 'auto';
+  v.poster = url(MEDIA[key].poster);
+  v.setAttribute('controlslist', 'nodownload');
+  v.innerHTML = `<source src="${url(MEDIA[key].src)}" type="video/mp4" />`;
+  v.addEventListener('play', () => { Object.values(players).forEach((o) => o !== p && o.video && o.video.pause()); p.el.classList.remove('ended'); });
+  v.addEventListener('ended', () => p.el.classList.add('ended'));
+  v.addEventListener('error', () => p.el.classList.add('error'), true);
+  if (key === 'full') v.addEventListener('timeupdate', () => syncChapters(v.currentTime));
+  p.el.prepend(v);
+  p.video = v;
+  return v;
+}
+
+function play(key, at) {
+  const p = players[key], v = mount(key);
+  p.el.classList.add('playing');
+  p.el.classList.remove('ended', 'error');
+  // play() 는 클릭 직후 바로 호출해야 브라우저가 소리 있는 재생을 허용한다
+  if (typeof at === 'number') {
+    if (v.readyState >= 1) v.currentTime = at;
+    else v.addEventListener('loadedmetadata', () => { v.currentTime = at; }, { once: true });
+  }
+  v.play().catch(() => {});
+}
+
+function reset(key) {
+  const p = players[key];
+  if (!p.video) return;
+  p.video.pause();
+  p.video.remove();
+  p.video = null;
+  p.el.classList.remove('playing', 'ended', 'error');
+  if (key === 'full') syncChapters(-1);
+}
+
+/* ---------- 10분 영상 타임라인 · 챕터 */
+function buildChapters() {
+  $('#timeline').innerHTML = SEGMENTS.map((s, i) =>
+    `<button type="button" data-seek="${s.at}" data-seg="${i}" style="flex:${s.end - s.at}" title="${esc(s.label)} · ${fmt(s.at)}">
+       <i class="p"></i><span><em>${fmt(s.at)}</em>${esc(s.label)}</span></button>`).join('');
+  $('#chapters').innerHTML = CHAPTERS.map(([t, label], i) =>
+    `<li><button type="button" data-seek="${t}" data-ch="${i}"><b>${fmt(t)}</b><span>${esc(label)}</span></button></li>`).join('');
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-seek]');
+    if (!b) return;
+    play('full', Number(b.dataset.seek));
+    if (innerWidth < 1200) players.full.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+}
+
+function syncChapters(t) {
+  $$('#timeline button').forEach((b, i) => {
+    const s = SEGMENTS[i];
+    const pct = t < 0 ? 0 : Math.max(0, Math.min(1, (t - s.at) / (s.end - s.at))) * 100;
+    $('.p', b).style.width = `${pct}%`;
+    b.classList.toggle('cur', t >= s.at && t < s.end);
+  });
+  let cur = -1;
+  CHAPTERS.forEach(([at], i) => { if (t >= at) cur = i; });
+  $$('#chapters button').forEach((b, i) => b.classList.toggle('cur', i === cur));
+}
+
+/* 히어로 · 메뉴의 '온라인 발표 보기' → 10분 영상을 제자리에서 재생 */
+function bindPlayLinks() {
+  $$('[data-play]').forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeSheet();
+    play(a.dataset.play);
+    $('#screening').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+  }));
+}
+
+/* ===================================================================== hero console animation */
+const RAW = ['상호: 브런치카페 퀼 역삼점', '사업자번호: 214-86-12345', '거래일시: 2026-11-17 12:41', '아메리카노    2  4,500   9,000', '카페라떼      1  5,000   5,000', '클럽샌드위치  2  8,500  17,000', '부가세                  2,818', '합계                  31,000원', '결제수단            신용카드'];
+const JSON_ROWS = [
+  ['vendor', '"브런치카페 퀼 역삼점"', 's'], ['business_number', '"214-86-12345"', 's'], ['date', '"2026-11-17"', 's'],
+  ['total_amount', '31000', 'n'], ['vat', '2818', 'n'], ['payment_method', '"신용카드"', 's'], ['items', '[3 rows]', 'p'],
+];
+const ERP_FIELDS = [['거래처', '브런치카페 퀼 역삼점'], ['거래일자', '2026-11-17'], ['합계금액', '31000'], ['부가세', '2818']];
+
+function consoleSkeleton() {
+  $('#cErp').insertAdjacentHTML('beforeend', ERP_FIELDS.map(([l]) => `<div><label>${l}</label><div class="f"></div></div>`).join(''));
+  $('#cJson').innerHTML = `<div class="in"><span class="p">{</span></div>${JSON_ROWS.map(([k, v, t]) =>
+    `<div>&nbsp;&nbsp;<span class="k">"${k}"</span><span class="p">: </span><span class="${t}">${esc(v)}</span><span class="p">,</span></div>`).join('')}
+    <div class="in"><span class="p">}</span></div><div class="conf"><span>confidence</span><span class="bar"><i id="cConf"></i></span><span class="mono" id="cConfV">0.00</span></div>`;
+}
+
+async function typeInto(el, text, speed = 22) {
+  for (let i = 1; i <= text.length; i++) { el.textContent = text.slice(0, i); await sleep(speed); }
+}
+
+async function runConsole() {
+  const stages = $$('#cStages div'), raw = $('#cRaw'), rows = $$('#cJson > div:not(.in):not(.conf)'), fields = $$('#cErp .f');
+  const status = $('#cStatus'), stamp = $('#cStamp'), conf = $('#cConf'), confV = $('#cConfV');
+  const setStage = (i) => stages.forEach((s, j) => { s.className = j < i ? 'ok' : j === i ? 'on' : ''; });
+  if (reduced) {
+    raw.innerHTML = RAW.map(esc).join('<br>'); rows.forEach((r) => r.classList.add('in'));
+    fields.forEach((f, i) => { f.textContent = ERP_FIELDS[i][1]; }); stages.forEach((s) => (s.className = 'ok'));
+    conf.style.width = '98%'; confV.textContent = '0.98'; stamp.classList.add('in'); status.textContent = 'DONE'; return;
+  }
+  for (;;) {
+    raw.innerHTML = ''; rows.forEach((r) => r.classList.remove('in')); fields.forEach((f) => { f.textContent = ''; });
+    stamp.classList.remove('in'); conf.style.width = '0'; confV.textContent = '0.00'; status.textContent = 'RUNNING'; status.style.color = '';
+    setStage(0);
+    for (const line of RAW) {
+      const d = document.createElement('div'); d.className = 'caret'; raw.append(d);
+      await typeInto(d, line, 14); d.className = '';
+    }
+    await sleep(300); setStage(1);
+    for (const r of rows) { r.classList.add('in'); await sleep(230); }
+    conf.style.width = '98%'; confV.textContent = '0.98';
+    await sleep(700); setStage(2);
+    for (const f of fields) { f.classList.add('typing'); await typeInto(f, ERP_FIELDS[fields.indexOf(f)][1], 34); f.classList.remove('typing'); }
+    await sleep(250); stamp.classList.add('in'); setStage(3); status.textContent = 'DONE'; status.style.color = 'var(--lime)';
+    await sleep(3600);
+  }
+}
+
+/* ===================================================================== sections render */
+function renderStatic() {
+  $('#metrics').innerHTML = METRICS.map(([v, l]) => `<div><b>${v}</b><span>${l}</span></div>`).join('');
+  $('#stack').innerHTML = STACK.map(([h, items]) =>
+    `<div><h4>${h}</h4><div class="chips">${items.map(([i, t]) => `<span><i class="${i}"></i>${t}</span>`).join('')}</div></div>`).join('') +
+    `<p class="mono" style="font-size:12px;color:var(--ink-3)">테스트 SQLite ↔ 운영 TiDB 를 DATABASE_URL 하나로 전환 · 변경 영역만 CI/CD</p>`;
+  const mark = (v) => (v === 'y' ? '<i class="fa-solid fa-check y" aria-label="허용"></i>' : v === 'n' ? '<i class="fa-solid fa-xmark no" aria-label="차단"></i>' : `<span class="ro">${v}</span>`);
+  $('#matrixBody').innerHTML = MATRIX.map(([a, ...v]) => `<tr><td>${a}</td>${v.map((x) => `<td>${mark(x)}</td>`).join('')}</tr>`).join('');
+  $('#incidentList').innerHTML = INCIDENTS.map((c) => `
+    <article class="card inc reveal ${c.open ? 'open' : ''}" style="--sev:${c.color}">
+      <div class="hd"><span class="sev">${c.sev}</span><span>${c.id}</span><span class="stt">${c.open ? '● OPEN' : '● RESOLVED'}</span></div>
+      <h3>${c.title}</h3>
+      <dl><dt>SYMPTOM</dt><dd>${c.symptom}</dd><dt>CAUSE</dt><dd>${c.cause}</dd><dt>FIX</dt><dd>${c.fix}</dd><dt>PREVENT</dt><dd>${c.prevent}</dd></dl>
+    </article>`).join('');
+  $('#fileList').innerHTML = FILES.map((f) => `
+    <a class="card file reveal ${f.feat ? 'feat' : ''}" href="${url(f.href)}" target="_blank" rel="noopener">
+      <span class="ic ${f.ic}"><i class="${f.icon}"></i></span><span><b>${f.title}</b><span>${f.meta}</span></span><i class="fa-solid fa-arrow-up-right-from-square go"></i></a>`).join('');
+}
+
+/* ---------- pipeline inspector */
+let stepIdx = 0, stepTimer = null;
+function buildInspector() {
+  $('#steps').innerHTML = STEPS.map((s, i) => `
+    <button class="step" type="button" role="tab" data-step="${i}" aria-selected="false">
+      <span class="n">${s.no}</span><span><h3>${s.title}</h3><p>${s.sub}</p></span><span class="prog"><i></i></span></button>`).join('');
+  $('#vShot').innerHTML = STEPS.map((s, i) =>
+    `<img src="${url(s.shot)}" alt="${s.title} 단계 화면" loading="lazy" data-shot="${i}" class="${s.contain ? 'contain' : ''}" style="${s.position ? `object-position:${s.position}` : ''}" />`).join('');
+  $('#steps').addEventListener('click', (e) => { const b = e.target.closest('[data-step]'); if (b) showStep(Number(b.dataset.step), true); });
+  const box = $('#inspector');
+  box.addEventListener('mouseenter', () => box.classList.add('paused'));
+  box.addEventListener('mouseleave', () => box.classList.remove('paused'));
+  showStep(0);
+  if (!reduced) {
+    new IntersectionObserver(([en]) => { clearInterval(stepTimer); if (en.isIntersecting) stepTimer = setInterval(() => { if (!box.classList.contains('paused')) showStep((stepIdx + 1) % STEPS.length); }, 7000); }, { threshold: .35 }).observe(box);
+  }
+}
+function showStep(i, user) {
+  stepIdx = i;
+  const s = STEPS[i];
+  $$('.step').forEach((b, j) => { b.classList.toggle('on', j === i); b.setAttribute('aria-selected', j === i); });
+  $$('#vShot img').forEach((img, j) => img.classList.toggle('on', j === i));
+  $('#vUrl').textContent = `https://${s.url}`;
+  $('#vIdx').textContent = `${s.no} / ${String(STEPS.length).padStart(2, '0')}`;
+  const info = $('#vInfo');
+  info.innerHTML = `<span class="tag">stage ${s.no} · ${s.sub}</span><h3 style="margin-top:8px">${s.head}</h3>
+    <ul>${s.points.map((p) => `<li><i class="fa-solid fa-check"></i><span>${p}</span></li>`).join('')}</ul><div class="code">${esc(s.code)}</div>`;
+  info.classList.remove('fade-swap'); void info.offsetWidth; info.classList.add('fade-swap');
+  if (user) { const b = $(`.step[data-step="${i}"] .prog i`); if (b) { b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; } }
+}
+
+/* ===================================================================== navigation (rail · mobile) */
+const SECTIONS = $$('main section[data-stage]');
+function buildNav() {
+  $('#railList').insertAdjacentHTML('beforeend', SECTIONS.map((s) =>
+    `<li><a href="#${s.id}" data-nav="${s.id}"><span>${s.dataset.stage}<b>${s.dataset.name}</b></span></a></li>`).join(''));
+  $('#sheetList').innerHTML = SECTIONS.map((s) => `<a href="#${s.id}" data-nav="${s.id}"><em>${s.dataset.stage}</em>${s.dataset.name}</a>`).join('');
+  $$('#sheetList a').forEach((a) => a.addEventListener('click', closeSheet));
+}
+function onScroll() {
+  const y = scrollY + innerHeight * .35;
+  let cur = SECTIONS[0];
+  SECTIONS.forEach((s) => { if (s.offsetTop <= y) cur = s; });
+  const idx = SECTIONS.indexOf(cur);
+  $$('#railList a').forEach((a, i) => { a.classList.toggle('active', i === idx); a.classList.toggle('done', i < idx); });
+  const links = $$('#railList a');
+  if (links[idx]) $('#railFill').style.height = `${Math.max(0, links[idx].offsetTop + links[idx].offsetHeight / 2 - 14)}px`;
+  $('#mobileCur').textContent = `${cur.dataset.stage} · ${cur.dataset.label}`;
+  $('#totop').classList.toggle('show', scrollY > 600);
+}
+const burger = $('#burger');
+function closeSheet() { document.body.classList.remove('menu-open'); burger.setAttribute('aria-expanded', 'false'); $('#sheet').setAttribute('aria-hidden', 'true'); }
+burger.addEventListener('click', () => {
+  const open = document.body.classList.toggle('menu-open');
+  burger.setAttribute('aria-expanded', String(open));
+  burger.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+  $('#sheet').setAttribute('aria-hidden', String(!open));
+});
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSheet(); });
+$('#totop').addEventListener('click', () => scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' }));
+
+/* ===================================================================== reveal on scroll */
+function initReveal() {
+  const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+    if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+  }), { threshold: .12, rootMargin: '0px 0px -40px 0px' });
+  $$('.reveal').forEach((el, i) => { el.style.transitionDelay = `${(i % 3) * 70}ms`; io.observe(el); });
+}
+
+/* ===================================================================== boot */
+renderStatic();
+$$('.player[data-media]').forEach(buildPlayer);
+buildChapters();
+buildInspector();
+buildNav();
+bindPlayLinks();
+consoleSkeleton();
+runConsole();
+initReveal();
+addEventListener('scroll', onScroll, { passive: true });
+addEventListener('resize', onScroll);
+onScroll();
+</script>
+</body>
+</html>

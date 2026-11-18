@@ -4,6 +4,12 @@
 
 ### 생성형 AI × RPA 기반 데이터 입력 자동화 플랫폼
 
+<a href="https://fsclass-n.github.io/dataquill/"><img src="https://img.shields.io/badge/PORTFOLIO-fsclass--n.github.io%2Fdataquill-6366F1?style=for-the-badge&logo=githubpages&logoColor=white" alt="포트폴리오 웹사이트" /></a>
+<a href="https://dataquill.onrender.com"><img src="https://img.shields.io/badge/LIVE-dataquill.onrender.com-A3E635?style=for-the-badge&logo=render&logoColor=black" alt="라이브 서비스" /></a>
+
+**포트폴리오 웹사이트 → [https://fsclass-n.github.io/dataquill/](https://fsclass-n.github.io/dataquill/)**<br/>
+10분 온라인 발표 · 시연 영상, 60초 하이라이트, 처리 파이프라인, 권한 설계, 트러블슈팅을 한 페이지에서 볼 수 있습니다.
+
 **영수증·세금계산서·거래 이메일 같은 비정형 문서를 AI가 읽어 정형화하고,<br/>RPA 로봇이 ERP 화면과 엑셀 원장에 대신 입력합니다.**
 
 <br/>
