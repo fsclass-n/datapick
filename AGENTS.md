@@ -22,6 +22,11 @@
   - PDF: PowerPoint COM 으로 내보내기 (`docs/pdf/프로젝트_발표자료.pdf`), 화면 캡처는 `docs/assets/screenshots/`
   - 캡처는 별도 데모 인스턴스(백엔드 :8001 + 임시 SQLite, 프런트 :5180)에서 촬영. 5174 포트는 다른 프로젝트(fashionpick)가 사용 중
 
+## 문서(진행일지 · 산출물) 생성
+- `python docs/tools/build_docs.py` — **시스템 Python 3.11**(pywin32 · PyMuPDF, 한글 설치 필요)로 실행. .venv 에는 pywin32 가 없음
+- 진행일지는 `docs/tools/templates/` 원본 빈 양식에서 다시 채움(메타데이터 보존), 산출물은 `docs/tools/hwpx_writer.py` 로 직접 생성
+- 내용은 build_docs.py 의 JOURNAL · output_0N() 만 수정. 실행 후 자동 검수(본문 일치 · 글꼴 · 빈 쪽 · 하단 제목) 결과가 모두 OK 여야 함
+
 ## 구조 메모
 - Python 패키지 루트는 저장소 루트 (`backend.app`, `rpa` 를 import). Docker 빌드 컨텍스트도 루트
 - Vite 는 `envDir: '..'` 로 루트 `.env` 를 읽음 (VITE_ 접두사만 노출)
@@ -29,6 +34,7 @@
 - Tailwind v4: 재사용 클래스(btn, card, input 등)는 `@utility` 로 정의 (`src/index.css`)
 
 ## 규칙
+- **최종 결과 보고는 한국어로 작성**: 작업이 끝난 뒤 사용자에게 알리는 최종 결과만 한글로 작성 (작업 중간 안내는 언어 무관)
 - 가상환경 `.venv`, 단일 `requirements.txt`
 - 환경 변수는 `.env` 하나로 관리, `.env.example`에 Render 대시보드 등록 항목 구분 표시
 - Netlify/Render는 각자 영역(frontend/, backend/) 변경 시에만 배포
