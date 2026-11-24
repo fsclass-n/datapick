@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faArrowRight,
@@ -8,13 +8,16 @@ import {
   faCoins,
   faInbox,
   faRobot,
+  faTriangleExclamation,
+  faUserGear,
   faWandMagicSparkles,
 } from '@fortawesome/free-solid-svg-icons'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api } from '../api/client'
 import { useAuth } from '../context/AuthContext'
-import { Badge, EmptyState, LoadingBlock, PageHeader, StatCard } from '../components/ui'
-import { SOURCE_LABELS, compactWon, dateTime, won } from '../utils/format'
+import { useToast } from '../context/ToastContext'
+import { Badge, EmptyState, LoadingBlock, PageHeader, Spinner, StatCard } from '../components/ui'
+import { PROVIDER_LABELS, SOURCE_LABELS, compactWon, dateTime, won } from '../utils/format'
 import { sourceIcon } from '../utils/icons'
 import { TOOL_LIST, TOOLS } from '../utils/tools'
 
@@ -24,6 +27,7 @@ export default function Dashboard() {
   const [recent, setRecent] = useState([])
   const [analyses, setAnalyses] = useState([])
   const [error, setError] = useState('')
+  const [withdrawOpen, setWithdrawOpen] = useState(false)
 
   useEffect(() => {
     Promise.all([api('/api/dashboard'), api('/api/documents'), api('/api/tools/analyses')])
@@ -205,6 +209,88 @@ export default function Dashboard() {
           />
         )}
       </section>
+
+      <section className="card mt-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500">
+              <FontAwesomeIcon icon={faUserGear} />
+            </span>
+            <div>
+              <p className="text-sm font-medium text-slate-800">
+                {user.email}
+                <span className="text-slate-400"> · {PROVIDER_LABELS[user.provider] || user.provider}</span>
+              </p>
+              <p className="mt-0.5 text-xs text-slate-500">가입일 {dateTime(user.created_at)}</p>
+            </div>
+          </div>
+          <button type="button" onClick={() => setWithdrawOpen(true)} className="text-sm font-semibold text-rose-600 transition hover:text-rose-700">
+            회원 탈퇴
+          </button>
+        </div>
+      </section>
+
+      {withdrawOpen && <WithdrawModal user={user} onClose={() => setWithdrawOpen(false)} />}
     </>
+  )
+}
+
+function WithdrawModal({ user, onClose }) {
+  const { logout } = useAuth()
+  const toast = useToast()
+  const navigate = useNavigate()
+  const [password, setPassword] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const needsPassword = ['local', 'admin'].includes(user.provider)
+
+  async function submit(e) {
+    e.preventDefault()
+    if (needsPassword && !password) return setError('비밀번호를 입력해 주세요.')
+    setBusy(true)
+    setError('')
+    try {
+      await api('/api/auth/me', { method: 'DELETE', body: { password: password || null } })
+      logout()
+      toast('탈퇴가 완료되었습니다. 이용해 주셔서 감사합니다.', 'success')
+      navigate('/', { replace: true })
+    } catch (err) {
+      setError(err.message)
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="withdraw-title">
+      <form onSubmit={submit} className="card w-full max-w-md p-6">
+        <h3 id="withdraw-title" className="flex items-center gap-2 text-lg font-bold text-rose-600">
+          <FontAwesomeIcon icon={faTriangleExclamation} /> 회원 탈퇴
+        </h3>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          계정과 함께 <b>업로드한 문서, AI 분석 기록, RPA 작업 이력, 엑셀 원장</b>이 모두 삭제되며 되돌릴 수 없습니다.
+        </p>
+        {needsPassword && (
+          <div className="mt-4">
+            <label htmlFor="withdraw-pw" className="label">비밀번호 확인</label>
+            <input
+              id="withdraw-pw"
+              type="password"
+              className="input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="현재 비밀번호를 입력하세요"
+              autoComplete="current-password"
+            />
+          </div>
+        )}
+        {error && <p className="mt-3 text-sm text-rose-600">{error}</p>}
+        <div className="mt-5 flex justify-end gap-2">
+          <button type="button" className="btn-secondary" onClick={onClose} disabled={busy}>취소</button>
+          <button type="submit" className="btn bg-rose-600 text-white hover:bg-rose-700" disabled={busy}>
+            {busy ? <Spinner /> : '탈퇴하기'}
+          </button>
+        </div>
+      </form>
+    </div>
   )
 }

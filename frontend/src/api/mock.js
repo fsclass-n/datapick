@@ -257,6 +257,16 @@ export async function mockRequest(path, { method, body, token }) {
     }
     case 'GET /api/auth/me':
       return publicUser(user)
+    case 'DELETE /api/auth/me': {
+      if (['user@dataquill.io', 'admin@dataquill.io'].includes(user.email)) fail(403, '공개 체험용 계정은 탈퇴할 수 없습니다.')
+      if (user.password && body?.password !== user.password) fail(401, '비밀번호가 일치하지 않습니다.')
+      db.users = db.users.filter((u) => u.id !== user.id)
+      const docIds = db.documents.filter((d) => d.user_id === user.id).map((d) => d.id)
+      db.documents = db.documents.filter((d) => d.user_id !== user.id)
+      db.jobs = db.jobs.filter((j) => !docIds.includes(j.document_id))
+      db.analyses = (db.analyses || []).filter((a) => a.user_id !== user.id)
+      return done(null)
+    }
     case 'GET /api/dashboard':
       return computeStats(db, user.id)
     case 'GET /api/documents':

@@ -1,5 +1,7 @@
 from urllib.parse import parse_qs, urlparse
 
+import time
+
 import pytest
 
 from backend.app.security import is_valid_password
@@ -215,6 +217,24 @@ def test_parse_falls_back_to_rules_when_gemini_fails(monkeypatch):
     text = "브런치카페\n2026-11-17\n합계 10,000원"
     parsed, engine = parser.parse(text)
     assert engine == "rules" and parsed["total_amount"] == 10000
+
+
+def test_withdraw_blocks_public_test_account(client, user_headers):
+    res = client.request("DELETE", "/api/auth/me", headers=user_headers, json={})
+    assert res.status_code == 403
+
+
+def test_withdraw_deletes_account_and_data(client):
+    email = f"withdraw-{time.time_ns()}@example.com"
+    headers = {"Authorization": f"Bearer {client.post('/api/auth/register', json={'name': '탈퇴', 'email': email, 'password': 'Withdraw123!'}).json()['access_token']}"}
+    client.post("/api/documents/upload", headers=headers, files={"file": ("memo.txt", b"hello", "text/plain")})
+    assert client.get("/api/auth/me", headers=headers).status_code == 200
+    # 비밀번호가 틀리면 탈퇴되지 않는다
+    assert client.request("DELETE", "/api/auth/me", headers=headers, json={"password": "Wrong123!"}).status_code == 401
+    assert client.get("/api/auth/me", headers=headers).status_code == 200
+    # 올바른 비밀번호로 탈퇴하면 계정이 사라진다
+    assert client.request("DELETE", "/api/auth/me", headers=headers, json={"password": "Withdraw123!"}).status_code == 204
+    assert client.get("/api/auth/me", headers=headers).status_code == 401
 
 
 def test_admin_login_issues_full_admin(client, admin_headers):

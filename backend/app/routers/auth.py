@@ -1,6 +1,7 @@
 import secrets
 import time
 from collections import defaultdict, deque
+from pathlib import Path
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -16,6 +17,7 @@ from ..models import User, utcnow
 from ..schemas import LoginIn, RegisterIn, TokenOut, UserOut
 from ..security import PASSWORD_RULE, create_token, hash_password, is_valid_password, verify_password
 from ..services import oauth
+from ..test_accounts import TEST_ACCOUNT_EMAILS
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 STATE_COOKIE = "dq_oauth_state"
@@ -93,6 +95,26 @@ def admin_login(body: LoginIn, request: Request, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UserOut)
 def me(user: User = Depends(get_current_user)):
     return user
+
+
+class WithdrawIn(BaseModel):
+    password: str | None = None  # 로컬(비밀번호) 계정은 재확인 필수
+
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+def withdraw(body: WithdrawIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """회원 탈퇴: 계정·문서·RPA 작업·AI 분석·엑셀 원장·업로드 파일을 모두 삭제한다."""
+    if user.email in TEST_ACCOUNT_EMAILS:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "공개 체험용 계정은 탈퇴할 수 없습니다.")
+    if user.password_hash and (not body.password or not verify_password(body.password, user.password_hash)):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "비밀번호가 일치하지 않습니다.")
+
+    paths = [Path(d.storage_path) for d in user.documents if d.storage_path]
+    ledger = settings.storage_dir.parent / "exports" / f"ledger_user_{user.id}.xlsx"
+    db.delete(user)  # documents → rpa_jobs, analyses 는 관계 cascade 로 함께 삭제
+    db.commit()
+    for path in paths + [ledger]:
+        path.unlink(missing_ok=True)
 
 
 @router.get("/providers")
