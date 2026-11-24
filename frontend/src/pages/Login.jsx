@@ -106,6 +106,18 @@ export default function Login() {
     api('/api/auth/providers').then(setProviders).catch(() => {})
   }, [])
 
+  // 소셜 로그인 중 뒤로가기·탭 복귀 시 로딩 상태가 남지 않도록 해제 (bfcache 복원 포함)
+  useEffect(() => {
+    const onPageShow = (e) => { if (e.persisted) setBusy(null) }
+    const onVisible = () => { if (!document.hidden) setBusy(null) }
+    window.addEventListener('pageshow', onPageShow)
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      window.removeEventListener('pageshow', onPageShow)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [])
+
   useEffect(() => {
     if (params.has('oauth_error') || params.has('mode')) setParams({}, { replace: true })
   }, [params, setParams])
@@ -140,10 +152,21 @@ export default function Login() {
     submit({ name: '', ...account }, kind)
   }
 
-  function socialLogin(provider) {
+  async function socialLogin(provider) {
     if (IS_MOCK) return toast('소셜 로그인은 백엔드(API) 연결 후 사용할 수 있습니다.', 'info')
     if (providers[provider] === false) return setError(`${SOCIAL.find((s) => s.id === provider).label} 로그인이 아직 설정되지 않았습니다.`)
     setBusy(provider)
+    try {
+      // API 주소를 주소창에 거치지 않고 서비스 로그인 페이지로 바로 이동 (경고 페이지 우회)
+      const res = await fetch(`${oauthLoginUrl(provider)}?format=json`, { credentials: 'include' })
+      const type = res.headers.get('content-type') || ''
+      if (res.ok && type.includes('json')) {
+        const { url } = await res.json()
+        window.location.assign(url)
+        return
+      }
+      if (res.redirected) { window.location.assign(res.url); return }
+    } catch { /* 네트워크 오류 시 아래 기본 경로로 */ }
     window.location.assign(oauthLoginUrl(provider))
   }
 

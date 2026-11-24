@@ -64,5 +64,5 @@ export async function download(path, filename) {
 }
 
 export function oauthLoginUrl(provider) {
-  return `${API_URL}/api/auth/oauth/${provider}/login`
+  return `${API_URL}/api/auth/oauth/${provider}/start`
 }

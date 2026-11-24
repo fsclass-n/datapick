@@ -43,7 +43,7 @@ def test_login_failure(client):
 
 def test_oauth_unconfigured_redirects_to_login(client):
     assert client.get("/api/auth/providers").json() == {"google": False, "naver": False, "kakao": False, "admin_login": True}
-    res = client.get("/api/auth/oauth/google/login", follow_redirects=False)
+    res = client.get("/api/auth/oauth/google/start", follow_redirects=False)
     assert res.status_code == 307
     assert "oauth_error" in parse_qs(urlparse(res.headers["location"]).query)
 

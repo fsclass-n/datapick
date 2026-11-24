@@ -4,7 +4,7 @@ from collections import defaultdict, deque
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -103,14 +103,15 @@ def _frontend_error(message: str) -> RedirectResponse:
     return response
 
 
-@router.get("/oauth/{provider}/login")
-def oauth_login(provider: str):
+@router.get("/oauth/{provider}/start")
+def oauth_login(provider: str, format: str | None = None):
     if provider not in oauth.PROVIDERS:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "지원하지 않는 로그인 방식입니다.")
     if not oauth.is_configured(provider):
         return _frontend_error(f"{provider} 로그인이 아직 설정되지 않았습니다. 관리자에게 문의하세요.")
     state = secrets.token_urlsafe(24)
-    response = RedirectResponse(oauth.authorize_url(provider, state))
+    url = oauth.authorize_url(provider, state)
+    response = JSONResponse({"url": url}) if format == "json" else RedirectResponse(url)
     response.set_cookie(
         STATE_COOKIE,
         state,
