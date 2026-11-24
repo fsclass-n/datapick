@@ -18,7 +18,7 @@ import {
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { IS_MOCK, api, oauthLoginUrl } from '../api/client'
+import { IS_MOCK, OAUTH_STATE_KEY, api, oauthLoginUrl } from '../api/client'
 import Logo from '../components/layout/Logo'
 import { DOCUMENT_TOOL, TOOL_LIST } from '../utils/tools'
 import { Spinner } from '../components/ui'
@@ -161,7 +161,8 @@ export default function Login() {
       const res = await fetch(`${oauthLoginUrl(provider)}?format=json`, { credentials: 'include' })
       const type = res.headers.get('content-type') || ''
       if (res.ok && type.includes('json')) {
-        const { url } = await res.json()
+        const { url, state } = await res.json()
+        if (state) sessionStorage.setItem(OAUTH_STATE_KEY, state)
         window.location.assign(url)
         return
       }

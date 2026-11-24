@@ -3,6 +3,7 @@ import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCompass } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from './context/AuthContext'
+import { OAUTH_STATE_KEY, api } from './api/client'
 import SiteLayout, { PageContainer } from './components/layout/SiteLayout'
 import { EmptyState, LoadingBlock } from './components/ui'
 import Home from './pages/Home'
@@ -32,17 +33,38 @@ function OAuthCallback() {
   const { loginWithToken } = useAuth()
   const navigate = useNavigate()
   const [token] = useState(() => new URLSearchParams(window.location.hash.slice(1)).get('token'))
-  const [error, setError] = useState(token ? '' : '로그인 토큰을 받지 못했습니다.')
+  const [handoff] = useState(() => {
+    const p = new URLSearchParams(window.location.search)
+    return p.get('provider') && p.get('code') && p.get('state')
+      ? { provider: p.get('provider'), code: p.get('code'), state: p.get('state') }
+      : null
+  })
+  const [error, setError] = useState(token || handoff ? '' : '로그인 토큰을 받지 못했습니다.')
   const handled = useRef(false)
 
   useEffect(() => {
     window.history.replaceState(null, '', window.location.pathname)
-    if (handled.current || !token) return
+    if (handled.current) return
     handled.current = true
+    if (handoff) {
+      // 쿠키 없이 시작한 흐름: 이 탭의 sessionStorage 에 저장해 둔 state 와 대조한 뒤 서버 교환
+      const expected = sessionStorage.getItem(OAUTH_STATE_KEY)
+      sessionStorage.removeItem(OAUTH_STATE_KEY)
+      if (expected !== handoff.state) {
+        setError('로그인 요청이 만료되었거나 올바르지 않습니다. 다시 시도해 주세요.')
+        return
+      }
+      api(`/api/auth/oauth/${handoff.provider}/exchange`, { method: 'POST', body: { code: handoff.code, state: handoff.state } })
+        .then(({ access_token }) => loginWithToken(access_token))
+        .then(() => navigate('/dashboard', { replace: true }))
+        .catch((err) => setError(err.message))
+      return
+    }
+    if (!token) return
     loginWithToken(token)
       .then(() => navigate('/dashboard', { replace: true }))
       .catch((err) => setError(err.message))
-  }, [token, loginWithToken, navigate])
+  }, [token, handoff, loginWithToken, navigate])
 
   if (!error) return <LoadingBlock />
   return (

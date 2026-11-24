@@ -66,3 +66,6 @@ export async function download(path, filename) {
 export function oauthLoginUrl(provider) {
   return `${API_URL}/api/auth/oauth/${provider}/start`
 }
+
+// 소셜 로그인 시작 시 받은 state 를 이 탭에만 보관 (쿠키 없는 경로의 CSRF 검증용)
+export const OAUTH_STATE_KEY = 'dq_oauth_state'

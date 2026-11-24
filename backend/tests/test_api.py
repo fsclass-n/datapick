@@ -49,8 +49,18 @@ def test_oauth_unconfigured_redirects_to_login(client):
 
 
 def test_oauth_callback_rejects_bad_state(client):
-    res = client.get("/api/auth/oauth/kakao/callback?code=abc&state=forged", follow_redirects=False)
+    """쿠키가 있는데 state 가 다르면 거부, 쿠키가 없으면 프런트 sessionStorage 검증으로 넘긴다."""
+    res = client.get("/api/auth/oauth/kakao/callback?code=abc&state=forged", headers={"Cookie": "dq_oauth_state=other"}, follow_redirects=False)
     assert "oauth_error" in res.headers["location"]
+    res = client.get("/api/auth/oauth/kakao/callback?code=abc&state=forged", follow_redirects=False)
+    loc = res.headers["location"]
+    assert "/oauth/callback?" in loc and "provider=kakao" in loc and "state=forged" in loc
+
+
+def test_oauth_exchange_rejects_forged_state(client):
+    """서버가 발급하지 않은 state 로는 토큰 교환을 할 수 없다."""
+    res = client.post("/api/auth/oauth/kakao/exchange", json={"code": "abc", "state": "forged"})
+    assert res.status_code == 401
 
 
 def test_upload_parse_and_excel_rpa(client, user_headers):
