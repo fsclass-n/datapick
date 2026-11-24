@@ -3,7 +3,7 @@
 ## 프로젝트
 - PDF 영수증/이메일 등 비정형 데이터 → OCR + LLM(Gemini) 해석 → RPA로 ERP/엑셀 자동 입력하는 B2B 솔루션
 - 2026-11-24: AI 도구 3종(견적서 비교 · 계약서 빨간펜 · 건강검진 추이) 추가, 브랜드 · 로고 · 프런트 전면 개편
-- 1인 프로젝트 (홍기흥)
+- 3조 팀 프로젝트 — 팀원 4명: 박미금(조장) · 김모란 · 이오리(발표자) · 홍기흥
 - Repo: https://github.com/fsclass-n/dataquill (origin을 omnitask.git에서 변경함, 2026-11-16)
 - Frontend: Netlify (https://dataquill.netlify.app) / Backend: Render (https://dataquill.onrender.com)
 
@@ -79,7 +79,7 @@
 
 ## 진행일지 · 산출물 (docs/*.hwpx → docs/pdf)
 - 재생성: `python docs/tools/build_docs.py` (pywin32 가 있는 Python, 한컴오피스 2020 필요) → 진행일지 빈 칸 채움(양식·기간·조·보고자 유지), `docs/산출물/*.hwpx` 작성, `docs/pdf/` 에 PDF 저장
-- 진행일지 팀원 칸은 `홍기흥`, 보고자는 양식의 `조휘일 (서명)` 유지 (`TEAM` 상수)
+- 진행일지 팀원 칸은 `박미금(조장) · 김모란 · 이오리 · 홍기흥`(`TEAM` 상수), 보고자는 발표자 `이오리 (서명)`으로 교체
 - 이미 채워진 셀은 건너뜀 → 문구를 바꾸려면 빈 양식으로 되돌린 뒤 실행 (`git checkout 608cdee -- docs/프로젝트_진행일지_*.hwpx`)
 - 한글 자동화 보안 모듈: `HKCU\Software\HNC\HwpAutomation\Modules\FilePathCheckerModule` 에 pyhwpx 의 DLL 등록 필요, COM 이 멈추면 남은 `Hwp` 프로세스 종료
 - 한글 HTML 가져오기는 CSS 대부분과 `&#x27;` 를 무시 → `html.escape(..., quote=False)`, 한글이 섞인 아스키 다이어그램 대신 표 사용
@@ -87,7 +87,7 @@
 - Windows 에서 `pip install -r requirements.txt` 가 cp949 디코딩 오류를 내면 `PYTHONUTF8=1` 로 실행 (requirements 에 한글 주석)
 
 ## 발표·시연 영상 (docs/video)
-- 산출물: `3조_final.mp4`(10:00, 1080p30, ≤95MB, 저장소에 커밋) · `3조_final.srt` · `3조_highlight.mp4`(60초) · `video-thumbnail.png` · `영상_대본_및_연출가이드.md`. `build/` 는 git 제외
+- 산출물: `3조_final.mp4`(10:00, 1080p30, ≤95MB, 저장소에 커밋) · `3조_final.srt` · `3조_highlight_3min.mp4`(3분) · `video-thumbnail.png` · `영상_대본_및_연출가이드.md`. `build/` 는 git 제외
 - 대본·시간의 단일 기준: `docs/video/tools/video_scenes.py` (합계 정확히 600초, 영문 용어는 읽는 문장에 한글 발음)
 - 순서: `tts.py` → `record_demo.py` → `docs/scripts/capture_screens.py` → `build_presentation.py` → `export_slides.ps1` → `compose.py --rebuild` → `check_final.py` → `gen_guide.py`
 - 합성 음성 패키지는 `.venv` 에만 설치(`PYTHONUTF8=1 .venv/Scripts/pip install edge-tts==7.3.1`). `requirements.txt` 를 바꾸면 Render 백엔드가 재배포되므로 넣지 않음

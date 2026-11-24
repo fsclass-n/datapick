@@ -229,7 +229,7 @@ def base(prs, num, section, title, subtitle=None):
     conn = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.6), Inches(7.02), Inches(12.73), Inches(7.02))
     conn.line.color.rgb = rgb(LINE)
     conn.line.width = Pt(0.75)
-    textbox(slide, 0.6, 7.07, 6, 0.3, [("dataquill  |  생성형 AI & RPA 데이터 입력 자동화  |  홍기흥", {"size": 9, "color": MUTED})])
+    textbox(slide, 0.6, 7.07, 6, 0.3, [("dataquill  |  생성형 AI & RPA 데이터 입력 자동화  |  3조", {"size": 9, "color": MUTED})])
     page = f"{num} / {TOTAL_MAIN}" if isinstance(num, int) else num
     textbox(slide, 10.7, 7.07, 2.03, 0.3, [(page, {"size": 9, "color": MUTED, "align": PP_ALIGN.RIGHT})])
     return slide
@@ -279,12 +279,12 @@ def s01_cover(prs, qrs):
         if i < 2:
             arrow(s, 0.9 + i * 2.55 + 2.18, 4.825, 0.9 + (i + 1) * 2.55 - 0.05, 4.825, BRAND_200)
     textbox(s, 0.9, 5.85, 7, 0.9, [
-        ("발표자  홍기흥", {"size": 16, "bold": True, "color": WHITE}),
-        ("1인 풀스택 개발 (기획 · 프런트엔드 · 백엔드 · RPA · 배포)", {"size": 12, "color": "C7D2FE"}),
+        ("발표  이오리", {"size": 16, "bold": True, "color": WHITE}),
+        ("3조 · 조장 박미금 / 김모란 · 이오리 · 홍기흥", {"size": 12, "color": "C7D2FE"}),
     ])
     qr_block(s, qrs, 8.35, 4.55)
     notes(s, """
-안녕하세요, 1인 풀스택으로 dataquill을 개발한 홍기흥입니다.
+안녕하세요, 3조 발표를 맡은 이오리입니다.
 dataquill은 영수증 PDF나 거래 이메일처럼 형식이 제각각인 문서를 AI가 읽어서 정형 데이터로 바꾸고,
 RPA 로봇이 그 값을 ERP와 엑셀에 직접 입력해 주는 B2B 자동화 서비스입니다.
 오늘은 기능 소개보다는 왜 이렇게 설계했는지, 배포하면서 무엇이 터졌고 어떻게 해결했는지를 중심으로 말씀드리겠습니다.
@@ -404,8 +404,8 @@ RPA 코드는 rpa라는 별도 패키지로 뺐습니다. 웹 서버에서 호�
 
 
 def s05_stack(prs):
-    s = base(prs, 5, "04 · 기술 스택 선정 이유", "기능보다 '1인이 끝까지 운영할 수 있는가'로 골랐다")
-    for i, text in enumerate(["① 1인이 유지보수 가능한가", "② 로컬과 운영이 같은 코드로 도는가", "③ 실패해도 대체 경로가 있는가"]):
+    s = base(prs, 5, "04 · 기술 스택 선정 이유", "기능보다 '작은 팀이 끝까지 운영할 수 있는가'로 골랐다")
+    for i, text in enumerate(["① 작은 팀이 유지보수 가능한가", "② 로컬과 운영이 같은 코드로 도는가", "③ 실패해도 대체 경로가 있는가"]):
         pill(s, 0.6 + i * 4.1, 1.78, 3.85, 0.42, text, size=12)
     rows = [
         ["영역", "선택", "고려한 대안", "선택 이유"],
@@ -420,7 +420,7 @@ def s05_stack(prs):
     ]
     table(s, 0.6, 2.4, 12.1, rows, [1.0, 2.75, 2.25, 6.1], size=11.5, row_h=0.47)
     notes(s, """
-기술은 세 가지 기준으로 골랐습니다. 혼자 유지보수할 수 있는지, 로컬과 운영이 같은 코드로 도는지, 실패했을 때 대체 경로가 있는지입니다.
+기술은 세 가지 기준으로 골랐습니다. 작은 팀으로 유지보수할 수 있는지, 로컬과 운영이 같은 코드로 도는지, 실패했을 때 대체 경로가 있는지입니다.
 대표적인 예가 LLM 부분입니다. 처음에는 프롬프트로 JSON으로 답해 달라고 요청하고 결과를 파싱하는 방식도 생각했는데,
 그러면 필드가 빠지거나 형식이 깨지는 경우를 일일이 처리해야 합니다.
 그래서 Gemini의 구조화 출력에 Pydantic 모델을 그대로 스키마로 넘겼습니다. 서버의 검증 모델과 LLM 출력 스키마가 같은 클래스라서 한쪽만 고치면 됩니다.
@@ -568,7 +568,7 @@ def s09_flow(prs):
 
 
 def s10_ui(prs):
-    s = base(prs, 10, "09 · 주요 기능 ③ 반응형 UI/UX 및 디자인 시스템", "B2B SaaS 수준의 디테일을 1인으로")
+    s = base(prs, 10, "09 · 주요 기능 ③ 반응형 UI/UX 및 디자인 시스템", "B2B SaaS 수준의 디테일을 4인 팀으로")
     for i, (name, caption) in enumerate([("mobile_login.png", "모바일 로그인"), ("mobile_closed.png", "메뉴 닫힘 (햄버거)"),
                                           ("mobile_drawer.png", "메뉴 열림 (X + 드로어)")]):
         x = 0.6 + i * 2.35
@@ -702,7 +702,7 @@ def s13_trouble(prs):
 
 
 def s14_docs(prs):
-    s = base(prs, 14, "13 · 프로젝트 산출물 및 문서화 관리", "혼자 개발할수록 '왜 그렇게 했는지'를 남긴다")
+    s = base(prs, 14, "13 · 프로젝트 산출물 및 문서화 관리", "여럿이 개발할수록 '왜 그렇게 했는지'를 남긴다")
     tree = """docs/
 ├── md/
 │   ├── 2026-11-16_착수.md
@@ -731,7 +731,7 @@ readme.md"""
         "**커밋 메시지** — '무엇'보다 '왜' 중심",
     ], size=13), space=9)
     notes(s, """
-혼자 개발하면 결정한 이유를 금방 잊어버립니다.
+여럿이 나눠 개발하면 결정한 이유가 더 쉽게 흩어집니다.
 그래서 작업한 날마다 무엇을 결정했고, 어떻게 검증했고, 무엇이 터졌는지를 마크다운으로 남겼고, 단계별 진행일지와 산출물을 따로 관리했습니다.
 오늘 보여 드린 트러블슈팅 내용도 이 기록에서 그대로 가져왔고, 이 발표자료 자체도 스크립트로 다시 만들 수 있게 해 두었습니다.
 """)
@@ -776,7 +776,7 @@ def s15_retro(prs):
             (body, {"size": 11, "color": BODY}),
         ])
     notes(s, """
-돌아보면 제 코드 자체보다 외부 요인에서 더 많이 실패했습니다. 이미지 태그, LLM 서버 상태, 플랫폼 포트 같은 것들이요.
+돌아보면 저희 코드 자체보다 외부 요인에서 더 많이 실패했습니다. 이미지 태그, LLM 서버 상태, 플랫폼 포트 같은 것들이요.
 그래서 다음 프로젝트에서는 처음부터 버전을 고정하고 재시도 정책을 먼저 설계할 생각입니다.
 현재 한계도 분명히 알고 있습니다. 가장 큰 건 RPA가 API 요청 안에서 동기로 돈다는 점이라, 첫 번째 과제로 작업 큐 분리를 잡았습니다.
 RPA 코드를 처음부터 별도 패키지로 분리해 둔 덕분에 이전 비용은 크지 않을 거라고 봅니다.
@@ -829,7 +829,7 @@ def main():
     prs = Presentation()
     prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
     prs.core_properties.title = "dataquill 프로젝트 결과 발표"
-    prs.core_properties.author = "홍기흥"
+    prs.core_properties.author = "3조 (박미금 · 김모란 · 이오리 · 홍기흥)"
     qrs = make_qr_codes()
     s01_cover(prs, qrs)
     for build in (s02_problem, s03_solution, s04_architecture, s05_stack, s06_pipeline, s07_ai, s08_auth,

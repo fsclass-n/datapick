@@ -28,7 +28,7 @@ TEMPLATES = DOCS / "tools" / "templates"
 OUT_DIR = DOCS / "산출물"
 PDF_DIR = DOCS / "pdf"
 
-TEAM = "홍기흥"
+TEAM = "박미금(조장) · 김모란 · 이오리 · 홍기흥"
 TOPIC = "DataQuill — 생성형 AI × RPA 기반 데이터 입력 자동화 플랫폼"
 COURSE = "[K-Digital] 심화_생성형 AI와 AWS 클라우드를 활용한 풀스택 & 자동화 실무 개발 Final-Project"
 REPO = "https://github.com/fsclass-n/dataquill"
@@ -193,6 +193,7 @@ def fill_journal(template: Path, out: Path, rows: dict) -> None:
         return re.sub(r"(<hp:subList[^>]*>).*?(</hp:subList>)", lambda s: s.group(1) + body + s.group(2), tc, count=1, flags=re.S)
 
     xml = re.sub(r"<hp:tc .*?</hp:tc>", repl, xml, flags=re.S)
+    xml = xml.replace("조휘일", "이오리")
     # 표준 스타일: 셀 내부 여백 상하 2mm · 좌우 2.5mm (표 틀 · 행 · 열은 그대로)
     xml = re.sub(r'<hp:(cellMargin|inMargin) left="\d+" right="\d+" top="\d+" bottom="\d+"/>',
                  lambda m: f'<hp:{m.group(1)} left="709" right="709" top="567" bottom="567"/>', xml)
@@ -232,7 +233,7 @@ def output_01() -> Document:
         "사람이 검수한 값을 RPA(Playwright) 로봇이 웹 ERP 전표 화면과 엑셀 원장에 대신 입력하는 B2B 데이터 입력 자동화 플랫폼이다.")
     d.table(["구분", "내용"], [
         ["핵심 가치", "같은 문서를 ERP · 엑셀에 반복 입력하던 일을 'AI 추출 → 사람 검수 → 로봇 입력' 흐름으로 대체"],
-        ["추진 목적", "생성형 AI(LLM) · RPA · 클라우드 배포를 한 서비스로 통합해 실무형 자동화 파이프라인을 1인 풀스택으로 구현"],
+        ["추진 목적", "생성형 AI(LLM) · RPA · 클라우드 배포를 한 서비스로 통합해 실무형 자동화 파이프라인을 4인 팀으로 구현"],
         ["대상 사용자", "경리 · 회계, 구매 · 총무, 영업지원 담당자 / 서비스 운영 관리자"],
         ["입력", "PDF, 이미지(JPG · PNG · WEBP · BMP · TIFF), EML, HTML, TXT 업로드(최대 10MB), 이메일 본문 붙여넣기"],
         ["출력", "엑셀 원장(xlsx) 적재, 웹 ERP 전표 자동 입력(전표번호 발급)"],
