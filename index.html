@@ -138,7 +138,7 @@ section{position:relative;padding:120px 0}
 .console .robot{position:absolute;left:-26px;bottom:44px;width:58px;height:58px;border-radius:16px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line-2);color:var(--cyan);font-size:22px;box-shadow:0 18px 40px -16px rgba(34,211,238,.6);animation:bob 3.4s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-8px)}}
 
-.metrics{margin-top:72px;display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line);border-radius:16px;background:rgba(11,17,34,.75);backdrop-filter:blur(6px);position:relative;z-index:1}
+.metrics{margin-top:72px;display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--line);border-radius:16px;background:rgba(11,17,34,.75);backdrop-filter:blur(6px);position:relative;z-index:1}
 .metrics div{padding:18px 20px;border-right:1px solid var(--line)}
 .metrics div:last-child{border-right:0}
 .metrics b{display:block;font-family:var(--display);font-size:30px;line-height:1.1;font-weight:700}
@@ -241,6 +241,22 @@ section{position:relative;padding:120px 0}
 .viewer .info .code{margin-top:18px;padding:12px 14px;border-radius:10px;background:var(--bg-2);border:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--cyan);word-break:break-all}
 .fade-swap{animation:swap .5s var(--ease)}
 @keyframes swap{from{opacity:0;transform:translateY(8px)}}
+
+/* ---- AI tools (03 pipeline 후반부) ---- */
+.tools{margin-top:64px}
+.tools-head{margin-bottom:24px}
+.tools-head h3{margin-top:10px;font-size:clamp(20px,2.4vw,28px);font-weight:800;letter-spacing:-.01em}
+.tools-head p{margin-top:8px;color:var(--ink-2);max-width:640px;font-size:14.5px}
+.toolgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.tool{display:flex;flex-direction:column;overflow:hidden;color:inherit;text-decoration:none;transition:border-color .25s,transform .3s var(--ease)}
+.tool:hover{border-color:var(--line-2);transform:translateY(-4px)}
+.tshot{aspect-ratio:16/9;overflow:hidden;background:#f8fafc;border-bottom:1px solid var(--line)}
+.tshot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.tbody{padding:20px 22px 24px}
+.ttag{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.tbody h3{margin-top:8px;font-size:19px;font-weight:800}
+.tbody p{margin-top:8px;font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+.tsample{display:inline-block;margin-top:14px;padding:6px 10px;border-radius:8px;background:var(--bg-2);border:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
 
 /* ================================================================ 04 system */
 .arch{display:grid;grid-template-columns:1.25fr 1fr;gap:24px}
@@ -369,8 +385,9 @@ footer a:hover{color:var(--ink)}
   .sec-head{grid-template-columns:1fr;gap:8px}
   .sec-no{font-size:64px}
   .metrics{grid-template-columns:repeat(3,1fr)}
-  .metrics div:nth-child(3){border-right:0}
-  .metrics div:nth-child(-n+3){border-bottom:1px solid var(--line)}
+  .metrics div:nth-child(3n){border-right:0}
+  .metrics div:nth-child(-n+6){border-bottom:1px solid var(--line)}
+  .toolgrid{grid-template-columns:1fr}
   .problem{grid-template-columns:1fr}
   .side{grid-template-columns:1fr}
   .timeline{height:auto;flex-wrap:wrap}
@@ -453,7 +470,7 @@ footer a:hover{color:var(--ink)}
         </h1>
         <p class="lead">
           <b>DataQuill</b>은 영수증 · 세금계산서 · 거래 이메일처럼 형식이 제각각인 문서를 <b>OCR + Gemini</b>로 정형화하고,
-          사람이 검수한 값을 <b>Playwright 로봇</b>이 ERP 전표 화면과 엑셀 원장에 대신 입력하는 B2B 자동화 서비스입니다.
+          사람이 검수한 값을 <b>Playwright 로봇</b>이 ERP 전표 화면과 엑셀 원장에 대신 입력하는 B2B 자동화 서비스입니다. 같은 읽기 엔진으로 만든 견적서 비교 · 계약서 빨간펜 · 건강검진 추이 도구도 함께 제공합니다.
         </p>
         <div class="actions">
           <a class="btn btn-main" href="#screening" data-play="full"><i class="fa-solid fa-circle-play"></i>온라인 발표 보기</a>
@@ -548,6 +565,33 @@ footer a:hover{color:var(--ink)}
           <div class="shot" id="vShot"></div>
           <div class="info" id="vInfo"></div>
         </div>
+      </div>
+    </div>
+
+    <div class="tools reveal">
+      <div class="tools-head"><span class="tag">AI 분석 도구 3종 · 같은 읽기 엔진의 다른 얼굴</span>
+        <h3>자동 입력 외에, 자주 쓰는 비교 · 검토도 도구로</h3>
+        <p>원본 파일은 저장하지 않고 분석 결과만 본인 계정에 보관합니다. 법률 자문 · 의료 진단이 아닌 참고용 결과이며, 로그인 화면의 테스트 계정으로 각 도구의 &lsquo;샘플로 바로 체험&rsquo;을 눌러 볼 수 있습니다.</p>
+      </div>
+      <div class="toolgrid">
+        <a class="card tool" href="https://dataquill.onrender.com/tools/quotes" target="_blank" rel="noopener">
+          <div class="tshot"><img src="docs/assets/screenshots/tool_quote.png" alt="견적서 비교기 화면" loading="lazy" /></div>
+          <div class="tbody"><span class="ttag" style="color:var(--cyan)">Quote Compare</span><h3>견적서 비교기</h3>
+            <p>견적서 2~5장의 품목을 자동으로 맞춰 단가를 나란히 비교 — 이상 단가 · 누락 항목 · 절감액</p>
+            <span class="tsample">샘플 결과 · 빠진 품목 1건, 이상 단가 2건</span></div>
+        </a>
+        <a class="card tool" href="https://dataquill.onrender.com/tools/contract" target="_blank" rel="noopener">
+          <div class="tshot"><img src="docs/assets/screenshots/tool_contract.png" alt="계약서 빨간펜 화면" loading="lazy" /></div>
+          <div class="tbody"><span class="ttag" style="color:var(--rose)">Contract Red Pen</span><h3>계약서 빨간펜</h3>
+            <p>자동 연장 · 위약금 · 일방 해지 같은 주의 조항을 원문 그대로 발췌해 빨간 줄 — 위험도 · 쉬운 설명</p>
+            <span class="tsample">샘플 결과 · 주의 조항 8곳, 위험도 높음</span></div>
+        </a>
+        <a class="card tool" href="https://dataquill.onrender.com/tools/health" target="_blank" rel="noopener">
+          <div class="tshot"><img src="docs/assets/screenshots/tool_health.png" alt="건강검진 추이 비교기 화면" loading="lazy" /></div>
+          <div class="tbody"><span class="ttag" style="color:var(--lime)">Health Trend</span><h3>건강검진 추이 비교기</h3>
+            <p>연도별 검진 수치를 나란히 놓고 나빠진 항목만 골라냄 — 기준 범위 밖 표시</p>
+            <span class="tsample">샘플 결과 · 나빠진 항목 9개, 공복혈당 98→112</span></div>
+        </a>
       </div>
     </div>
   </div>
@@ -715,8 +759,9 @@ const CHAPTERS = [
 
 const METRICS = [
   ['10:00', '발표 · 시연 영상'],
-  ['30', 'pytest 통과'],
+  ['55', 'pytest 통과'],
   ['6', '입력 형식'],
+  ['3', 'AI 분석 도구'],
   ['2', '적재 대상 (ERP · Excel)'],
   ['3', 'OAuth 제공자'],
   ['3', '권한 역할'],
@@ -773,6 +818,8 @@ const MATRIX = [
   ['문서 업로드 · 메일 본문 해석', 'y', 'n', '본인'],
   ['검수 저장 · 재해석 · 삭제', 'y', 'n', '본인'],
   ['엑셀 적재 · ERP 자동 타이핑', 'y', 'n', '본인'],
+  ['AI 도구 (견적서 · 계약서 · 검진 분석)', 'y', 'n', '본인'],
+  ['회원 탈퇴 (계정 · 문서 · 기록 삭제)', 'y', 'n', '본인'],
   ['회원 권한 변경', 'y', 'n', 'n'],
   ['다른 사용자 문서 열람', 'y', '조회만', 'n'],
 ];
@@ -798,6 +845,14 @@ const INCIDENTS = [
     symptom: '일시적 과부하 한 번에 문서가 즉시 실패 처리',
     cause: '재시도 없이 첫 응답을 그대로 결과로 사용',
     fix: '429/500/503/504 만 2 · 5 · 10초 백오프로 최대 4회, 400 은 즉시 실패', prevent: '가짜 클라이언트로 재시도 횟수를 검증하는 테스트 3개' },
+  { id: 'INC-06', sev: 'HIGH', color: 'var(--amber)', title: 'Gemini 과부하가 재시도 이후에도 지속',
+    symptom: '견적서 비교 샘플이 재시도(4회) 후에도 503 으로 실패',
+    cause: '재시도 대상이 모델 한 개뿐이라 같은 과부하 풀을 반복 호출',
+    fix: '재시도 소진 시 대체 모델(flash-lite)로 전환, 그래도 실패하면 규칙 파서로 대체하고 엔진을 <code>rules</code> 로 표시', prevent: '도구별 규칙 폴백 경로와 테스트 추가' },
+  { id: 'INC-07', sev: 'HIGH', color: 'var(--rose)', title: 'SNS 로그인이 "요청이 만료" 오류로 실패',
+    symptom: 'Google 로그인 완료 후 콜백에서 state 불일치 오류',
+    cause: '프런트 → API 도메인의 사이트 간 fetch 응답 쿠키가 공용 접미사(PSL) 규칙으로 저장되지 않음',
+    fix: '쿠키 대신 서버 state 레지스트리(10분 · 1회용) + 프런트 sessionStorage 검증 후 <code>/exchange</code> 로 토큰 교환', prevent: '쿠키 있음 · 없음 두 경로 모두 같은 CSRF 방어' },
   { id: 'OPEN-01', sev: 'LOW', color: 'var(--cyan)', open: true, title: '새로고침 후 문서 시각이 9시간 이르게 표시',
     symptom: '업로드 직후는 정상, 목록을 다시 불러오면 시각이 어긋남',
     cause: 'TiDB 에서 읽은 created_at 이 시간대 없는 값으로 내려와 브라우저가 현지 시각으로 해석',
@@ -805,7 +860,7 @@ const INCIDENTS = [
 ];
 
 const FILES = [
-  { feat: true, ic: 'vid', icon: 'fa-solid fa-film', title: '10분 발표 · 시연 영상 (원본 mp4)', meta: '1920×1080 · H.264 · 65MB', href: 'docs/video/3조_final.mp4' },
+  { feat: true, ic: 'vid', icon: 'fa-solid fa-film', title: '10분 발표 · 시연 영상 (원본 mp4)', meta: '1920×1080 · H.264 · 68MB', href: 'docs/video/3조_final.mp4' },
   { ic: 'pdf', icon: 'fa-regular fa-file-pdf', title: '프로젝트 발표자료 (PDF)', meta: '17장 · 984KB', href: 'docs/pdf/프로젝트_발표자료.pdf' },
   { ic: 'ppt', icon: 'fa-regular fa-file-powerpoint', title: '프로젝트 발표자료 (PPTX)', meta: '발표자 노트 포함 · 1.1MB', href: 'docs/프로젝트_발표자료.pptx' },
   { ic: 'vid', icon: 'fa-solid fa-closed-captioning', title: '10분 영상 한국어 자막', meta: 'SRT · 125문장', href: 'docs/video/3조_final.srt' },
