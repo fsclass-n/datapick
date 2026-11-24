@@ -7,6 +7,7 @@ export function LogoMark({ className = 'size-9' }) {
       <path d="M19.5 26.8v-4M23.75 26.8v-7M28 26.8v-10.5" stroke="#c7d2fe" strokeWidth="2.2" strokeLinecap="round" />
       <path d="M6 24.5C5.5 15.5 12 7.5 23.5 6 24 15.5 15.5 23.5 6 24.5Z" fill="#fff" />
       <path d="M6 24.5C11 19 16.5 12.5 23.5 6" fill="none" stroke="#4f46e5" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M11.2 17.5l4.2-1.6M14.4 13.8l4.4-2" fill="none" stroke="#4f46e5" strokeWidth="1.3" strokeLinecap="round" />
     </svg>
   )
 }
