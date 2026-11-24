@@ -71,7 +71,7 @@ const USE_CASES = [
 ]
 
 const ROLES = [
-  { icon: faUserShield, role: '운영 관리자', how: '서버 환경 변수 ADMIN_TOKEN 으로 인증', can: '모든 데이터 생성 · 수정 · 삭제, 회원 권한 변경', tone: 'border-brand-200 bg-brand-50 text-brand-700' },
+  { icon: faUserShield, role: '운영 관리자', how: '환경 변수 ADMIN_EMAIL · ADMIN_PASSWORD 계정으로 로그인', can: '모든 데이터 생성 · 수정 · 삭제, 회원 권한 변경', tone: 'border-brand-200 bg-brand-50 text-brand-700' },
   { icon: faEye, role: '테스트 관리자', how: '로그인 화면의 테스트 관리자 버튼', can: '관리자 화면 전체 조회, 쓰기 요청은 서버에서 403 차단', tone: 'border-amber-200 bg-amber-50 text-amber-700' },
   { icon: faUserCheck, role: '일반 사용자', how: '이메일 가입 · Google · 네이버 · 카카오', can: '본인 문서 업로드 · 검수 · RPA 실행', tone: 'border-slate-200 bg-slate-50 text-slate-700' },
 ]

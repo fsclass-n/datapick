@@ -27,8 +27,8 @@ export function AuthProvider({ children }) {
     return me
   }, [])
 
-  const adminLogin = useCallback(async (token) => {
-    const { access_token, user: me } = await api('/api/auth/admin-login', { method: 'POST', body: { token } })
+  const adminLogin = useCallback(async (email, password) => {
+    const { access_token, user: me } = await api('/api/auth/admin-login', { method: 'POST', body: { email, password } })
     tokenStore.set(access_token)
     setUser(me)
     return me
@@ -60,7 +60,7 @@ export function AuthProvider({ children }) {
       loading,
       // 관리자 화면 접근 (운영 관리자 + 테스트 관리자)
       isAdmin: ADMIN_ROLES.includes(user?.role),
-      // 전체 CRUD 권한 (ADMIN_TOKEN 으로 로그인한 운영 관리자)
+      // 전체 CRUD 권한 (ADMIN_EMAIL · ADMIN_PASSWORD 계정으로 로그인한 운영 관리자)
       isOperator: user?.role === 'admin',
       // 테스트 관리자: 조회만 가능
       readOnly: user?.role === 'test_admin',

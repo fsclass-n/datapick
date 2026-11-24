@@ -12,7 +12,7 @@ from ..config import settings
 from ..database import get_db
 from ..deps import get_current_user
 from ..models import User, utcnow
-from ..schemas import AdminLoginIn, LoginIn, RegisterIn, TokenOut, UserOut
+from ..schemas import LoginIn, RegisterIn, TokenOut, UserOut
 from ..security import PASSWORD_RULE, create_token, hash_password, is_valid_password, verify_password
 from ..services import oauth
 
@@ -58,24 +58,31 @@ def _recent_failures(client_ip: str) -> deque:
 
 
 @router.post("/admin-login", response_model=TokenOut)
-def admin_login(body: AdminLoginIn, request: Request, db: Session = Depends(get_db)):
-    """운영 관리자 로그인: 서버 환경 변수 ADMIN_TOKEN 과 일치해야 전체 CRUD 권한을 받는다."""
-    if not settings.admin_token:
-        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "운영 관리자 로그인이 설정되지 않았습니다. (ADMIN_TOKEN)")
+def admin_login(body: LoginIn, request: Request, db: Session = Depends(get_db)):
+    """운영 관리자 로그인: 서버 환경 변수 ADMIN_EMAIL · ADMIN_PASSWORD 와 일치해야 전체 CRUD 권한을 받는다."""
+    if not settings.admin_password:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "운영 관리자 로그인이 설정되지 않았습니다. (ADMIN_EMAIL · ADMIN_PASSWORD)",
+        )
     client_ip = request.client.host if request.client else "unknown"
     failures = _recent_failures(client_ip)
     if len(failures) >= ADMIN_LOGIN_MAX_FAILURES:
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "인증 실패가 많아 잠시 차단되었습니다. 10분 후 다시 시도해 주세요.")
-    if not secrets.compare_digest(body.token.encode(), settings.admin_token.encode()):
+    email_ok = secrets.compare_digest(body.email.lower().encode(), settings.admin_email.encode())
+    password_ok = secrets.compare_digest(body.password.encode(), settings.admin_password.encode())
+    if not (email_ok and password_ok):
         failures.append(time.monotonic())
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "관리자 토큰이 올바르지 않습니다.")
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다.")
     failures.clear()
 
     user = db.scalar(select(User).where(User.email == settings.admin_email))
     if not user:
-        user = User(email=settings.admin_email, name="운영 관리자", provider="admin_token")
+        user = User(email=settings.admin_email, name="운영 관리자", provider="admin")
         db.add(user)
     user.role = "admin"
+    # 같은 이메일·비밀번호로 일반 로그인도 되도록 환경 변수 비밀번호를 계정에 반영한다
+    user.password_hash = hash_password(settings.admin_password)
     db.flush()
     return issue_token(db, user)
 
@@ -87,7 +94,7 @@ def me(user: User = Depends(get_current_user)):
 
 @router.get("/providers")
 def providers():
-    return {**{name: oauth.is_configured(name) for name in oauth.PROVIDERS}, "admin_token": bool(settings.admin_token)}
+    return {**{name: oauth.is_configured(name) for name in oauth.PROVIDERS}, "admin_login": bool(settings.admin_password)}
 
 
 def _frontend_error(message: str) -> RedirectResponse:

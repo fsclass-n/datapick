@@ -31,10 +31,6 @@ class TokenOut(BaseModel):
     user: UserOut
 
 
-class AdminLoginIn(BaseModel):
-    token: str = Field(min_length=1, max_length=512)
-
-
 class RoleIn(BaseModel):
     role: Literal["user", "admin"]
 

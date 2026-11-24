@@ -170,7 +170,7 @@ flowchart TD
 
 - **문제** — 로그인 화면에 비밀번호가 공개된 관리자 계정으로 누구나 회원 권한을 바꿀 수 있었음
 - **해결**
-  - 운영 관리자는 서버 환경 변수 `ADMIN_TOKEN` 으로만 로그인(`compare_digest`, 같은 IP 5회 실패 시 10분 차단, 미설정 시 503)
+  - 운영 관리자는 서버 환경 변수 `ADMIN_EMAIL` · `ADMIN_PASSWORD` 에 등록된 이메일+비밀번호로 로그인(`compare_digest`, 같은 IP 5회 실패 시 10분 차단, 미설정 시 503, 기동 시 계정 자동 준비)
   - 테스트 관리자는 `deps.get_current_user` **단일 진입점**에서 GET · HEAD · OPTIONS 외 요청을 403 → 새 API 를 추가해도 자동 적용
   - 공개 계정 권한은 서버 기동 시 복원, 권한 변경 API 로 변경 불가(400) — 테스트 8개로 회귀 방지
 
@@ -202,7 +202,7 @@ flowchart TD
 | Method | Endpoint | 설명 | 권한 |
 | --- | --- | --- | --- |
 | `POST` | `/api/auth/register` · `/login` | 이메일 가입 · 로그인(JWT) | 누구나 |
-| `POST` | `/api/auth/admin-login` | `ADMIN_TOKEN` 운영 관리자 로그인 | 토큰 |
+| `POST` | `/api/auth/admin-login` | `ADMIN_EMAIL` · `ADMIN_PASSWORD` 운영 관리자 로그인 | 계정 |
 | `GET` | `/api/auth/oauth/{provider}/login` · `/callback` | OAuth(state 쿠키 CSRF 검증) | 누구나 |
 | `GET` | `/api/auth/me` · `/providers` | 내 정보 · 활성 제공자 | 로그인 |
 | `GET` | `/api/dashboard` | 사용자 KPI · 일별 추이 | 로그인 |
@@ -245,7 +245,7 @@ dataquill/
 | 문서 업로드 · 검수 · 삭제 | ✅ | ❌ (403) | 본인 |
 | 엑셀 적재 · ERP 타이핑 | ✅ | ❌ (403) | 본인 |
 | 회원 권한 변경 | ✅ | ❌ (403) | ❌ |
-| 진입 방법 | `/admin/login` + `ADMIN_TOKEN` | 로그인 화면 버튼 | 가입 · OAuth · 테스트 버튼 |
+| 진입 방법 | `/admin/login` + 환경 변수 계정 | 로그인 화면 버튼 | 가입 · OAuth · 테스트 버튼 |
 
 ## 9. Getting Started
 

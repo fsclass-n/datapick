@@ -42,7 +42,7 @@ def test_login_failure(client):
 
 
 def test_oauth_unconfigured_redirects_to_login(client):
-    assert client.get("/api/auth/providers").json() == {"google": False, "naver": False, "kakao": False, "admin_token": True}
+    assert client.get("/api/auth/providers").json() == {"google": False, "naver": False, "kakao": False, "admin_login": True}
     res = client.get("/api/auth/oauth/google/login", follow_redirects=False)
     assert res.status_code == 307
     assert "oauth_error" in parse_qs(urlparse(res.headers["location"]).query)
@@ -165,27 +165,36 @@ def test_gemini_retries_transient_errors(monkeypatch, failures, code, ok, calls)
     assert fake.calls == calls
 
 
-def test_admin_token_login_issues_full_admin(client, admin_headers):
+def test_admin_login_issues_full_admin(client, admin_headers):
     me = client.get("/api/auth/me", headers=admin_headers).json()
-    assert me["role"] == "admin" and me["provider"] == "admin_token"
+    assert me["role"] == "admin" and me["provider"] == "admin"
 
 
-def test_admin_token_rejects_wrong_token_and_rate_limits(client):
+def test_admin_credentials_also_work_on_normal_login(client):
+    res = client.post("/api/auth/login", json={"email": "operator@dataquill.io", "password": "test-admin-pw-0123!"})
+    assert res.status_code == 200 and res.json()["user"]["role"] == "admin"
+
+
+def test_admin_login_rejects_wrong_credentials_and_rate_limits(client):
     from backend.app.routers import auth
 
     auth.ADMIN_LOGIN_FAILURES.clear()
-    for _ in range(auth.ADMIN_LOGIN_MAX_FAILURES):
-        assert client.post("/api/auth/admin-login", json={"token": "wrong"}).status_code == 401
-    res = client.post("/api/auth/admin-login", json={"token": "test-admin-token-0123456789"})
+    for body in ({"email": "operator@dataquill.io", "password": "wrong"},
+                 {"email": "nobody@dataquill.io", "password": "test-admin-pw-0123!"},
+                 {"email": "operator@dataquill.io", "password": "wrong"},
+                 {"email": "operator@dataquill.io", "password": "wrong"},
+                 {"email": "operator@dataquill.io", "password": "wrong"}):
+        assert client.post("/api/auth/admin-login", json=body).status_code == 401
+    res = client.post("/api/auth/admin-login", json={"email": "operator@dataquill.io", "password": "test-admin-pw-0123!"})
     assert res.status_code == 429
     auth.ADMIN_LOGIN_FAILURES.clear()
 
 
-def test_admin_token_disabled_when_not_configured(client, monkeypatch):
+def test_admin_login_disabled_when_not_configured(client, monkeypatch):
     from backend.app.config import settings
 
-    monkeypatch.setattr(settings, "admin_token", "")
-    assert client.post("/api/auth/admin-login", json={"token": "anything"}).status_code == 503
+    monkeypatch.setattr(settings, "admin_password", "")
+    assert client.post("/api/auth/admin-login", json={"email": "a@b.co", "password": "x"}).status_code == 503
 
 
 def test_seeded_test_admin_is_read_only_role(client, test_admin_headers):

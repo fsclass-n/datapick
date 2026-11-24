@@ -200,7 +200,7 @@ export async function mockRequest(path, { method, body, token }) {
   const id = Number(pathname.match(/\/(\d+)/)?.[1])
   const done = (value) => (save(db), value)
 
-  if (route === 'GET /api/auth/providers') return { google: false, naver: false, kakao: false, admin_token: false }
+  if (route === 'GET /api/auth/providers') return { google: false, naver: false, kakao: false, admin_login: false }
   if (route === 'POST /api/auth/admin-login') fail(503, 'Mock 모드에서는 운영 관리자 로그인을 사용할 수 없습니다.')
   if (route === 'POST /api/auth/login') {
     const user = db.users.find((u) => u.email === body.email?.toLowerCase() && u.password && u.password === body.password)

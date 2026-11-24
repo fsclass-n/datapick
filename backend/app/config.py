@@ -19,9 +19,9 @@ def _path(value: str) -> Path:
 class Settings:
     app_env = os.getenv("APP_ENV", "local")
     secret_key = os.getenv("SECRET_KEY", "dev-secret-change-me")
-    # 운영 관리자 인증용 토큰 (비우면 운영 관리자 로그인 비활성)
-    admin_token = os.getenv("ADMIN_TOKEN", "")
+    # 운영 관리자 계정 (비우면 운영 관리자 로그인 비활성)
     admin_email = os.getenv("ADMIN_EMAIL", "operator@dataquill.io").lower()
+    admin_password = os.getenv("ADMIN_PASSWORD", "")
     jwt_expire_minutes = int(os.getenv("JWT_EXPIRE_MINUTES", "720"))
 
     database_url = os.getenv("DATABASE_URL", "sqlite:///./storage/dataquill.db")
