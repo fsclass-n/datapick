@@ -304,13 +304,49 @@ def review_contract_rules(text: str) -> dict:
                           summary=None, clauses=found).model_dump()
 
 
+def _flat(value: str) -> str:
+    return "".join(value.split())
+
+
 def _locate(text: str, quote: str) -> tuple[int, int] | None:
     start = text.find(quote)
     if start >= 0:
         return start, start + len(quote)
     words = [re.escape(w) for w in quote.split()]
     match = re.search(r"\s*".join(words), text) if words else None
-    return (match.start(), match.end()) if match else None
+    if match:
+        return match.start(), match.end()
+    # AI 가 한두 글자를 바꿔 옮긴 경우('필요한' → '필요할'): 공백을 무시하고 가장 비슷한 원문 문장(유사도 0.85 이상)에 표시
+    target = _flat(quote)
+    best, best_ratio = None, 0.85
+    for sentence in _SENTENCE.finditer(text):
+        raw = sentence.group(0)
+        start = sentence.start() + len(raw) - len(raw.lstrip())
+        head = _HEADING_ONLY.match(raw.lstrip())
+        if head:
+            rest = raw.lstrip()[head.end():]
+            start += head.end() + len(rest) - len(rest.lstrip())
+        body = text[start:sentence.end()].strip()
+        ratio = SequenceMatcher(None, target, _flat(body)).ratio()
+        if body and ratio >= best_ratio:
+            best, best_ratio = (start, start + len(body)), ratio
+    return best
+
+
+def merge_with_rules(review: dict, text: str) -> dict:
+    """AI 발췌 조항의 유형 · 위험도를 규칙으로 다시 정하고, AI 가 놓친 규칙 조항을 더한다(판정은 규칙 기준)."""
+    clauses = []
+    for clause in review["clauses"]:
+        rule = next((r for r in CONTRACT_RULES if r[2].search(clause["quote"])), None)
+        if rule:
+            clause = {**clause, "category": rule[0], "risk": rule[1], "suggestion": clause.get("suggestion") or rule[4]}
+        clauses.append(clause)
+    for extra in review_contract_rules(text)["clauses"] if len(text.strip()) >= 30 else []:
+        same = any(c["category"] == extra["category"] and SequenceMatcher(None, _flat(c["quote"]), _flat(extra["quote"])).ratio() > 0.6
+                   for c in clauses)
+        if not same:
+            clauses.append(extra)
+    return {**review, "clauses": clauses}
 
 
 def score_contract(review: dict, text: str) -> dict:
@@ -331,8 +367,10 @@ def analyze_contract(filename: str, data: bytes | None = None, text: str = "") -
     file_bytes = mime = None
     if data is not None:
         text, file_bytes, mime = read_document(filename, data)
-    review = (generate_structured(CONTRACT_PROMPT, ContractReview, text, file_bytes, mime).model_dump()
-              if settings.gemini_api_key else review_contract_rules(text))
+    if settings.gemini_api_key:
+        review = merge_with_rules(generate_structured(CONTRACT_PROMPT, ContractReview, text, file_bytes, mime).model_dump(), text)
+    else:
+        review = review_contract_rules(text)
     shown = text[:MAX_CONTRACT_CHARS]
     return {"review": score_contract(review, shown), "text": shown}, _engine()
 

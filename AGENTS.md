@@ -14,7 +14,7 @@
 
 ## 명령어
 - 백엔드 실행 (루트에서): `.venv/Scripts/python -m uvicorn backend.app.main:app --reload --port 8000`
-- 백엔드 테스트: `.venv/Scripts/python -m pytest backend/tests -q` (49개)
+- 백엔드 테스트: `.venv/Scripts/python -m pytest backend/tests -q` (50개)
 - 프런트: `cd frontend && npm run dev` / `npm run lint` / `npm run build`
 - Mock 모드 빌드 확인: `VITE_API_URL= npx vite build --outDir <임시폴더>`
 - ERP 타이핑용 브라우저: `.venv/Scripts/python -m playwright install chromium`

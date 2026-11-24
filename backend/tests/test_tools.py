@@ -113,3 +113,29 @@ def test_timestamps_are_returned_with_utc_offset(client, user_headers):
     docs = client.get("/api/documents", headers=user_headers).json()
     for value in [a["created_at"] for a in listed] + [me["created_at"]] + [d["created_at"] for d in docs]:
         assert value.endswith(("Z", "+00:00")), value
+
+
+def test_contract_gemini_output_is_relocated_and_rejudged_by_rules(client, user_headers, monkeypatch):
+    """운영에서 실제로 받은 Gemini 응답 재현: 한 글자 바뀐 발췌문, 규칙과 다른 유형 · 위험도, 누락된 비밀유지 조항."""
+    from backend.app.services import analyzers
+
+    def fake(prompt, schema, text, *_):
+        clause = lambda q, cat, risk: {"title": "-", "quote": q, "category": cat, "risk": risk, "explanation": "AI 설명"}  # noqa: E731
+        return schema(title="마케팅 대행 서비스 계약서", summary="AI 요약", clauses=[
+            clause("을이 계약기간 중 계약을 해지하는 경우 잔여 기간 이용료 총액의 50%를 위약금으로 갑에게 지급한다.", "termination", "high"),
+            clause("갑은 운영상 필요할 경우 을에게 사전 통보 없이 서비스 내용을 변경할 수 있다.", "termination", "high"),
+            clause("계약 만료 1개월 전까지 서면 해지 통보가 없으면 동일한 조건으로 1년씩 자동 연장된다.", "auto_renewal", "medium"),
+        ])
+
+    monkeypatch.setattr(analyzers.settings, "gemini_api_key", "test")
+    monkeypatch.setattr(analyzers, "generate_structured", fake)
+    text = (SAMPLES / "contract.txt").read_text(encoding="utf-8")
+    body = client.post("/api/tools/contract-review", headers=user_headers, data={"text": text}).json()
+    review = body["result"]["review"]
+    by_category = {c["category"]: c for c in review["clauses"]}
+    assert body["engine"] == "gemini" and review["summary"] == "AI 요약"
+    assert by_category["penalty"]["risk"] == "high", "위약금 문장은 규칙으로 penalty 판정"
+    assert by_category["auto_renewal"]["risk"] == "high", "AI 가 medium 으로 줘도 규칙 위험도(high) 적용"
+    assert by_category["termination"]["start"] is not None, "'필요할'로 바뀐 발췌문도 원문 문장에 표시"
+    assert {"confidentiality", "jurisdiction", "payment", "liability", "ip"} <= set(by_category), "AI 가 놓친 규칙 조항 추가"
+    assert len(review["clauses"]) == 8 and all(c["start"] is not None for c in review["clauses"])

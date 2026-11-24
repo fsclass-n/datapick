@@ -347,7 +347,7 @@ export default function Home() {
           </ol>
           <div className="mt-10 flex flex-wrap items-center gap-3 text-xs text-white/60">
             <FontAwesomeIcon icon={faCodeBranch} className="text-gold-400" />
-            {['Gemini 구조화 출력', 'Tesseract OCR', 'FastAPI', 'Playwright RPA', 'React 19', 'pytest 49개'].map((t) => (
+            {['Gemini 구조화 출력', 'Tesseract OCR', 'FastAPI', 'Playwright RPA', 'React 19', 'pytest 50개'].map((t) => (
               <span key={t} className="rounded-full border border-white/15 px-3 py-1">{t}</span>
             ))}
           </div>

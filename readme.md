@@ -27,7 +27,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Render-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 [![CI/CD](https://img.shields.io/github/actions/workflow/status/fsclass-n/dataquill/deploy.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/fsclass-n/dataquill/actions/workflows/deploy.yml)
-![Tests](https://img.shields.io/badge/pytest-49%20passed-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
+![Tests](https://img.shields.io/badge/pytest-50%20passed-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
 [![Issues](https://img.shields.io/github/issues/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/issues)
 [![Last Commit](https://img.shields.io/github/last-commit/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/commits/main)
 ![Repo Size](https://img.shields.io/github/repo-size/fsclass-n/dataquill?style=flat-square)
@@ -73,7 +73,7 @@
 | **판정의 일관성** | LLM 에 '비교 · 판정'까지 맡기면 결과가 매번 다르고 설명이 어려움 | **AI는 읽기만, 비교 · 판정은 규칙 코드** — 같은 입력이면 같은 결과 |
 
 - **기간 · 인원**: 1인 풀스택(기획 · 백엔드 · 프런트엔드 · RPA · 배포 · 문서 · 영상) — 홍기흥
-- **결과**: 운영 서비스(AI 도구 3종 + 문서 자동 입력) · API · 자동 테스트 49개 · 10분 발표 영상 · 발표자료 · 진행일지/산출물(HWPX · PDF)
+- **결과**: 운영 서비스(AI 도구 3종 + 문서 자동 입력) · API · 자동 테스트 50개 · 10분 발표 영상 · 발표자료 · 진행일지/산출물(HWPX · PDF)
 
 ## 2. Key Features
 
@@ -86,7 +86,7 @@
 | 도구 | 입력 | 결과 | 판정 규칙(코드) |
 | --- | --- | --- | --- |
 | **견적서 비교기** `/tools/quotes` | 견적서 2~5장 | 품목별 단가 비교표 · 이상 단가 · 빠진 품목 · 총액 차이 · 공통 품목 기준 합계 | 품목명 자동 매칭(문자 순서 유사도 + 2글자 조각 겹침 ≥ 0.6), 최저가 대비 **+20% 이상 = 이상 단가** |
-| **계약서 빨간펜** `/tools/contract` | 계약서 1부 또는 본문 붙여넣기 | **원문 위치에 빨간 줄** · 위험도 점수(0~100) · 조항별 쉬운 설명 · 확인할 점 | 9개 위험 유형(자동 연장 · 위약금 · 일방 해지/변경 · 경업 금지 · 면책 · 지연이자 · 권리 귀속 · 비밀유지 · 관할), AI 발췌문을 원문에서 다시 찾아 위치 확정 |
+| **계약서 빨간펜** `/tools/contract` | 계약서 1부 또는 본문 붙여넣기 | **원문 위치에 빨간 줄** · 위험도 점수(0~100) · 조항별 쉬운 설명 · 확인할 점 | 9개 위험 유형(자동 연장 · 위약금 · 일방 해지/변경 · 경업 금지 · 면책 · 지연이자 · 권리 귀속 · 비밀유지 · 관할) — AI 발췌문도 유형 · 위험도는 규칙이 판정, 원문에서 다시 찾아 위치 확정 |
 | **건강검진 추이 비교기** `/tools/health` | 검진 결과지 1~5회분 | 연도별 수치표 · 정상/주의/위험 · **범위 악화 · 계속 악화 · 개선** · 추이 차트 | 16개 항목, 국민건강보험 일반검진 기준을 단순화한 경계값(성별 구분 없음, 진단 아님) |
 
 - 모든 도구에 **'샘플로 바로 체험'** 버튼 — 가상 샘플 문서(`frontend/public/samples/`)로 10초 안에 결과 확인
@@ -215,7 +215,8 @@ flowchart TD
 - **해결**
   - **역할 분리**: Gemini 는 구조화 출력으로 값 · 원문 발췌만, 비교 · 점수 · 판정은 `services/analyzers.py` 의 순수 함수 → 같은 입력이면 같은 결과, 단위 테스트 가능
   - **품목 매칭**: 어순이 다른 '도장(문틀)' ↔ '문틀 도장' 은 문자 순서 유사도만으로 0.5 라 놓침 → 2글자 조각 겹침(dice)을 함께 써서 0.67 로 매칭
-  - **빨간펜 위치**: AI 발췌문을 원문에서 다시 찾고(공백 · 줄바꿈 무시), 못 찾으면 줄 대신 카드로만 표시 → 문서에 없는 문장에 줄을 긋지 않음
+  - **빨간펜 위치**: AI 발췌문을 원문에서 다시 찾고(공백 · 줄바꿈 무시 → 그래도 없으면 유사도 0.85 이상인 원문 문장), 못 찾으면 줄 대신 카드로만 표시 → 문서에 없는 문장에 줄을 긋지 않음
+  - **운영에서 발견**: 배포 후 실제 Gemini 응답을 점검하니 발췌문 한 글자 변형('필요한' → '필요할')으로 위치를 못 찾고, 위약금 조항을 '일방 해지'로 · 자동 연장을 '주의'로 분류하고 비밀유지 조항을 빠뜨림 → **AI 발췌문의 유형 · 위험도는 규칙이 다시 판정하고, 규칙이 찾은 조항 중 AI 가 놓친 것은 추가**. 그 응답을 그대로 재현한 회귀 테스트 추가
   - **PDF 줄바꿈**: PDF 추출 텍스트의 줄바꿈이 문장 중간을 끊어 '사전 통보 없이 … 변경' 규칙이 놓침 → 패턴이 줄바꿈을 건너도록 바꾸고 샘플 PDF 로 재검증
   - **Mock 동일성**: 백엔드 없이 동작하는 목업(`mockTools.js`)도 같은 규칙을 옮겨, 같은 샘플에서 같은 결과(5개 품목 · 8개 조항)를 화면 점검으로 확인
 
@@ -263,7 +264,7 @@ dataquill/
 │   │   ├── deps.py · security.py# 인증 · 권한(테스트 관리자 쓰기 차단) · PBKDF2 · JWT
 │   │   ├── routers/             # auth · documents · admin · erp_demo · tools(AI 도구)
 │   │   └── services/            # parser(Gemini 공용 호출 · 규칙) · analyzers(견적 · 계약 · 검진 판정) · oauth · stats
-│   ├── tests/                   # pytest 49개 (임시 DB · 외부 키 격리)
+│   ├── tests/                   # pytest 50개 (임시 DB · 외부 키 격리)
 │   └── Dockerfile               # python:3.11-slim-bookworm + Tesseract + Chromium
 ├── rpa/                         # extract(OCR) · excel_writer · erp_typer(Playwright)
 ├── frontend/src/                # pages(tools/ 포함) · components(layout · tools) · api(client · mock · mockTools) · utils/tools.js
@@ -300,7 +301,7 @@ Docker: `docker compose up --build` (backend 8000 · frontend 5173)
 ## 10. Testing & Quality
 
 ```bash
-.venv/Scripts/python -m pytest backend/tests -q   # 49 passed
+.venv/Scripts/python -m pytest backend/tests -q   # 50 passed
 cd frontend && npm run lint && npm run build       # lint 오류 0 · build 성공
 ```
 
