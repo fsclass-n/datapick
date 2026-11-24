@@ -157,12 +157,54 @@ def test_gemini_retries_transient_errors(monkeypatch, failures, code, ok, calls)
     monkeypatch.setattr(genai, "Client", lambda **_: type("C", (), {"models": fake})())
     monkeypatch.setattr(parser, "RETRY_DELAYS", (0, 0, 0))
     monkeypatch.setattr(parser.settings, "gemini_api_key", "test")
+    monkeypatch.setattr(parser.settings, "gemini_fallback_model", "")
     if ok:
         assert parser.parse_with_gemini("text")["total_amount"] == 1000
     else:
         with pytest.raises(parser.ParseError):
             parser.parse_with_gemini("text")
     assert fake.calls == calls
+
+
+def test_gemini_fails_over_to_fallback_model(monkeypatch):
+    """주 모델이 계속 실패하면 대체 모델로 호출한다."""
+    from google import genai
+    from google.genai import errors
+
+    from backend.app.services import parser
+
+    class Fake:
+        def __init__(self):
+            self.seen = []
+
+        def generate_content(self, model=None, **_):
+            self.seen.append(model)
+            if model == "primary-model":
+                raise errors.APIError(503, {"error": {"code": 503, "message": "high demand", "status": "UNAVAILABLE"}})
+            return type("R", (), {"text": '{"document_type": "receipt", "vendor": "A", "total_amount": 1000}'})()
+
+    fake = Fake()
+    monkeypatch.setattr(genai, "Client", lambda **_: type("C", (), {"models": fake})())
+    monkeypatch.setattr(parser, "RETRY_DELAYS", (0, 0, 0))
+    monkeypatch.setattr(parser.settings, "gemini_api_key", "test")
+    monkeypatch.setattr(parser.settings, "gemini_model", "primary-model")
+    monkeypatch.setattr(parser.settings, "gemini_fallback_model", "backup-model")
+    assert parser.parse_with_gemini("text")["total_amount"] == 1000
+    assert fake.seen == ["primary-model"] * 4 + ["backup-model"]
+
+
+def test_parse_falls_back_to_rules_when_gemini_fails(monkeypatch):
+    """Gemini 두 모델이 모두 실패해도 규칙 파서 결과를 반환한다."""
+    from backend.app.services import parser
+
+    def boom(*_a, **_kw):
+        raise parser.ParseError("Gemini 호출 실패 (503)")
+
+    monkeypatch.setattr(parser, "generate_structured", boom)
+    monkeypatch.setattr(parser.settings, "gemini_api_key", "test")
+    text = "브런치카페\n2026-11-17\n합계 10,000원"
+    parsed, engine = parser.parse(text)
+    assert engine == "rules" and parsed["total_amount"] == 10000
 
 
 def test_admin_login_issues_full_admin(client, admin_headers):

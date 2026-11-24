@@ -37,6 +37,7 @@ class Settings:
 
     gemini_api_key = os.getenv("GEMINI_API_KEY", "")
     gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+    gemini_fallback_model = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-2.5-flash-lite")
 
     oauth = {
         "google": (os.getenv("GOOGLE_CLIENT_ID", ""), os.getenv("GOOGLE_CLIENT_SECRET", "")),

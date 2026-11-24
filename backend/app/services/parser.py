@@ -41,6 +41,7 @@ class ParseError(RuntimeError):
 
 
 RETRYABLE_STATUS = {429, 500, 503, 504}
+FAILOVER_STATUS = RETRYABLE_STATUS | {404}
 RETRY_DELAYS = (2, 5, 10)
 MAX_PROMPT_CHARS = 30000
 
@@ -61,7 +62,11 @@ def generate_structured(
     file_bytes: bytes | None = None,
     mime_type: str | None = None,
 ) -> BaseModel:
-    """Gemini 구조화 출력 공용 호출. 일시 오류(429/5xx)만 백오프 재시도한다."""
+    """Gemini 구조화 출력 공용 호출.
+
+    일시 오류(429/5xx)는 백오프 재시도하고, 계속 실패하거나 모델이 없으면(404)
+    대체 모델(GEMINI_FALLBACK_MODEL)로 넘어간다.
+    """
     from google import genai
     from google.genai import errors as genai_errors
     from google.genai import types
@@ -77,18 +82,34 @@ def generate_structured(
         response_schema=schema,
         temperature=0,
     )
-    for attempt, delay in enumerate((*RETRY_DELAYS, None)):
-        try:
-            response = client.models.generate_content(model=settings.gemini_model, contents=contents, config=config)
+    models = [m for m in dict.fromkeys((settings.gemini_model, settings.gemini_fallback_model)) if m]
+    attempts = 0
+    response = None
+    last_exc = None
+    for model in models:
+        next_model = False
+        for delay in (*RETRY_DELAYS, None):
+            try:
+                response = client.models.generate_content(model=model, contents=contents, config=config)
+            except genai_errors.APIError as exc:
+                attempts += 1
+                last_exc = exc
+                if exc.code in RETRYABLE_STATUS and delay is not None:
+                    time.sleep(delay)
+                    continue
+                if exc.code in FAILOVER_STATUS and model != models[-1]:
+                    next_model = True
+                    break
+                hint = " (일시적인 과부하입니다. 잠시 후 다시 시도해 주세요.)" if exc.code in RETRYABLE_STATUS else ""
+                raise ParseError(f"Gemini 호출 실패 ({exc.code}, {attempts}회 시도): {exc.message or exc.status}{hint}") from exc
+            except Exception as exc:
+                raise ParseError(f"Gemini 호출 실패: {exc}") from exc
             break
-        except genai_errors.APIError as exc:
-            if exc.code in RETRYABLE_STATUS and delay is not None:
-                time.sleep(delay)
-                continue
-            hint = " (일시적인 과부하입니다. 잠시 후 다시 시도해 주세요.)" if exc.code in RETRYABLE_STATUS else ""
-            raise ParseError(f"Gemini 호출 실패 ({exc.code}, {attempt + 1}회 시도): {exc.message or exc.status}{hint}") from exc
-        except Exception as exc:
-            raise ParseError(f"Gemini 호출 실패: {exc}") from exc
+        if not next_model:
+            break
+    if response is None:
+        hint = " (일시적인 과부하입니다. 잠시 후 다시 시도해 주세요.)" if last_exc and last_exc.code in RETRYABLE_STATUS else ""
+        raise ParseError(f"Gemini 호출 실패 ({last_exc.code}, {attempts}회 시도): {last_exc.message or last_exc.status}{hint}") from last_exc
     if not response.text:
         raise ParseError("Gemini 가 빈 응답을 반환했습니다.")
     return schema.model_validate_json(response.text)
@@ -157,5 +178,8 @@ def parse_with_rules(text: str) -> dict:
 
 def parse(text: str, file_bytes: bytes | None = None, mime_type: str | None = None) -> tuple[dict, str]:
     if settings.gemini_api_key:
-        return parse_with_gemini(text, file_bytes, mime_type), "gemini"
+        try:
+            return parse_with_gemini(text, file_bytes, mime_type), "gemini"
+        except ParseError:
+            pass  # Gemini 장애 시 규칙 파서로 대체
     return parse_with_rules(text), "rules"

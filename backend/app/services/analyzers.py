@@ -41,8 +41,19 @@ def read_document(filename: str, data: bytes) -> tuple[str, bytes | None, str | 
     return result.text, data, result.mime_type
 
 
-def _engine() -> Engine:
-    return "gemini" if settings.gemini_api_key else "rules"
+def _extract(prompt: str, schema: type[BaseModel], rules_fn, text: str,
+             file_bytes: bytes | None = None, mime_type: str | None = None) -> tuple[dict, Engine]:
+    """Gemini 구조화 추출. 호출이 계속 실패하면 규칙 파서로 대체한다(엔진 'rules'로 표기)."""
+    if settings.gemini_api_key:
+        try:
+            return generate_structured(prompt, schema, text, file_bytes, mime_type).model_dump(), "gemini"
+        except ParseError:
+            pass
+    return rules_fn(text), "rules"
+
+
+def _combined(engines: set[Engine]) -> Engine:
+    return "gemini" if engines == {"gemini"} else "rules"
 
 
 # ─────────────────────────────── 견적서 비교기 ───────────────────────────────
@@ -181,17 +192,18 @@ def compare_quotes(quotes: list[dict]) -> dict:
 
 def analyze_quotes(files: list[tuple[str, bytes]]) -> tuple[dict, Engine]:
     quotes = []
+    engines: set[Engine] = set()
     for filename, data in files:
         text, file_bytes, mime = read_document(filename, data)
         try:
-            doc = (generate_structured(QUOTE_PROMPT, QuoteDoc, text, file_bytes, mime).model_dump()
-                   if settings.gemini_api_key else extract_quote_rules(text))
+            doc, eng = _extract(QUOTE_PROMPT, QuoteDoc, extract_quote_rules, text, file_bytes, mime)
         except ParseError as exc:
             raise ParseError(f"'{filename}': {exc}") from exc
+        engines.add(eng)
         if not doc["items"]:
             raise ParseError(f"'{filename}' 에서 견적 품목을 찾지 못했습니다.")
         quotes.append({**doc, "filename": filename})
-    return {"quotes": quotes, "comparison": compare_quotes(quotes)}, _engine()
+    return {"quotes": quotes, "comparison": compare_quotes(quotes)}, _combined(engines)
 
 
 # ─────────────────────────────── 계약서 빨간펜 ───────────────────────────────
@@ -368,11 +380,14 @@ def analyze_contract(filename: str, data: bytes | None = None, text: str = "") -
     if data is not None:
         text, file_bytes, mime = read_document(filename, data)
     if settings.gemini_api_key:
-        review = merge_with_rules(generate_structured(CONTRACT_PROMPT, ContractReview, text, file_bytes, mime).model_dump(), text)
+        try:
+            review, engine = merge_with_rules(generate_structured(CONTRACT_PROMPT, ContractReview, text, file_bytes, mime).model_dump(), text), "gemini"
+        except ParseError:
+            review, engine = review_contract_rules(text), "rules"
     else:
-        review = review_contract_rules(text)
+        review, engine = review_contract_rules(text), "rules"
     shown = text[:MAX_CONTRACT_CHARS]
-    return {"review": score_contract(review, shown), "text": shown}, _engine()
+    return {"review": score_contract(review, shown), "text": shown}, engine
 
 
 # ─────────────────────────────── 건강검진 추이 비교기 ───────────────────────────────
@@ -542,12 +557,13 @@ def _reference(code: str) -> str | None:
 
 def analyze_health(files: list[tuple[str, bytes]]) -> tuple[dict, Engine]:
     exams = []
+    engines: set[Engine] = set()
     for filename, data in files:
         text, file_bytes, mime = read_document(filename, data)
         try:
-            exam = (generate_structured(HEALTH_PROMPT, HealthExam, text, file_bytes, mime).model_dump()
-                    if settings.gemini_api_key else extract_health_rules(text))
+            exam, eng = _extract(HEALTH_PROMPT, HealthExam, extract_health_rules, text, file_bytes, mime)
         except ParseError as exc:
             raise ParseError(f"'{filename}': {exc}") from exc
+        engines.add(eng)
         exams.append({**exam, "filename": filename})
-    return {"exams": exams, "trend": compare_health(exams)}, _engine()
+    return {"exams": exams, "trend": compare_health(exams)}, _combined(engines)
