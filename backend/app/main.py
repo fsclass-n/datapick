@@ -7,7 +7,7 @@ from sqlalchemy import select
 from .config import settings
 from .database import Base, SessionLocal, engine
 from .models import User
-from .routers import admin, auth, documents, erp_demo
+from .routers import admin, auth, documents, erp_demo, tools
 from .security import hash_password, verify_password
 from .test_accounts import TEST_ACCOUNT_EMAILS, TEST_ACCOUNTS
 
@@ -67,7 +67,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-for module in (auth, admin, documents, erp_demo):
+for module in (auth, admin, documents, erp_demo, tools):
     app.include_router(module.router)
 
 

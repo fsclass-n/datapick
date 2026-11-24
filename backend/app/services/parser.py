@@ -42,6 +42,7 @@ class ParseError(RuntimeError):
 
 RETRYABLE_STATUS = {429, 500, 503, 504}
 RETRY_DELAYS = (2, 5, 10)
+MAX_PROMPT_CHARS = 30000
 
 
 PROMPT = """당신은 회계 전표 입력 담당자입니다. 아래 문서(영수증, 세금계산서, 거래 이메일 등)를 읽고
@@ -53,20 +54,27 @@ ERP 전표 입력에 필요한 값을 JSON 으로 추출하세요.
 """
 
 
-def parse_with_gemini(text: str, file_bytes: bytes | None = None, mime_type: str | None = None) -> dict:
+def generate_structured(
+    prompt: str,
+    schema: type[BaseModel],
+    text: str = "",
+    file_bytes: bytes | None = None,
+    mime_type: str | None = None,
+) -> BaseModel:
+    """Gemini 구조화 출력 공용 호출. 일시 오류(429/5xx)만 백오프 재시도한다."""
     from google import genai
     from google.genai import errors as genai_errors
     from google.genai import types
 
     client = genai.Client(api_key=settings.gemini_api_key)
-    contents: list = [PROMPT]
+    contents: list = [prompt]
     if file_bytes and mime_type:
         contents.append(types.Part.from_bytes(data=file_bytes, mime_type=mime_type))
     if text:
-        contents.append(f"[문서 텍스트]\n{text[:30000]}")
+        contents.append(f"[문서 텍스트]\n{text[:MAX_PROMPT_CHARS]}")
     config = types.GenerateContentConfig(
         response_mime_type="application/json",
-        response_schema=ParsedDocument,
+        response_schema=schema,
         temperature=0,
     )
     for attempt, delay in enumerate((*RETRY_DELAYS, None)):
@@ -77,13 +85,17 @@ def parse_with_gemini(text: str, file_bytes: bytes | None = None, mime_type: str
             if exc.code in RETRYABLE_STATUS and delay is not None:
                 time.sleep(delay)
                 continue
-            hint = " (일시적인 과부하입니다. 잠시 후 '재해석'을 눌러 주세요.)" if exc.code in RETRYABLE_STATUS else ""
+            hint = " (일시적인 과부하입니다. 잠시 후 다시 시도해 주세요.)" if exc.code in RETRYABLE_STATUS else ""
             raise ParseError(f"Gemini 호출 실패 ({exc.code}, {attempt + 1}회 시도): {exc.message or exc.status}{hint}") from exc
         except Exception as exc:
             raise ParseError(f"Gemini 호출 실패: {exc}") from exc
     if not response.text:
         raise ParseError("Gemini 가 빈 응답을 반환했습니다.")
-    return ParsedDocument.model_validate_json(response.text).model_dump()
+    return schema.model_validate_json(response.text)
+
+
+def parse_with_gemini(text: str, file_bytes: bytes | None = None, mime_type: str | None = None) -> dict:
+    return generate_structured(PROMPT, ParsedDocument, text, file_bytes, mime_type).model_dump()
 
 
 _AMOUNT = r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]+)\s*원?"

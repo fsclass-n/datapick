@@ -5,6 +5,7 @@
 """
 
 import io
+import textwrap
 from datetime import datetime, timezone, timedelta
 from email.message import EmailMessage
 from pathlib import Path
@@ -137,12 +138,159 @@ def make_txt():
     )
 
 
+QUOTES = {
+    "견적서_A_한빛인테리어": """견 적 서
+공급자: 한빛인테리어
+사업자번호: 214-81-55120
+견적일: 2026-11-10
+수신: 브런치카페 퀼 (사무공간 리모델링)
+품목 수량 단위 단가 금액
+벽지 시공(실크) 30 롤 18,000 540,000
+바닥 데코타일 25 ㎡ 32,000 800,000
+LED 조명 교체 8 개 55,000 440,000
+철거 및 폐기물 처리 1 식 400,000 400,000
+도장(문틀) 6 개 25,000 150,000
+합계: 2,330,000원 (부가세 별도)
+유효기간: 견적일로부터 30일
+결제조건: 착수 50%, 완료 후 50%""",
+    "견적서_B_다온디자인": """견 적 서
+공급자: 다온디자인
+사업자번호: 105-87-33014
+견적일: 2026-11-12
+수신: 브런치카페 퀼 (사무공간 리모델링)
+품목 수량 단위 단가 금액
+벽지 시공 실크 30 롤 17,500 525,000
+바닥 데코타일 시공 25 ㎡ 30,000 750,000
+LED 조명 8 개 42,000 336,000
+문틀 도장 6 개 24,000 144,000
+합계: 1,755,000원 (부가세 별도)
+유효기간: 견적일로부터 14일
+결제조건: 계약 시 전액""",
+    "견적서_C_우리공간": """견 적 서
+공급자: 우리공간
+사업자번호: 120-86-90412
+견적일: 2026-11-13
+수신: 브런치카페 퀼 (사무공간 리모델링)
+품목 수량 단위 단가 금액
+벽지 시공(실크) 30 롤 19,000 570,000
+바닥 데코타일 25 ㎡ 41,000 1,025,000
+LED 조명 교체 8 개 46,000 368,000
+철거 및 폐기물 처리 1 식 350,000 350,000
+도장(문틀) 6 개 26,000 156,000
+합계: 2,469,000원 (부가세 별도)
+유효기간: 견적일로부터 30일
+하자보수: 시공 후 1년 무상""",
+}
+
+CONTRACT = """마케팅 대행 서비스 계약서
+
+주식회사 퀵그로스 (이하 "갑")와 브런치카페 퀼 (이하 "을")은 다음과 같이 계약을 체결한다.
+
+제1조(목적) 본 계약은 갑이 을의 온라인 마케팅(SNS 운영, 검색 광고 대행)을 수행하는 데 필요한 사항을 정한다.
+
+제2조(계약기간) 계약기간은 2026년 12월 1일부터 2027년 11월 30일까지로 한다. 계약 만료 1개월 전까지 서면 해지 통보가 없으면 동일한 조건으로 1년씩 자동 연장된다.
+
+제3조(대금 지급) 을은 매월 5일까지 월 이용료 1,100,000원(부가세 포함)을 지급한다. 지급이 지연될 경우 연 24%의 지연이자를 가산한다.
+
+제4조(중도 해지) 을이 계약기간 중 계약을 해지하는 경우 잔여 기간 이용료 총액의 50%를 위약금으로 갑에게 지급한다.
+
+제5조(서비스 변경) 갑은 운영상 필요한 경우 을에게 사전 통보 없이 서비스 내용을 변경할 수 있다.
+
+제6조(책임의 제한) 광고 성과(방문자 수, 매출 등)에 대하여 갑은 어떠한 책임도 지지 않는다.
+
+제7조(결과물의 권리) 계약기간 중 제작된 콘텐츠의 저작권은 갑에게 귀속된다.
+
+제8조(비밀유지) 양 당사자는 본 계약과 관련하여 알게 된 상대방의 영업 정보를 제3자에게 누설하지 아니한다.
+
+제9조(관할) 본 계약과 관련한 분쟁은 갑의 본점 소재지 관할 법원을 전속 관할로 한다.
+
+2026년 11월 20일"""
+
+HEALTH = {
+    "건강검진_2025": """건강검진 결과 통보서
+수검자: 홍길동 (가상 인물)
+검진기관: 퀼내과의원
+검진일: 2025-11-12
+체중: 71.2 kg
+체질량지수(BMI): 24.1
+허리둘레: 84 cm
+혈압: 126/82 mmHg
+공복혈당: 98 mg/dL
+총콜레스테롤: 205 mg/dL
+HDL 콜레스테롤: 38 mg/dL
+LDL 콜레스테롤: 128 mg/dL
+중성지방: 142 mg/dL
+AST(SGOT): 28 U/L
+ALT(SGPT): 33 U/L
+감마지티피(γ-GTP): 45 U/L
+혈색소: 14.8 g/dL
+혈청 크레아티닌: 0.9 mg/dL
+eGFR: 95 mL/min/1.73㎡""",
+    "건강검진_2026": """건강검진 결과 통보서
+수검자: 홍길동 (가상 인물)
+검진기관: 퀼내과의원
+검진일: 2026-11-18
+체중: 75.8 kg
+체질량지수(BMI): 25.6
+허리둘레: 89 cm
+혈압: 138/88 mmHg
+공복혈당: 112 mg/dL
+총콜레스테롤: 236 mg/dL
+HDL 콜레스테롤: 44 mg/dL
+LDL 콜레스테롤: 162 mg/dL
+중성지방: 210 mg/dL
+AST(SGOT): 31 U/L
+ALT(SGPT): 48 U/L
+감마지티피(γ-GTP): 71 U/L
+혈색소: 15.1 g/dL
+혈청 크레아티닌: 0.95 mg/dL
+eGFR: 91 mL/min/1.73㎡""",
+}
+
+# 프런트엔드 '샘플로 체험' 버튼이 내려받는 텍스트 사본 (URL 에 안전한 영문 파일명)
+WEB_NAMES = {
+    "견적서_A_한빛인테리어": "quote_a.txt", "견적서_B_다온디자인": "quote_b.txt", "견적서_C_우리공간": "quote_c.txt",
+    "마케팅대행_계약서": "contract.txt", "건강검진_2025": "health_2025.txt", "건강검진_2026": "health_2026.txt",
+}
+WEB_DIR = OUT.parent / "frontend" / "public" / "samples"
+
+
+def text_pdf(path, text, title_size=13, size=9):
+    doc = fitz.open()
+    page = doc.new_page(width=595, height=842)
+    page.insert_font(fontname="malgun", fontfile=FONT)
+    page.insert_font(fontname="malgunb", fontfile=FONT_B)
+    y = 56
+    for i, line in enumerate(text.splitlines()):
+        if not line.strip():
+            y += 6
+            continue
+        title = i == 0
+        for chunk in textwrap.wrap(line, 48) if not title else [line]:
+            page.insert_text((50, y), chunk, fontsize=title_size if title else size, fontname="malgunb" if title else "malgun")
+            y += 24 if title else size + 7
+    doc.subset_fonts()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    doc.save(path, deflate=True)
+    doc.close()
+
+
+def make_tool_samples():
+    WEB_DIR.mkdir(parents=True, exist_ok=True)
+    groups = [("견적비교", QUOTES), ("계약서", {"마케팅대행_계약서": CONTRACT}), ("건강검진", HEALTH)]
+    for folder, docs in groups:
+        for name, text in docs.items():
+            text_pdf(OUT / folder / f"{name}.pdf", text)
+            (WEB_DIR / WEB_NAMES[name]).write_text(text + chr(10), encoding="utf-8")
+
+
 if __name__ == "__main__":
+    make_tool_samples()
     make_text_pdf()
     make_scanned_pdf()
     make_eml()
     make_html()
     make_txt()
-    for f in sorted(OUT.iterdir()):
-        if f.name != "make_samples.py":
-            print(f"{f.name:40s} {f.stat().st_size:>8,} B")
+    for f in sorted(OUT.rglob("*")):
+        if f.is_file() and f.suffix not in (".py", ".md"):
+            print(f"{str(f.relative_to(OUT)):44s} {f.stat().st_size:>8,} B")

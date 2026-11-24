@@ -11,10 +11,12 @@ def _rate(ok: int, total: int) -> float:
     return round(ok / total * 100, 1) if total else 0.0
 
 
+def _utc(value: datetime) -> datetime:
+    return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+
+
 def _day(value: datetime) -> str:
-    if value.tzinfo is None:
-        value = value.replace(tzinfo=timezone.utc)
-    return value.astimezone(timezone(timedelta(hours=9))).strftime("%m-%d")
+    return _utc(value).astimezone(timezone(timedelta(hours=9))).strftime("%m-%d")
 
 
 def compute(db: Session, user_id: int | None = None, days: int = 14) -> dict:
@@ -68,7 +70,7 @@ def compute(db: Session, user_id: int | None = None, days: int = 14) -> dict:
         },
         "daily": list(daily.values()),
         "recent_failures": [
-            {"id": d.id, "filename": d.filename, "error": d.error, "created_at": d.created_at.isoformat()}
+            {"id": d.id, "filename": d.filename, "error": d.error, "created_at": _utc(d.created_at).isoformat()}
             for d in sorted((d for d in docs if d.status == "failed"), key=lambda d: d.created_at, reverse=True)[:5]
         ],
     }

@@ -18,7 +18,9 @@ import { IS_MOCK, api, download } from '../api/client'
 import { useToast } from '../context/ToastContext'
 import { useAuth } from '../context/AuthContext'
 import { READ_ONLY_HINT } from '../utils/roles'
-import { Badge, EmptyState, LoadingBlock, PageHeader, Spinner } from '../components/ui'
+import { Badge, EmptyState, LoadingBlock, Spinner } from '../components/ui'
+import { ToolHero } from '../components/tools/ToolPage'
+import { DOCUMENT_TOOL } from '../utils/tools'
 import { DOC_TYPE_LABELS, SOURCE_LABELS, dateTime, won } from '../utils/format'
 import { sourceIcon } from '../utils/icons'
 
@@ -362,16 +364,12 @@ export default function Documents() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Automation"
-        title="문서 처리"
-        description="비정형 문서를 업로드하면 OCR + Gemini 가 해석하고, 검수 후 RPA 로 ERP·엑셀에 자동 입력합니다."
-        actions={
-          <button className="btn-secondary" onClick={downloadLedger}>
-            <FontAwesomeIcon icon={faDownload} /> 엑셀 원장 다운로드
-          </button>
-        }
-      />
+      <ToolHero tool={DOCUMENT_TOOL} />
+      <div className="my-6 flex justify-end">
+        <button className="btn-secondary" onClick={downloadLedger}>
+          <FontAwesomeIcon icon={faDownload} /> 엑셀 원장 다운로드
+        </button>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
         <div className="space-y-6 lg:col-span-3">

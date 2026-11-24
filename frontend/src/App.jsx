@@ -10,6 +10,9 @@ import Login from './pages/Login'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Documents = lazy(() => import('./pages/Documents'))
+const QuoteCompare = lazy(() => import('./pages/tools/QuoteCompare'))
+const ContractReview = lazy(() => import('./pages/tools/ContractReview'))
+const HealthTrend = lazy(() => import('./pages/tools/HealthTrend'))
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'))
 const AdminMonitoring = lazy(() => import('./pages/admin/AdminMonitoring'))
 const AdminLogin = lazy(() => import('./pages/AdminLogin'))
@@ -74,6 +77,9 @@ export default function App() {
           <Route element={<RequireAuth />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/documents" element={<Documents />} />
+            <Route path="/tools/quotes" element={<QuoteCompare />} />
+            <Route path="/tools/contract" element={<ContractReview />} />
+            <Route path="/tools/health" element={<HealthTrend />} />
             <Route element={<RequireAuth admin />}>
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/monitoring" element={<AdminMonitoring />} />

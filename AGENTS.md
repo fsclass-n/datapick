@@ -2,6 +2,7 @@
 
 ## 프로젝트
 - PDF 영수증/이메일 등 비정형 데이터 → OCR + LLM(Gemini) 해석 → RPA로 ERP/엑셀 자동 입력하는 B2B 솔루션
+- 2026-11-24: AI 도구 3종(견적서 비교 · 계약서 빨간펜 · 건강검진 추이) 추가, 브랜드 · 로고 · 프런트 전면 개편
 - 1인 프로젝트 (홍기흥)
 - Repo: https://github.com/fsclass-n/dataquill (origin을 omnitask.git에서 변경함, 2026-11-16)
 - Frontend: Netlify (https://dataquill.netlify.app) / Backend: Render (https://dataquill.onrender.com)
@@ -13,7 +14,7 @@
 
 ## 명령어
 - 백엔드 실행 (루트에서): `.venv/Scripts/python -m uvicorn backend.app.main:app --reload --port 8000`
-- 백엔드 테스트: `.venv/Scripts/python -m pytest backend/tests -q`
+- 백엔드 테스트: `.venv/Scripts/python -m pytest backend/tests -q` (49개)
 - 프런트: `cd frontend && npm run dev` / `npm run lint` / `npm run build`
 - Mock 모드 빌드 확인: `VITE_API_URL= npx vite build --outDir <임시폴더>`
 - ERP 타이핑용 브라우저: `.venv/Scripts/python -m playwright install chromium`
@@ -52,6 +53,22 @@
 - 앱 · 정책 페이지는 `PageContainer` 안에서 렌더링 (container-page + page-y)
 - 디자인 토큰: `index.css` 의 text-display/title/heading/body/caption, `container-page`, `section-y`, `page-y`, `eyebrow`
   (Tailwind 기본 유틸리티와 이름이 겹치지 않게 주의: `overline` 은 text-decoration 이라 사용 금지)
+- 브랜드(2026-11-24 개편): 잉크 남색 `ink`/`brand-*`(#14213d 계열) · 금박 `gold-*`(#e9a23b) · 종이 배경 `paper`. 보조 유틸리티 `paper-lines`(괘선) · `dot-grid` · `red-pen`(물결 밑줄)
+  - 도구별 강조색: 견적 sky · 계약서 rose · 검진 emerald · 문서 입력 ink — 클래스 문자열은 `utils/tools.js` ACCENTS 에 그대로 둔다(Tailwind 정적 분석)
+  - recharts 색은 CSS 변수 대신 hex 로 적는다(SVG 속성)
+- 로고: 깃펜의 한쪽 깃이 데이터 픽셀로 흩어지는 마크. `components/layout/Logo.jsx` 의 `LogoMark`(tone: tile · light · dark) + `Wordmark`(data=ink, quill=gold)
+  - 같은 도형을 `frontend/public/favicon.svg`, 루트 `index.html`(GitHub Pages 로고 2곳 + 인라인 파비콘)에도 사용 → 로고를 바꾸면 세 곳 모두 수정
+- 사진: `frontend/public/images/*.webp`(본문 1000~1600px, `-sm` 480px). 모두 Unsplash License, 출처는 `utils/tools.js` IMAGE_CREDITS 와 푸터에 표기. 새 사진도 공식 다운로드 링크로 받아 로컬 WebP 로 최적화(핫링크 금지)
+
+## AI 도구 3종 (2026-11-24)
+- 경로: `/tools/quotes`(견적서 비교기) · `/tools/contract`(계약서 빨간펜) · `/tools/health`(건강검진 추이), 메타데이터는 `frontend/src/utils/tools.js`
+- 원칙: **AI는 읽기만, 판정은 규칙 코드** — `backend/app/services/analyzers.py` (Gemini 구조화 출력 → 결정적 비교 · 점수 · 판정). Gemini 호출은 `parser.generate_structured` 공용 함수(재시도 포함)
+- API: `POST /api/tools/quote-compare`(files 2~5) · `/contract-review`(file 또는 text) · `/health-trend`(files 1~5), `GET/DELETE /api/tools/analyses[/{id}]`(본인만, 관리자도 타인 결과 조회 불가)
+- 원본 파일은 저장하지 않고 `analyses` 테이블에 결과 JSON 만 저장
+- 규칙을 바꾸면 **`frontend/src/api/mockTools.js` 도 같이 수정** (Mock 모드 동일성). 프런트 '샘플로 바로 체험'은 `frontend/public/samples/*.txt` 사용
+- 샘플 재생성: `py -3.11 samples/make_samples.py` → `samples/견적비교|계약서|건강검진/*.pdf` + `frontend/public/samples/*.txt` (테스트 `backend/tests/test_tools.py` 가 TXT 사본을 읽음)
+- 응답 시각은 `schemas.UtcDatetime` 으로 UTC 표시를 붙인다(DB 가 시간대 없는 값을 돌려줘 새로고침 후 9시간 이르게 보이던 문제 해결)
+- 화면 점검: 데모 인스턴스(백엔드 :8001 임시 SQLite + `GEMINI_API_KEY=` 규칙 엔진, 프런트 :5180 `VITE_API_URL=http://localhost:8001`) + Mock 빌드(`vite preview` :5181)에서 Playwright 로 샘플 실행 · 콘솔 오류 · 가로 넘침 확인
 
 ## 결정 사항
 - 소셜 로그인(Google/Naver/Kakao): 실제 OAuth 연동 (백엔드 콜백 구현, Client ID/Secret 필요)

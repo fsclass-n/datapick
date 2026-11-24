@@ -1,7 +1,10 @@
-from datetime import datetime
-from typing import Literal
+from datetime import datetime, timezone
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, EmailStr, Field
+
+# DB(SQLite · TiDB)는 시간대 없는 UTC 시각을 돌려주므로, 응답에 UTC 표시를 붙여 브라우저가 현지 시각으로 바꾸게 한다
+UtcDatetime = Annotated[datetime, AfterValidator(lambda v: v if v.tzinfo else v.replace(tzinfo=timezone.utc))]
 
 
 class UserOut(BaseModel):
@@ -12,8 +15,8 @@ class UserOut(BaseModel):
     name: str
     role: str
     provider: str
-    created_at: datetime
-    last_login_at: datetime | None = None
+    created_at: UtcDatetime
+    last_login_at: UtcDatetime | None = None
 
 
 class LoginIn(BaseModel):
@@ -48,8 +51,8 @@ class RpaJobOut(BaseModel):
     target: str
     status: str
     message: str | None
-    created_at: datetime
-    finished_at: datetime | None
+    created_at: UtcDatetime
+    finished_at: UtcDatetime | None
 
 
 class DocumentOut(BaseModel):
@@ -62,8 +65,8 @@ class DocumentOut(BaseModel):
     parser: str | None
     parsed: dict | None
     error: str | None
-    created_at: datetime
-    parsed_at: datetime | None
+    created_at: UtcDatetime
+    parsed_at: UtcDatetime | None
     jobs: list[RpaJobOut] = []
 
 
@@ -73,3 +76,18 @@ class DocumentDetailOut(DocumentOut):
 
 class RpaIn(BaseModel):
     target: Literal["excel", "erp"] = "excel"
+
+
+class AnalysisOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    kind: str
+    title: str
+    filenames: list[str]
+    engine: str
+    created_at: UtcDatetime
+
+
+class AnalysisDetailOut(AnalysisOut):
+    result: dict

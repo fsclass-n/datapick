@@ -4,14 +4,27 @@
   --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --font-heading: "IBM Plex Sans KR", "Pretendard Variable", sans-serif;
 
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-900: #1e1b4b;
+  /* 브랜드: 잉크(남색) · 금박(골드) · 종이(웜 화이트) — 깃펜과 데이터를 상징 */
+  --color-brand-50: #eef1f7;
+  --color-brand-100: #dce3ef;
+  --color-brand-200: #b9c6de;
+  --color-brand-300: #8fa2c6;
+  --color-brand-400: #6179a8;
+  --color-brand-500: #3d5a8f;
+  --color-brand-600: #284578;
+  --color-brand-700: #1e3561;
+  --color-brand-800: #18294b;
+  --color-brand-900: #14213d;
+  --color-ink: #14213d;
+  --color-gold-50: #fdf6e9;
+  --color-gold-100: #fae8c4;
+  --color-gold-200: #f5d398;
+  --color-gold-400: #efb85c;
+  --color-gold-500: #e9a23b;
+  --color-gold-600: #c9811f;
+  --color-gold-700: #9c6114;
+  --color-paper: #f7f5f0;
+  --color-paper-dark: #efebe2;
 
   /* 타이포 스케일 (화면 전체 공통) */
   --text-display: 3.5rem;
@@ -32,10 +45,15 @@
 
   --animate-fade-in: fade-in 0.25s ease-out;
   --animate-float: float 6s ease-in-out infinite;
+  --animate-grow: grow 4.5s linear;
 
   @keyframes fade-in {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: none; }
+  }
+  @keyframes grow {
+    from { width: 0; }
+    to { width: 100%; }
   }
   @keyframes float {
     0%, 100% { transform: translateY(0); }
@@ -46,7 +64,7 @@
 @layer base {
   html { scroll-behavior: smooth; }
   body {
-    @apply bg-slate-50 font-sans text-slate-800 antialiased;
+    @apply bg-paper font-sans text-slate-800 antialiased;
   }
   h1, h2, h3, h4 {
     @apply font-heading tracking-tight text-slate-900;
@@ -54,7 +72,7 @@
 }
 
 @utility card {
-  @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm;
+  @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm shadow-ink/5;
 }
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-50;
@@ -88,5 +106,18 @@
   @apply py-8 sm:py-10;
 }
 @utility eyebrow {
-  @apply text-xs font-semibold tracking-[0.18em] text-brand-600 uppercase;
+  @apply text-xs font-semibold tracking-[0.18em] text-gold-600 uppercase;
+}
+/* 종이 질감 배경(가는 괘선) */
+@utility paper-lines {
+  background-image: repeating-linear-gradient(to bottom, transparent 0 31px, rgb(20 33 61 / 0.05) 31px 32px);
+}
+/* 데이터 픽셀 점 격자 */
+@utility dot-grid {
+  background-image: radial-gradient(rgb(20 33 61 / 0.12) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+/* 계약서 빨간펜 밑줄 */
+@utility red-pen {
+  @apply rounded-sm bg-rose-50 underline decoration-rose-500 decoration-wavy decoration-2 underline-offset-4;
 }

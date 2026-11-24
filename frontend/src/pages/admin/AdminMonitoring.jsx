@@ -22,7 +22,7 @@ import { useToast } from '../../context/ToastContext'
 import { EmptyState, LoadingBlock, PageHeader, Spinner, StatCard } from '../../components/ui'
 import { PROVIDER_LABELS, SOURCE_LABELS, dateTime } from '../../utils/format'
 
-const COLORS = ['#6366f1', '#10b981', '#f59e0b', '#f43f5e', '#0ea5e9']
+const COLORS = ['#284578', '#10b981', '#e9a23b', '#f43f5e', '#0ea5e9']
 const tooltipStyle = { borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13 }
 
 function Gauge({ value, label, color, detail }) {
@@ -117,7 +117,7 @@ export default function AdminMonitoring() {
       </div>
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
-        <Gauge value={d.success_rate} label="AI 파싱 성공률" color="#6366f1" detail={`평균 신뢰도 ${d.avg_confidence != null ? Math.round(d.avg_confidence * 100) + '%' : '-'}`} />
+        <Gauge value={d.success_rate} label="AI 파싱 성공률" color="#284578" detail={`평균 신뢰도 ${d.avg_confidence != null ? Math.round(d.avg_confidence * 100) + '%' : '-'}`} />
         <Gauge value={rpa.success_rate} label="RPA 타이핑 성공률" color="#10b981" detail={`총 ${rpa.total}건 실행 · 성공 ${rpa.success}건`} />
       </div>
 
@@ -132,7 +132,7 @@ export default function AdminMonitoring() {
                 <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
                 <Tooltip contentStyle={tooltipStyle} cursor={{ fill: '#f8fafc' }} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="parsed" name="성공" stackId="p" fill="#6366f1" />
+                <Bar dataKey="parsed" name="성공" stackId="p" fill="#284578" />
                 <Bar dataKey="failed" name="실패" stackId="p" fill="#fb7185" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

@@ -10,24 +10,22 @@ import {
   faEye as faEyeIcon,
   faEye,
   faEyeSlash,
-  faFileInvoice,
   faKeyboard,
   faLock,
-  faRobot,
   faUser,
   faUserShield,
-  faWandMagicSparkles,
 } from '@fortawesome/free-solid-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { IS_MOCK, api, oauthLoginUrl } from '../api/client'
 import Logo from '../components/layout/Logo'
+import { DOCUMENT_TOOL, TOOL_LIST } from '../utils/tools'
 import { Spinner } from '../components/ui'
 import { PASSWORD_RULES, isValidEmail, isValidPassword } from '../utils/format'
 
 const TEST_ACCOUNTS = {
-  user: { email: 'user@dataquill.io', password: 'User1234!', label: '일반 사용자', desc: '문서 업로드 · RPA 체험', icon: faUser },
+  user: { email: 'user@dataquill.io', password: 'User1234!', label: '일반 사용자', desc: 'AI 도구 · 문서 자동 입력', icon: faUser },
   admin: { email: 'admin@dataquill.io', password: 'Admin1234!', label: '테스트 관리자', desc: '관리자 화면 · 읽기 전용', icon: faEyeIcon },
 }
 
@@ -37,21 +35,14 @@ const SOCIAL = [
   { id: 'kakao', label: '카카오', className: 'bg-kakao text-[#191919] hover:brightness-95', icon: <FontAwesomeIcon icon={faComment} /> },
 ]
 
-const PIPELINE = [
-  { icon: faFileInvoice, title: '비정형 문서 수집', desc: 'PDF 영수증 · 이메일 · 스캔 이미지' },
-  { icon: faWandMagicSparkles, title: 'OCR + Gemini 해석', desc: '거래처 · 금액 · 날짜 · 품목 자동 정형화' },
-  { icon: faRobot, title: 'RPA 자동 타이핑', desc: 'ERP 전표 · 엑셀 원장에 자동 적재' },
-]
+const SERVICES = [...TOOL_LIST, DOCUMENT_TOOL]
 
 function BrandPanel() {
   return (
-    <div className="relative hidden overflow-hidden bg-brand-900 lg:flex lg:w-[46%] lg:flex-col lg:justify-between lg:gap-10 lg:p-10 xl:p-12">
-      <div className="absolute -top-32 -left-32 size-96 rounded-full bg-brand-600/40 blur-3xl" />
-      <div className="absolute -right-24 bottom-0 size-96 rounded-full bg-fuchsia-500/20 blur-3xl" />
-      <div
-        className="absolute inset-0 opacity-[0.07]"
-        style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}
-      />
+    <div className="relative hidden overflow-hidden bg-ink lg:flex lg:w-[46%] lg:flex-col lg:justify-between lg:gap-10 lg:p-10 xl:p-12">
+      <img src="/images/hero-quill.webp" alt="" className="absolute inset-0 size-full object-cover opacity-25" />
+      <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/90 to-ink" />
+      <div className="absolute inset-0 opacity-25 [background-image:radial-gradient(rgb(233_162_59/0.4)_1px,transparent_1px)] [background-size:22px_22px]" />
 
       <div className="relative">
         <Logo light />
@@ -59,48 +50,36 @@ function BrandPanel() {
 
       <div className="relative">
         <h2 className="text-3xl leading-tight font-bold text-white xl:text-4xl">
-          서류는 AI가 읽고,
+          문서를 올리면,
           <br />
-          입력은 <span className="bg-gradient-to-r from-brand-200 to-fuchsia-300 bg-clip-text text-transparent">로봇이 합니다.</span>
+          <span className="text-gold-400">데이터가 답합니다.</span>
         </h2>
-        <p className="mt-5 max-w-md text-brand-100/80">
-          반복되는 데이터 입력 업무를 자동화하세요. 영수증 한 장부터 월말 정산까지, dataquill 이 ERP 와 엑셀에 정확하게 옮겨 드립니다.
+        <p className="mt-5 max-w-md text-white/70">
+          견적서 비교, 계약서 위험 조항, 건강검진 추이, 영수증 자동 입력까지. 로그인하면 도구마다 샘플 문서로 바로 체험할 수 있습니다.
         </p>
 
-        <ol className="mt-10 space-y-3">
-          {PIPELINE.map((step, i) => (
+        <ul className="mt-10 grid grid-cols-2 gap-3">
+          {SERVICES.map((tool, i) => (
             <li
-              key={step.title}
-              className="flex animate-float items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur"
-              style={{ animationDelay: `${i * 0.6}s` }}
+              key={tool.id}
+              className="flex animate-float items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5 backdrop-blur"
+              style={{ animationDelay: `${i * 0.5}s` }}
             >
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-brand-200">
-                <FontAwesomeIcon icon={step.icon} />
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gold-500 text-ink">
+                <FontAwesomeIcon icon={tool.icon} />
               </span>
-              <div>
-                <p className="font-heading font-semibold text-white">
-                  <span className="mr-2 text-brand-300">0{i + 1}</span>
-                  {step.title}
-                </p>
-                <p className="text-sm text-brand-100/70">{step.desc}</p>
-              </div>
+              <span className="min-w-0">
+                <span className="block truncate font-heading text-sm font-semibold text-white">{tool.short}</span>
+                <span className="block truncate text-xs text-white/55">{tool.output.split(' · ')[0]}</span>
+              </span>
             </li>
           ))}
-        </ol>
+        </ul>
       </div>
 
-      <div className="relative grid grid-cols-3 gap-4 border-t border-white/10 pt-8 text-white">
-        {[
-          ['PDF·IMG·EML', '지원 문서 형식'],
-          ['Gemini', 'AI 해석 엔진'],
-          ['ERP·Excel', 'RPA 적재 대상'],
-        ].map(([value, label]) => (
-          <div key={label}>
-            <p className="font-heading text-lg font-bold xl:text-xl">{value}</p>
-            <p className="text-xs text-brand-100/70">{label}</p>
-          </div>
-        ))}
-      </div>
+      <p className="relative border-t border-white/10 pt-6 text-xs text-white/45">
+        AI는 문서를 읽기만 하고, 비교 · 판정은 규칙 코드가 계산합니다. 공개 테스트 계정에는 실제 문서를 올리지 마세요.
+      </p>
     </div>
   )
 }
@@ -177,7 +156,7 @@ export default function Login() {
 
           <h1 className="text-2xl font-bold sm:text-3xl">{isSignup ? '계정 만들기' : '다시 오신 것을 환영합니다'}</h1>
           <p className="mt-2 text-sm text-slate-500">
-            {isSignup ? '업무 자동화를 시작할 계정을 만들어 주세요.' : 'AI 데이터 입력 자동화 워크스페이스에 로그인하세요.'}
+            {isSignup ? '문서를 데이터로 바꿀 계정을 만들어 주세요.' : 'dataquill 문서 데이터 워크스페이스에 로그인하세요.'}
           </p>
 
           {!isSignup && (
@@ -330,7 +309,7 @@ export default function Login() {
               <FontAwesomeIcon icon={faKeyboard} /> 테스트 계정은 클릭 한 번으로 자동 입력 후 로그인됩니다.
             </p>
             <Link to="/admin/login" className="flex items-center gap-1.5 font-semibold text-slate-500 hover:text-brand-600">
-              <FontAwesomeIcon icon={faUserShield} /> 운영 관리자 로그인 (관리자 토큰)
+              <FontAwesomeIcon icon={faUserShield} /> 운영 관리자 로그인
             </Link>
           </div>
         </div>

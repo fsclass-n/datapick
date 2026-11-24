@@ -1,41 +1,42 @@
-import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faArrowRightFromBracket,
   faArrowRightToBracket,
   faChartLine,
+  faChevronDown,
   faCircleQuestion,
-  faFileImport,
   faGaugeHigh,
-  faLayerGroup,
   faRoute,
   faShieldHalved,
-  faSitemap,
+  faTableCellsLarge,
   faUsersGear,
+  faWandMagicSparkles,
 } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '../../context/AuthContext'
 import { IS_MOCK } from '../../api/client'
+import { DOCUMENT_TOOL, TOOL_LIST } from '../../utils/tools'
 import { Badge } from '../ui'
 import Logo from './Logo'
 
 const MARKETING_NAV = [
-  { to: '/#features', label: '주요 기능', icon: faLayerGroup },
+  { to: '/#tools', label: '서비스', icon: faTableCellsLarge },
   { to: '/#how', label: '작동 방식', icon: faRoute },
-  { to: '/#use-cases', label: '활용 사례', icon: faSitemap },
   { to: '/#security', label: '보안 · 권한', icon: faShieldHalved },
   { to: '/#faq', label: 'FAQ', icon: faCircleQuestion },
 ]
 
 const APP_NAV = [
   { to: '/dashboard', label: '대시보드', icon: faGaugeHigh },
-  { to: '/documents', label: '문서 처리', icon: faFileImport },
+  { to: DOCUMENT_TOOL.path, label: DOCUMENT_TOOL.short, icon: DOCUMENT_TOOL.icon },
+  { tools: true },
   { to: '/admin/users', label: '회원 관리', icon: faUsersGear, admin: true },
   { to: '/admin/monitoring', label: '모니터링', icon: faChartLine, admin: true },
 ]
 
 function HamburgerButton({ open, onClick }) {
-  const bar = 'absolute left-0 h-0.5 w-6 rounded-full bg-slate-800 transition-all duration-300 ease-in-out'
+  const bar = 'absolute left-0 h-0.5 w-6 rounded-full bg-ink transition-all duration-300 ease-in-out'
   return (
     <button
       type="button"
@@ -56,10 +57,10 @@ function HamburgerButton({ open, onClick }) {
 
 const navClass = ({ isActive }) =>
   `flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
-    isActive ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+    isActive ? 'bg-ink text-white' : 'text-slate-600 hover:bg-paper-dark hover:text-ink'
   }`
 
-// 해시 링크(/#features)는 NavLink 의 활성 표시 대상이 아니므로 일반 Link 로 렌더링
+// 해시 링크(/#tools)는 NavLink 의 활성 표시 대상이 아니므로 일반 Link 로 렌더링
 function NavItem({ item, className, onClick, iconClass = 'text-xs' }) {
   const content = (
     <>
@@ -81,10 +82,55 @@ function NavItem({ item, className, onClick, iconClass = 'text-xs' }) {
   )
 }
 
+function ToolsMenu() {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+  const { pathname } = useLocation()
+  const active = pathname.startsWith('/tools')
+
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e) => !ref.current?.contains(e.target) && setOpen(false)
+    const onKey = (e) => e.key === 'Escape' && setOpen(false)
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
+  return (
+    <div ref={ref} className="relative">
+      <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-haspopup="true" className={navClass({ isActive: active })}>
+        <FontAwesomeIcon icon={faWandMagicSparkles} className="text-xs" />
+        AI 도구
+        <span className="rounded bg-gold-500 px-1 text-[10px] font-bold text-ink">NEW</span>
+        <FontAwesomeIcon icon={faChevronDown} className={`text-[10px] transition ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <div className="animate-fade-in absolute top-full left-0 z-40 mt-2 w-[22rem] rounded-2xl border border-slate-200 bg-white p-2 shadow-xl shadow-ink/10">
+          {TOOL_LIST.map((tool) => (
+            <Link key={tool.id} to={tool.path} onClick={() => setOpen(false)} className="flex gap-3 rounded-xl p-3 transition hover:bg-paper">
+              <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${tool.accent.soft} ${tool.accent.icon}`}>
+                <FontAwesomeIcon icon={tool.icon} />
+              </span>
+              <span>
+                <span className="block text-sm font-semibold text-ink">{tool.name}</span>
+                <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">{tool.headline}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function UserSummary({ user }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-100 font-heading font-semibold text-brand-700">
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gold-100 font-heading font-semibold text-gold-700">
         {user.name.slice(0, 1)}
       </span>
       <div className="min-w-0 leading-tight">
@@ -97,11 +143,12 @@ function UserSummary({ user }) {
 
 function MobileDrawer({ open, onClose, items }) {
   const { user, logout } = useAuth()
+  const itemClass = (s) => `${navClass(s)} py-3 text-base`
   return (
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-x-0 top-16 bottom-0 z-40 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
+        className={`fixed inset-x-0 top-16 bottom-0 z-40 bg-ink/40 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
           open ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
         aria-hidden="true"
@@ -121,9 +168,18 @@ function MobileDrawer({ open, onClose, items }) {
           </div>
         )}
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {items.map((item) => (
-            <NavItem key={item.to} item={item} onClick={onClose} iconClass="w-5" className={(s) => `${navClass(s)} py-3 text-base`} />
-          ))}
+          {items.map((item) =>
+            item.tools ? (
+              <div key="tools" className="py-1">
+                <p className="px-3 pt-2 pb-1 text-xs font-semibold tracking-wider text-gold-600">AI 도구</p>
+                {TOOL_LIST.map((tool) => (
+                  <NavItem key={tool.id} item={{ to: tool.path, label: tool.name, icon: tool.icon }} onClick={onClose} iconClass="w-5" className={itemClass} />
+                ))}
+              </div>
+            ) : (
+              <NavItem key={item.to} item={item} onClick={onClose} iconClass="w-5" className={itemClass} />
+            ),
+          )}
           {user && (
             <Link to="/" onClick={onClose} className="mt-2 flex items-center gap-2 rounded-lg px-3 py-3 text-sm text-slate-500 hover:bg-slate-100">
               서비스 소개 보기
@@ -168,21 +224,19 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-ink/10 bg-paper/90 backdrop-blur-md">
         <div className="container-page flex h-16 items-center justify-between gap-6">
           <div className="flex items-center gap-8">
             <Logo />
             <nav className="hidden items-center gap-1 lg:flex" aria-label="주 메뉴">
-              {items.map((item) => (
-                <NavItem key={item.to} item={item} className={navClass} />
-              ))}
+              {items.map((item) => (item.tools ? <ToolsMenu key="tools" /> : <NavItem key={item.to} item={item} className={navClass} />))}
             </nav>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             {IS_MOCK && <Badge tone="amber">Mock 모드</Badge>}
             {user ? (
               <div className="hidden items-center gap-3 lg:flex">
-                <Badge status={user.role} />
+                <span className="hidden xl:block"><Badge status={user.role} /></span>
                 <UserSummary user={user} />
                 <button onClick={logout} className="btn-ghost px-2.5" title="로그아웃" aria-label="로그아웃">
                   <FontAwesomeIcon icon={faArrowRightFromBracket} />

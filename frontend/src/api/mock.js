@@ -1,3 +1,5 @@
+import { runTool } from './mockTools'
+
 // VITE_API_URL 이 비어 있을 때(Netlify 단독 배포 1단계) 사용하는 브라우저 내 목업 API.
 // 실제 백엔드(FastAPI)와 동일한 경로·응답 형태를 localStorage 로 흉내 낸다.
 
@@ -226,7 +228,33 @@ export async function mockRequest(path, { method, body, token }) {
     return doc
   }
 
+  db.analyses ||= []
+  db.seq.analysis ||= 1
+  const toolResult = await runTool(route, body)
+  if (toolResult) {
+    const analysis = { id: db.seq.analysis++, user_id: user.id, engine: 'rules', created_at: now(), ...toolResult }
+    db.analyses.push(analysis)
+    return done(analysis)
+  }
+  const findAnalysis = () => {
+    const analysis = db.analyses.find((a) => a.id === id && a.user_id === user.id)
+    if (!analysis) fail(404, '분석 결과를 찾을 수 없습니다.')
+    return analysis
+  }
+
   switch (route) {
+    case 'GET /api/tools/analyses': {
+      const kind = params.get('kind')
+      // eslint-disable-next-line no-unused-vars
+      return db.analyses.filter((a) => a.user_id === user.id && (!kind || a.kind === kind)).sort((a, b) => b.id - a.id).slice(0, 50).map(({ result, ...rest }) => rest)
+    }
+    case 'GET /api/tools/analyses/:id':
+      return findAnalysis()
+    case 'DELETE /api/tools/analyses/:id': {
+      const analysis = findAnalysis()
+      db.analyses = db.analyses.filter((a) => a !== analysis)
+      return done(null)
+    }
     case 'GET /api/auth/me':
       return publicUser(user)
     case 'GET /api/dashboard':

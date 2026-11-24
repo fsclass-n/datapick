@@ -8,6 +8,7 @@ import {
   faCoins,
   faInbox,
   faRobot,
+  faWandMagicSparkles,
 } from '@fortawesome/free-solid-svg-icons'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api } from '../api/client'
@@ -15,18 +16,21 @@ import { useAuth } from '../context/AuthContext'
 import { Badge, EmptyState, LoadingBlock, PageHeader, StatCard } from '../components/ui'
 import { SOURCE_LABELS, compactWon, dateTime, won } from '../utils/format'
 import { sourceIcon } from '../utils/icons'
+import { TOOL_LIST, TOOLS } from '../utils/tools'
 
 export default function Dashboard() {
   const { user } = useAuth()
   const [stats, setStats] = useState(null)
   const [recent, setRecent] = useState([])
+  const [analyses, setAnalyses] = useState([])
   const [error, setError] = useState('')
 
   useEffect(() => {
-    Promise.all([api('/api/dashboard'), api('/api/documents')])
-      .then(([s, docs]) => {
+    Promise.all([api('/api/dashboard'), api('/api/documents'), api('/api/tools/analyses')])
+      .then(([s, docs, list]) => {
         setStats(s)
         setRecent(docs.slice(0, 6))
+        setAnalyses(list.slice(0, 5))
       })
       .catch((err) => setError(err.message))
   }, [])
@@ -42,7 +46,7 @@ export default function Dashboard() {
       <PageHeader
         eyebrow="Workspace"
         title={`안녕하세요, ${user.name}님`}
-        description="최근 14일간의 문서 해석 및 RPA 자동 입력 현황입니다."
+        description="AI 도구로 문서를 분석하거나, 영수증 · 청구서를 ERP 와 엑셀에 자동으로 입력하세요."
         actions={
           <Link to="/documents" className="btn-primary">
             <FontAwesomeIcon icon={faCloudArrowUp} /> 문서 업로드
@@ -50,6 +54,33 @@ export default function Dashboard() {
         }
       />
 
+      <section className="mb-8">
+        <h2 className="mb-3 flex items-center gap-2 text-base font-semibold">
+          <FontAwesomeIcon icon={faWandMagicSparkles} className="text-gold-500" /> AI 도구
+        </h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          {TOOL_LIST.map((tool) => (
+            <Link key={tool.id} to={tool.path} className="group relative overflow-hidden rounded-2xl bg-ink p-5 text-white transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink/20">
+              <img src={tool.image.replace('.webp', '-sm.webp')} alt="" className="absolute inset-0 size-full object-cover opacity-25 transition duration-500 group-hover:scale-105 group-hover:opacity-35" />
+              <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
+              <div className="relative flex items-start gap-4">
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white text-lg">
+                  <FontAwesomeIcon icon={tool.icon} className={tool.accent.icon} />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-heading font-semibold">{tool.name}</p>
+                  <p className="mt-1 text-sm text-white/65">{tool.headline}</p>
+                  <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-gold-400">
+                    샘플로 바로 체험 <FontAwesomeIcon icon={faArrowRight} className="transition group-hover:translate-x-1" />
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <h2 className="mb-3 text-base font-semibold">영수증 · 청구서 자동 입력 (최근 14일)</h2>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard icon={faInbox} label="처리 문서" value={`${d.total}건`} sub={`완료 ${d.parsed} · 실패 ${d.failed}`} />
         <StatCard icon={faBrain} label="AI 파싱 성공률" value={`${d.success_rate}%`} sub={d.avg_confidence ? `평균 신뢰도 ${Math.round(d.avg_confidence * 100)}%` : '데이터 없음'} tone="green" />
@@ -62,7 +93,7 @@ export default function Dashboard() {
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-semibold">일별 처리 추이</h2>
             <div className="flex gap-3 text-xs text-slate-500">
-              <span className="flex items-center gap-1.5"><i className="size-2.5 rounded-full bg-brand-500" />파싱 성공</span>
+              <span className="flex items-center gap-1.5"><i className="size-2.5 rounded-full bg-brand-600" />파싱 성공</span>
               <span className="flex items-center gap-1.5"><i className="size-2.5 rounded-full bg-rose-400" />실패</span>
             </div>
           </div>
@@ -71,15 +102,15 @@ export default function Dashboard() {
               <AreaChart data={stats.daily} margin={{ left: -20, right: 8, top: 8 }}>
                 <defs>
                   <linearGradient id="gParsed" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#6366f1" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#284578" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#284578" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                 <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: '#64748b' }} tickLine={false} axisLine={false} />
                 <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 13 }} />
-                <Area type="monotone" dataKey="parsed" name="파싱 성공" stroke="#6366f1" strokeWidth={2} fill="url(#gParsed)" />
+                <Area type="monotone" dataKey="parsed" name="파싱 성공" stroke="#284578" strokeWidth={2} fill="url(#gParsed)" />
                 <Area type="monotone" dataKey="failed" name="실패" stroke="#fb7185" strokeWidth={2} fill="transparent" />
               </AreaChart>
             </ResponsiveContainer>
@@ -112,9 +143,38 @@ export default function Dashboard() {
       </div>
 
       <section className="card mt-6 overflow-hidden">
+        <div className="border-b border-slate-100 px-5 py-4">
+          <h2 className="text-base font-semibold">최근 AI 분석</h2>
+        </div>
+        {analyses.length ? (
+          <ul className="divide-y divide-slate-100">
+            {analyses.map((a) => {
+              const tool = TOOLS[a.kind]
+              return (
+                <li key={a.id}>
+                  <Link to={`${tool.path}?id=${a.id}`} className="flex items-center gap-4 px-5 py-3.5 transition hover:bg-slate-50">
+                    <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${tool.accent.soft} ${tool.accent.icon}`}>
+                      <FontAwesomeIcon icon={tool.icon} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-slate-800">{a.title}</p>
+                      <p className="truncate text-xs text-slate-500">{tool.name} · {dateTime(a.created_at)}</p>
+                    </div>
+                    <FontAwesomeIcon icon={faArrowRight} className="text-xs text-slate-300" />
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        ) : (
+          <p className="px-5 py-8 text-center text-sm text-slate-500">아직 AI 분석 기록이 없습니다. 위의 도구에서 샘플로 바로 체험해 보세요.</p>
+        )}
+      </section>
+
+      <section className="card mt-6 overflow-hidden">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
           <h2 className="text-base font-semibold">최근 처리 문서</h2>
-          <Link to="/documents" className="text-sm font-semibold text-brand-600 hover:text-brand-700">
+          <Link to="/documents" className="text-sm font-semibold text-brand-700 hover:text-ink">
             전체 보기 <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
           </Link>
         </div>

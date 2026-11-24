@@ -25,6 +25,7 @@ class User(Base):
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     documents: Mapped[list["Document"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
+    analyses: Mapped[list["Analysis"]] = relationship(cascade="all, delete-orphan")
 
 
 class Document(Base):
@@ -59,3 +60,18 @@ class RpaJob(Base):
     finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     document: Mapped[Document] = relationship(back_populates="jobs")
+
+
+class Analysis(Base):
+    """AI 도구(견적 비교 · 계약서 빨간펜 · 검진 추이) 실행 결과. 원본 파일은 저장하지 않는다."""
+
+    __tablename__ = "analyses"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    kind: Mapped[str] = mapped_column(String(20), index=True)
+    title: Mapped[str] = mapped_column(String(255))
+    filenames: Mapped[list] = mapped_column(JSON, default=list)
+    engine: Mapped[str] = mapped_column(String(20))
+    result: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

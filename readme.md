@@ -2,9 +2,9 @@
 
 # DataQuill
 
-### 생성형 AI × RPA 기반 데이터 입력 자동화 플랫폼
+### 문서를 올리면, 데이터가 답합니다 — 생성형 AI × 규칙 판정 × RPA
 
-**영수증 · 세금계산서 · 거래 이메일 같은 비정형 문서를 AI가 읽어 정형화하고,<br/>사람이 검수한 값을 RPA 로봇이 ERP 전표 화면과 엑셀 원장에 대신 입력합니다.**
+**견적서는 한 표로 비교하고, 계약서는 위험 조항에 빨간 줄을 긋고, 건강검진은 나빠진 수치만 골라냅니다.<br/>영수증 · 청구 메일은 AI가 정형화하고, 사람이 검수한 값을 RPA 로봇이 ERP 와 엑셀 원장에 입력합니다.**
 
 <a href="https://fsclass-n.github.io/dataquill/">
   <img src="docs/assets/portfolio-banner.jpg" alt="DataQuill 포트폴리오 — fsclass-n.github.io/dataquill" width="900"/>
@@ -27,7 +27,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Render-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 [![CI/CD](https://img.shields.io/github/actions/workflow/status/fsclass-n/dataquill/deploy.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/fsclass-n/dataquill/actions/workflows/deploy.yml)
-![Tests](https://img.shields.io/badge/pytest-30%20passed-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
+![Tests](https://img.shields.io/badge/pytest-49%20passed-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
 [![Issues](https://img.shields.io/github/issues/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/issues)
 [![Last Commit](https://img.shields.io/github/last-commit/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/commits/main)
 ![Repo Size](https://img.shields.io/github/repo-size/fsclass-n/dataquill?style=flat-square)
@@ -70,15 +70,39 @@
 | **스캔본 · 사진** | 텍스트 레이어가 없어 일반 추출 불가 | 텍스트 레이어 → Tesseract OCR → Gemini 멀티모달 단계적 대체 |
 | **API 없는 레거시 ERP** | 연동 API 가 없어 사람이 화면에 입력 | Playwright 로봇이 화면에 입력하고 전표번호로 성공 확인 |
 | **AI 환각** | 문서에 없는 값을 그럴듯하게 생성 | `없는 값은 null` 규칙 + 신뢰도 표시 + **사람 검수 후에만 입력** |
+| **판정의 일관성** | LLM 에 '비교 · 판정'까지 맡기면 결과가 매번 다르고 설명이 어려움 | **AI는 읽기만, 비교 · 판정은 규칙 코드** — 같은 입력이면 같은 결과 |
 
 - **기간 · 인원**: 1인 풀스택(기획 · 백엔드 · 프런트엔드 · RPA · 배포 · 문서 · 영상) — 홍기흥
-- **결과**: 운영 서비스 · API · 자동 테스트 30개 · 10분 발표 영상 · 발표자료 · 진행일지/산출물(HWPX · PDF)
+- **결과**: 운영 서비스(AI 도구 3종 + 문서 자동 입력) · API · 자동 테스트 49개 · 10분 발표 영상 · 발표자료 · 진행일지/산출물(HWPX · PDF)
 
 ## 2. Key Features
 
 [![▶ 10분 발표 · 시연 영상 보기](https://img.shields.io/badge/%E2%96%B6%20%EB%B0%9C%ED%91%9C%20%C2%B7%20%EC%8B%9C%EC%97%B0%20%EC%98%81%EC%83%81%20%EB%B3%B4%EA%B8%B0-10%EB%B6%84%20%C2%B7%20GitHub%20Pages-6366F1?style=for-the-badge&logo=githubpages&logoColor=white)](https://fsclass-n.github.io/dataquill/#screening)
 
 <sub>포트폴리오 페이지에서 바로 재생됩니다(다운로드 없음) — 챕터 17개로 원하는 장면 이동, 60초 하이라이트 포함.</sub>
+
+### AI 도구 3종 (NEW)
+
+| 도구 | 입력 | 결과 | 판정 규칙(코드) |
+| --- | --- | --- | --- |
+| **견적서 비교기** `/tools/quotes` | 견적서 2~5장 | 품목별 단가 비교표 · 이상 단가 · 빠진 품목 · 총액 차이 · 공통 품목 기준 합계 | 품목명 자동 매칭(문자 순서 유사도 + 2글자 조각 겹침 ≥ 0.6), 최저가 대비 **+20% 이상 = 이상 단가** |
+| **계약서 빨간펜** `/tools/contract` | 계약서 1부 또는 본문 붙여넣기 | **원문 위치에 빨간 줄** · 위험도 점수(0~100) · 조항별 쉬운 설명 · 확인할 점 | 9개 위험 유형(자동 연장 · 위약금 · 일방 해지/변경 · 경업 금지 · 면책 · 지연이자 · 권리 귀속 · 비밀유지 · 관할), AI 발췌문을 원문에서 다시 찾아 위치 확정 |
+| **건강검진 추이 비교기** `/tools/health` | 검진 결과지 1~5회분 | 연도별 수치표 · 정상/주의/위험 · **범위 악화 · 계속 악화 · 개선** · 추이 차트 | 16개 항목, 국민건강보험 일반검진 기준을 단순화한 경계값(성별 구분 없음, 진단 아님) |
+
+- 모든 도구에 **'샘플로 바로 체험'** 버튼 — 가상 샘플 문서(`frontend/public/samples/`)로 10초 안에 결과 확인
+- AI 도구는 **원본 파일을 저장하지 않고** 분석 결과(JSON)만 본인 계정에 보관, 관리자 화면에도 노출하지 않음
+
+<table>
+  <tr>
+    <td align="center" colspan="2"><img src="docs/assets/screenshots/tool_quote.png" alt="견적서 비교기" width="860"/><br/><sub>견적서 비교기 — 총액 최저 견적에 '철거' 항목이 빠진 것과 +36.7% 이상 단가를 찾아냄</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/assets/screenshots/tool_contract.png" alt="계약서 빨간펜" width="420"/><br/><sub>계약서 빨간펜 — 원문 빨간 줄 ↔ 조항 카드 연동</sub></td>
+    <td align="center"><img src="docs/assets/screenshots/tool_health.png" alt="건강검진 추이" width="420"/><br/><sub>건강검진 추이 — 나빠진 항목 우선 정렬 + 기준선 차트</sub></td>
+  </tr>
+</table>
+
+### 영수증 · 청구서 자동 입력 (RPA)
 
 | 기능 | 설명 |
 | --- | --- |
@@ -185,6 +209,16 @@ flowchart TD
 | 운영 ERP 타이핑 연결 거부 | Render 컨테이너는 `PORT=10000` | 기본 대상 `127.0.0.1:$PORT` |
 | `/login` 새로고침 404 | 정적 호스팅 SPA 규칙 없음 | `/* → /index.html` Rewrite |
 
+### Challenge 5. AI 결과를 '설명 가능한 판정'으로 만들기 (AI 도구 3종)
+
+- **문제** — LLM 에 "어느 견적이 싼지, 어느 조항이 위험한지"까지 맡기면 같은 문서도 실행마다 결론이 달라지고 근거를 보여 주기 어려움
+- **해결**
+  - **역할 분리**: Gemini 는 구조화 출력으로 값 · 원문 발췌만, 비교 · 점수 · 판정은 `services/analyzers.py` 의 순수 함수 → 같은 입력이면 같은 결과, 단위 테스트 가능
+  - **품목 매칭**: 어순이 다른 '도장(문틀)' ↔ '문틀 도장' 은 문자 순서 유사도만으로 0.5 라 놓침 → 2글자 조각 겹침(dice)을 함께 써서 0.67 로 매칭
+  - **빨간펜 위치**: AI 발췌문을 원문에서 다시 찾고(공백 · 줄바꿈 무시), 못 찾으면 줄 대신 카드로만 표시 → 문서에 없는 문장에 줄을 긋지 않음
+  - **PDF 줄바꿈**: PDF 추출 텍스트의 줄바꿈이 문장 중간을 끊어 '사전 통보 없이 … 변경' 규칙이 놓침 → 패턴이 줄바꿈을 건너도록 바꾸고 샘플 PDF 로 재검증
+  - **Mock 동일성**: 백엔드 없이 동작하는 목업(`mockTools.js`)도 같은 규칙을 옮겨, 같은 샘플에서 같은 결과(5개 품목 · 8개 조항)를 화면 점검으로 확인
+
 ## 5. Tech Stack
 
 | 영역 | 기술 |
@@ -210,6 +244,8 @@ flowchart TD
 | `GET` `PATCH` `DELETE` | `/api/documents/{id}` | 상세 · 검수 수정 · 삭제 | 본인 · 관리자 |
 | `POST` | `/api/documents/{id}/reparse` · `/rpa` | 재해석 · 엑셀/ERP 입력 | 본인 · 관리자 |
 | `GET` | `/api/documents/ledger.xlsx` | 엑셀 원장 다운로드 | 로그인 |
+| `POST` | `/api/tools/quote-compare` · `/contract-review` · `/health-trend` | AI 도구 실행(multipart, 결과 저장) | 로그인 |
+| `GET` `DELETE` | `/api/tools/analyses` · `/analyses/{id}` | 분석 기록 목록 · 상세 · 삭제 | 본인만 |
 | `GET` `PATCH` | `/api/admin/users` · `/users/{id}/role` · `/stats` | 회원 관리 · 권한 변경 · 통계 | 관리자 |
 | `GET` | `/api/health` | 상태 · 현재 파서 종류 | 누구나 |
 
@@ -225,12 +261,14 @@ dataquill/
 │   │   ├── config.py            # 루트 .env 하나로 설정
 │   │   ├── database.py          # SQLAlchemy 엔진 (SQLite / TiDB + TLS)
 │   │   ├── deps.py · security.py# 인증 · 권한(테스트 관리자 쓰기 차단) · PBKDF2 · JWT
-│   │   ├── routers/             # auth · documents · admin · erp_demo
-│   │   └── services/            # parser(Gemini/규칙) · oauth · stats
-│   ├── tests/                   # pytest 30개 (임시 DB · 외부 키 격리)
+│   │   ├── routers/             # auth · documents · admin · erp_demo · tools(AI 도구)
+│   │   └── services/            # parser(Gemini 공용 호출 · 규칙) · analyzers(견적 · 계약 · 검진 판정) · oauth · stats
+│   ├── tests/                   # pytest 49개 (임시 DB · 외부 키 격리)
 │   └── Dockerfile               # python:3.11-slim-bookworm + Tesseract + Chromium
 ├── rpa/                         # extract(OCR) · excel_writer · erp_typer(Playwright)
-├── frontend/src/                # pages · components/layout · api(client · mock) · context
+├── frontend/src/                # pages(tools/ 포함) · components(layout · tools) · api(client · mock · mockTools) · utils/tools.js
+├── frontend/public/             # favicon · images(Unsplash, WebP) · samples(샘플 체험용 TXT)
+├── samples/                     # 시연용 가상 문서(영수증 · 견적서 · 계약서 · 검진 결과지) + 생성 스크립트
 ├── docs/                        # md(작업 기록) · 진행일지/산출물(HWPX) · pdf · 발표자료 · video · tools
 ├── index.html                   # GitHub Pages 포트폴리오 (단일 파일)
 ├── render.yaml · docker-compose.yml · .github/workflows/deploy.yml
@@ -262,7 +300,7 @@ Docker: `docker compose up --build` (backend 8000 · frontend 5173)
 ## 10. Testing & Quality
 
 ```bash
-.venv/Scripts/python -m pytest backend/tests -q   # 30 passed
+.venv/Scripts/python -m pytest backend/tests -q   # 49 passed
 cd frontend && npm run lint && npm run build       # lint 오류 0 · build 성공
 ```
 
@@ -271,7 +309,9 @@ cd frontend && npm run lint && npm run build       # lint 오류 0 · build 성�
 | 회원 · OAuth | 비밀번호 규칙 6종, 가입 · 중복 · 로그인 실패, 미설정 제공자 · 위조 state |
 | 문서 · RPA | 업로드 → 파싱 → 엑셀, 메일 본문 · 검수 수정, 해석 불가 → failed · RPA 409, 미지원 형식 415, 데모 ERP 전표 |
 | 외부 장애 | Gemini 503 ×2 → 성공, ×9 → 4회 후 실패, 400 → 즉시 실패 |
-| 권한 | 관리자 403/401, 운영 관리자 토큰 · 5회 차단 · 미설정 503, 테스트 관리자 조회 허용 · 쓰기 5종 403, 공개 계정 권한 고정 · 기동 시 복원 |
+| AI 도구 | 견적 3종 → 총액 · 최저가 · 이상 단가(+36.7%) · 빠진 품목 · 어순이 다른 품목 매칭, 계약서 → 8개 조항 위치 · 위험도, 검진 → 날짜 정렬 · 악화/개선 판정 · 경계값 9종, 본인만 조회 · 삭제, 테스트 관리자 403 · 형식 415 · 개수 422, Gemini 경로(가짜 클라이언트) |
+| 시각 | 모든 응답 시각에 UTC 표시(새로고침 후 9시간 오차 회귀 방지) |
+| 권한 | 관리자 403/401, 운영 관리자 계정 · 5회 차단 · 미설정 503, 테스트 관리자 조회 허용 · 쓰기 5종 403, 공개 계정 권한 고정 · 기동 시 복원 |
 
 ## 11. Deployment & CI/CD
 
@@ -301,7 +341,9 @@ cd frontend && npm run lint && npm run build       # lint 오류 0 · build 성�
 | RPA · LLM 호출이 API 요청 안에서 동기 실행 | 작업 큐 + 워커 분리(rpa 패키지가 이미 분리되어 이전 비용 낮음) |
 | 업로드 원본이 컨테이너 디스크에 저장 | S3 등 오브젝트 스토리지, 보존 기간 정책 |
 | 파싱 품질을 샘플 단위로만 검증 | 문서 유형별 정답셋으로 필드 단위 정확도 측정 |
-| `create_all` 로 스키마 관리 · 새로고침 후 시각 9시간 오차 | Alembic 도입, 응답 시각에 UTC 시간대 부여 |
+| `create_all` 로 스키마 관리 | Alembic 도입 |
+| 규칙 엔진은 텍스트가 있는 문서만(스캔본 · 사진은 Gemini 필요), 계약 위험은 키워드 규칙 기반 | 문서 유형별 정답셋으로 추출 · 판정 정확도 측정, 위험 규칙 확장 |
+| 검진 판정은 성별 · 나이 미구분 단순 기준 | 성별 · 연령별 기준표, 항목 확장 |
 | 데모 ERP 대상 검증 · JWT 를 localStorage 에 저장 | 실제 ERP 커넥터(API 우선), HttpOnly 쿠키 인증 |
 
 <div align="center">
