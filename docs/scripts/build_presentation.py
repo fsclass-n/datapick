@@ -34,7 +34,7 @@ LINKS = {
     "서비스": "https://dataquill.onrender.com",
     "API 문서": "https://dataquill-api.onrender.com/docs",
 }
-TOTAL_MAIN = 16
+TOTAL_MAIN = 17
 INLINE = re.compile(r"(\*\*|`[^`]+`)")
 CODE = "4338CA"
 
@@ -272,8 +272,8 @@ def s01_cover(prs, qrs):
     write(logo.text_frame, [("dq", {"size": 22, "bold": True, "color": WHITE, "align": PP_ALIGN.CENTER})])
     logo.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
     textbox(s, 0.85, 1.95, 8, 1.1, [("dataquill", {"size": 60, "bold": True, "color": WHITE})])
-    textbox(s, 0.9, 3.1, 8.5, 0.6, [("서류는 AI가 읽고, 입력은 로봇이 합니다.", {"size": 26, "bold": True, "color": BRAND_200})])
-    textbox(s, 0.9, 3.75, 8.5, 0.5, [("생성형 AI & RPA 기반 데이터 입력 자동화 시스템 — 프로젝트 결과 발표", {"size": 16, "color": "E0E7FF"})])
+    textbox(s, 0.9, 3.1, 8.5, 0.6, [("문서를 올리면, 데이터가 답합니다.", {"size": 26, "bold": True, "color": BRAND_200})])
+    textbox(s, 0.9, 3.75, 8.5, 0.5, [("문서를 데이터로 바꾸는 깃펜 · AI & RPA 데이터 입력 자동화 결과 발표", {"size": 16, "color": "E0E7FF"})])
     for i, label in enumerate(["비정형 문서", "OCR + Gemini 해석", "RPA → ERP · Excel"]):
         pill(s, 0.9 + i * 2.55, 4.6, 2.15, 0.45, label, fill="312E81", color="E0E7FF", size=12)
         if i < 2:
@@ -434,7 +434,7 @@ def s06_pipeline(prs):
     stages = [
         ("① 업로드", ["PDF · 이미지 · EML", "HTML · TXT · 메일 본문", "10MB · 확장자 검사"]),
         ("② 텍스트 추출", ["PDF 텍스트 레이어 (pypdf)", "20자 미만 → 스캔본 판정", "이미지 → Tesseract kor+eng"]),
-        ("③ AI 정형화", ["Gemini 구조화 출력", "스캔본 · 이미지는 멀티모달", "키 없음 → 규칙 파서"]),
+        ("③ AI 정형화", ["Gemini 구조화 출력", "스캔본 · 이미지는 멀티모달", "과부하·키 없음 → 대체 모델 · 규칙 파서"]),
         ("④ 사람 검수", ["추출 값 수정 · 저장", "서버 스키마 재검증 (422)", "신뢰도 표시"]),
         ("⑤ RPA 입력", ["엑셀: 문서 ID 기준 교체", "ERP: Playwright 타이핑", "전표번호 확인 후 성공"]),
     ]
@@ -517,12 +517,13 @@ def s08_auth(prs):
     textbox(s, 7.2, 1.8, 5.5, 4.2, bullets([
         "**비밀번호 규칙** — 대·소문자 + 숫자 + 특수문자 8자 이상, 프런트 실시간 + **서버 재검증**",
         "**저장** — PBKDF2-SHA256 26만 회 + 솔트, `hmac.compare_digest` 비교",
-        "**OAuth 3종** — Google · Naver · Kakao 인가 코드 방식, state 쿠키로 CSRF 방지",
+        "**OAuth 3종** — Google · Naver · Kakao 인가 코드 방식, state 검증(쿠키 또는 서버 레지스트리)으로 CSRF 방지",
         "**계정 탈취 방지** — 같은 이메일이 다른 방식으로 가입돼 있으면 자동 연결 거부, 제공자의 이메일 인증 여부 확인",
         "**토큰 전달** — URL 해시(#token)로 전달 → 서버 접근 로그에 남지 않음",
+        "**회원 탈퇴** — 계정 · 문서 · 기록 삭제, 비밀번호 계정은 재확인, 공개 체험 계정은 차단",
         "**테스트 계정** — 일반 / 테스트 관리자(조회 전용) 버튼 → 자동 입력 후 로그인 (면접관 즉시 체험)",
     ], size=12.5), space=6)
-    flow = ["/oauth/{p}/login\nstate 생성 · HttpOnly 쿠키", "제공자 로그인", "/callback\nstate 비교", "토큰 교환\n프로필 조회", "계정 연결 · 생성\n→ #token=JWT"]
+    flow = ["/oauth/{p}/start\nstate 발급 · 레지스트리", "제공자 로그인", "/callback\nstate 비교", "/exchange\n토큰 교환", "계정 연결 · 생성\n→ #token=JWT"]
     for i, step in enumerate(flow):
         x = 0.6 + i * 2.47
         card(s, x, 6.15, 2.22, 0.75, [(step, {"size": 10.5, "bold": i in (2, 4), "color": INK, "align": PP_ALIGN.CENTER})],
@@ -591,8 +592,44 @@ UI는 "상용 B2B SaaS처럼 보이는가"를 기준으로 만들었습니다.
 """)
 
 
+def s10b_tools(prs):
+    s = base(prs, 11, "10 · 주요 기능 ④ AI 분석 도구", "읽기만 하는 도구 — 원본은 남기지 않는다")
+    tools = [
+        ("tool_quote.png", "견적서 비교기", "Quote Compare", [
+            "견적서 2~5장 → 품목 자동 매칭 후 단가 나란히 비교",
+            "이상 단가 · 누락 항목 · 절감액 표시"]),
+        ("tool_contract.png", "계약서 빨간펜", "Contract Red Pen", [
+            "자동 연장 · 위약금 등 주의 조항을 원문 발췌해 표시",
+            "위험도 점수 · 조항별 쉬운 설명 · 확인할 점"]),
+        ("tool_health.png", "건강검진 추이 비교기", "Health Trend", [
+            "연도별 검진 수치 비교 → 나빠진 항목만 표시",
+            "기준 범위 밖 항목 강조 (참고용, 진단 아님)"]),
+    ]
+    for i, (img, name, eng, items) in enumerate(tools):
+        x = 0.6 + i * 4.1
+        box(s, x, 1.8, 3.85, 3.3, WHITE, LINE, 0.04)
+        picture(s, SHOTS / img, x + 0.12, 1.92, 3.61, 2.03, anchor="top")
+        textbox(s, x + 0.2, 4.05, 3.5, 1.0, [
+            (f"{name}  ·  {eng}", {"size": 13, "bold": True, "color": INK, "space": 3}),
+            *[(it, {"size": 10.5, "color": BODY, "space": 2}) for it in items],
+        ])
+    textbox(s, 0.6, 5.35, 12.1, 1.55, bullets([
+        "**같은 읽기 엔진** — 문서 자동 입력의 Gemini 구조화 출력 + 스키마 강제를 그대로 사용, 과부하 시 대체 모델 · 규칙 파서로 자동 전환",
+        "**원본 미저장** — 파일은 메모리에서 분석 후 버리고 결과 JSON 만 본인 계정에 보관",
+        "**AI 는 읽기만, 판정은 규칙** — 비교 · 위험도 판정은 코드로 결정해 같은 입력이면 같은 결과",
+        "**샘플로 바로 체험** — 로그인 화면 테스트 계정 버튼 → 각 도구의 샘플 버튼",
+    ], size=12.5), space=6)
+    notes(s, """
+영수증 자동 입력 외에도, 같은 읽기 엔진으로 만든 분석 도구가 세 개 있습니다.
+견적서 여러 장의 품목을 맞춰 단가를 비교하는 견적서 비교기, 계약서의 주의 조항에 빨간 줄을 긋는 계약서 빨간펜,
+연도별 검진 수치를 비교하는 건강검진 추이 비교기입니다.
+공통 설계는 세 가지입니다. 원본 파일은 저장하지 않고 결과만 보관하고, 비교와 판정은 AI가 아니라 규칙 코드가 하고,
+AI가 죽어도 규칙 파서로 결과가 나옵니다.
+""")
+
+
 def s11_admin(prs):
-    s = base(prs, 11, "10 · 주요 기능 ④ 관리자(Admin) 백오피스", "접근 제어는 세 겹, 보안 경계는 서버 하나")
+    s = base(prs, 12, "11 · 주요 기능 ⑤ 관리자(Admin) 백오피스", "접근 제어는 세 겹, 보안 경계는 서버 하나")
     picture(s, SHOTS / "admin_users.png", 0.6, 1.8, 7.2, 4.5)
     textbox(s, 0.6, 6.35, 7.2, 0.5, [("검색(250ms 디바운스) · 권한 필터 · 가입 방식 · 처리 문서 수 · 권한 토글 (운영 화면 · 테스트 관리자)", {"size": 10, "color": MUTED})])
     layers = [
@@ -620,11 +657,11 @@ def s11_admin(prs):
 
 
 def s12_devops(prs):
-    s = base(prs, 12, "11 · DevOps 및 CI/CD 배포 자동화", "main 푸시 한 번, 바뀐 영역만 검증하고 배포")
+    s = base(prs, 13, "12 · DevOps 및 CI/CD 배포 자동화", "main 푸시 한 번, 바뀐 영역만 검증하고 배포")
     card(s, 0.6, 3.0, 1.9, 1.1, [("git push\nmain", {"size": 15, "bold": True, "color": WHITE, "align": PP_ALIGN.CENTER})],
          fill=BRAND_DARK, line=None, anchor=MSO_ANCHOR.MIDDLE)
     lanes = [
-        (1.8, 1.55, "GitHub Actions  ·  deploy.yml", ["paths-filter 로 바뀐 영역 판별", "`frontend/**` → npm ci · lint · build", "`backend/**` · `rpa/**` · requirements → pytest (30개)"], BRAND_LIGHT, BRAND_200),
+        (1.8, 1.55, "GitHub Actions  ·  deploy.yml", ["paths-filter 로 바뀐 영역 판별", "`frontend/**` → npm ci · lint · build", "`backend/**` · `rpa/**` · requirements → pytest (55개)"], BRAND_LIGHT, BRAND_200),
         (3.55, 1.05, "Render Static Site  ·  dataquill", ["Root Directory = frontend → frontend 변경 시에만 빌드", "SPA Rewrite: /* → /index.html"], PANEL, LINE),
         (4.8, 1.05, "Render Web Service (Docker)  ·  dataquill-api", ["Build Filter: `backend/**` · `rpa/**` · requirements.txt", "헬스 체크 /api/health · PORT 환경 변수로 기동"], PANEL, LINE),
     ]
@@ -658,7 +695,7 @@ GitHub Actions에서는 바뀐 쪽의 테스트와 빌드를 돌리고, Render�
 
 
 def s13_trouble(prs):
-    s = base(prs, 13, "12 · 트러블슈팅", "추측이 아니라 근거(로그 · 소스 · 헬스 체크)로 원인을 확정한다")
+    s = base(prs, 14, "13 · 트러블슈팅", "추측이 아니라 근거(로그 · 소스 · 헬스 체크)로 원인을 확정한다")
     cases = [
         ("① 어제까지 되던 Docker 빌드 실패", ROSE, [
             ("증상", "playwright install --with-deps 단계에서 'ttf-ubuntu-font-family' 설치 실패"),
@@ -674,7 +711,7 @@ def s13_trouble(prs):
         ]),
         ("③ 운영에서만 실패하는 문제들", SKY, [
             ("TiDB", "1105 insecure transport → TLS 필수, DB_SSL=true + certifi CA. 운영 DB 대신 임시 DB 로 전체 흐름 검증 후 삭제"),
-            ("Gemini", "503 high demand → 429/5xx 만 2·5·10초 백오프 재시도, 400 은 즉시 실패. 가짜 클라이언트 테스트 3개"),
+            ("Gemini", "503 high demand → 재시도, 지속 시 대체 모델(flash-lite) → 규칙 파서로 자동 전환"),
             ("ERP", "컨테이너는 PORT=10000 → 기본값을 127.0.0.1:$PORT 로. 오류 메시지의 URL 로 원인 확정"),
         ]),
     ]
@@ -702,7 +739,7 @@ def s13_trouble(prs):
 
 
 def s14_docs(prs):
-    s = base(prs, 14, "13 · 프로젝트 산출물 및 문서화 관리", "여럿이 개발할수록 '왜 그렇게 했는지'를 남긴다")
+    s = base(prs, 15, "14 · 프로젝트 산출물 및 문서화 관리", "여럿이 개발할수록 '왜 그렇게 했는지'를 남긴다")
     tree = """docs/
 ├── md/
 │   ├── 2026-11-16_착수.md
@@ -738,7 +775,7 @@ readme.md"""
 
 
 def s15_retro(prs):
-    s = base(prs, 15, "14 · 회고 및 향후 고도화 계획", "한계를 먼저 말하고, 개선 순서를 제시한다")
+    s = base(prs, 16, "15 · 회고 및 향후 고도화 계획", "한계를 먼저 말하고, 개선 순서를 제시한다")
     card(s, 0.6, 1.8, 5.9, 1.25, [
         ("Keep", {"size": 13, "bold": True, "color": GREEN, "space": 3}),
         ("대체 경로 설계(텍스트 → OCR → Vision, Gemini → 규칙), 화면 · 서버 이중 검증, 재발 방지 테스트", {"size": 11.5}),
@@ -797,7 +834,7 @@ def s16_qna(prs, qrs):
         textbox(s, 0.9, y, 1.6, 0.45, [(label, {"size": 13, "bold": True, "color": "A5B4FC"})], anchor=MSO_ANCHOR.MIDDLE)
         textbox(s, 2.5, y, 5.6, 0.45, [(value, {"size": 13, "color": WHITE, "mono": True})], anchor=MSO_ANCHOR.MIDDLE)
     textbox(s, 0.9, 5.85, 7.2, 0.8, [
-        ("검증: pytest 30개 · 운영 점검(로그인 · CORS · OAuth Redirect · Gemini 파싱 · 엑셀 적재)", {"size": 12, "color": "C7D2FE"}),
+        ("검증: pytest 55개 · 운영 점검(로그인 · CORS · OAuth Redirect · Gemini 파싱 · 엑셀 적재)", {"size": 12, "color": "C7D2FE"}),
         ("로그인 화면의 테스트 계정 버튼으로 가입 없이 바로 체험할 수 있습니다.", {"size": 12, "color": "C7D2FE"}),
     ])
     qr_block(s, qrs, 8.35, 3.05)
@@ -818,7 +855,7 @@ def s17_appendix(prs):
         ["왜 TiDB 인가?", "MySQL 호환이라 코드 변경 없음, 무료 관리형 Serverless. URL 만 바꿔 MySQL 로 이전 가능"],
         ["파싱 정확도는?", "샘플 단위 검증까지 완료(운영 샘플 신뢰도 0.98). 정답셋 구축 후 측정 예정이라 수치로 주장하지 않음"],
         ["개인정보 보안은?", "업로드 크기 · 확장자 제한, 본인 문서만 조회, 비밀 값 저장소 외부 관리. 암호화 저장 · 보존 정책은 개선 과제"],
-        ["테스트 전략은?", "API 통합 테스트 30개(인증 · OAuth state · 업로드→파싱→엑셀 · 권한 · 읽기 전용 관리자 · 통계 · Gemini 재시도), 외부 키 격리"],
+        ["테스트 전략은?", "API 통합 테스트 55개(인증 · OAuth state · 업로드→파싱→엑셀 · 권한 · 읽기 전용 관리자 · 통계 · Gemini 재시도/폴백 · 탈퇴), 외부 키 격리"],
         ["무료 플랜 콜드 스타트는?", "유휴 시 잠듦 → 데모 전 /api/health 로 깨움. 운영 전환 시 유료 플랜 또는 헬스 체크 핑"],
     ]
     table(s, 0.6, 1.8, 12.1, rows, [3.1, 9.0], size=11, row_h=0.5)
@@ -833,7 +870,7 @@ def main():
     qrs = make_qr_codes()
     s01_cover(prs, qrs)
     for build in (s02_problem, s03_solution, s04_architecture, s05_stack, s06_pipeline, s07_ai, s08_auth,
-                  s09_flow, s10_ui, s11_admin, s12_devops, s13_trouble, s14_docs, s15_retro):
+                  s09_flow, s10_ui, s10b_tools, s11_admin, s12_devops, s13_trouble, s14_docs, s15_retro):
         build(prs)
     s16_qna(prs, qrs)
     s17_appendix(prs)

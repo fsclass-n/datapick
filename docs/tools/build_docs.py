@@ -144,14 +144,14 @@ JOURNAL = {
             "- 모든 페이지 공통 레이아웃과 디자인 토큰 표준화, 발표자료 · 10분 발표 영상 · README · 진행일지 · 산출물 완성"],
         5: ["- 실제로 구현 · 검증되지 않은 수치(정확도, 고객사 로고 등)와 가짜 사업자 정보는 화면 · 문서에 넣지 않음",
             "- 권한은 화면이 아닌 서버에서 강제"],
-        6: ["[완료] 전역 레이아웃 SiteLayout(헤더 · 푸터 · 원형 Top), 첫 접속 메인, 상태별 헤더 메뉴, 읽기 전용 배너",
-            "[완료] 도메인 맞춤 메인 페이지, 디자인 토큰 표준화, 이용약관 · 개인정보처리방침 신설",
-            "[완료] 권한 모델: 운영 관리자는 ADMIN_TOKEN 로그인(5회 실패 시 10분 차단), test_admin 은 쓰기 요청 403, 테스트 계정 권한은 기동 시 복원 · 변경 불가",
-            "[완료] 발표자료(16장 + 부록, 발표자 노트) · 10분 발표 · 시연 영상(자막 포함) · 60초 하이라이트 제작, GitHub Pages 포트폴리오 공개",
-            "[완료] README 재작성, 진행일지 · 산출물 표준 디자인으로 재작성 및 PDF 변환"],
+        6: ["[완료] 전역 레이아웃 · 도메인 맞춤 메인 · 디자인 토큰, 이용약관 · 개인정보처리방침",
+            "[완료] 권한 모델: ADMIN_TOKEN 로그인, test_admin 쓰기 403, 테스트 계정 권한 고정",
+            "[완료] 발표자료(17장) · 10분 영상 · 3분 하이라이트 · GitHub Pages 포트폴리오",
+            "[완료] AI 도구 3종(견적서·계약서·검진) · 회원 탈퇴 · OAuth state 레지스트리 · Gemini 폴백",
+            "[완료] README·진행일지·산출물 표준 디자인 재작성 및 PDF 변환"],
         7: ["[완료] 발표자료 화면 캡처를 운영 서비스에서 재촬영해 개편 후 기준으로 갱신",
             "[향후 과제] RPA 작업 큐 분리 · 원본 스토리지 이전 · 정량 정확도 평가"],
-        8: ["[완료] 권한 테스트 8개 추가, pytest 30개 통과, 프런트 lint 오류 0 · build 성공",
+        8: ["[완료] 권한 · OAuth · 폴백 · 탈퇴 테스트 추가, pytest 55개 통과, 프런트 lint 오류 0 · build 성공",
             "[완료] 화면 점검 16항목 · 포트폴리오 페이지 22항목(제자리 영상 재생 · 모바일) 통과",
             "[완료] 피드백 반영 내역 · 요구사항 충족 여부 · 운영 방법 · 회고 · 향후 계획 작성(산출물 05)"],
         9: ["- 회고: 대체 경로 설계(텍스트 → OCR → Vision, Gemini → 규칙)와 화면 · 서버 양쪽 검증이 안정성에 효과적",
@@ -230,7 +230,8 @@ def output_01() -> Document:
     d = new_doc("01", "기획·분석 산출물", "1단계 기획·분석", "2026년 11월 23일(월) ~ 11월 24일(화)")
     d.h1("1. 프로젝트 개요 및 추진 목적")
     d.p("DataQuill 은 영수증 · 세금계산서 · 거래 이메일 같은 비정형 문서를 생성형 AI(Google Gemini)가 읽어 정형 데이터로 바꾸고, "
-        "사람이 검수한 값을 RPA(Playwright) 로봇이 웹 ERP 전표 화면과 엑셀 원장에 대신 입력하는 B2B 데이터 입력 자동화 플랫폼이다.")
+        "사람이 검수한 값을 RPA(Playwright) 로봇이 웹 ERP 전표 화면과 엑셀 원장에 대신 입력하는 B2B 데이터 입력 자동화 플랫폼이다. "
+        "같은 읽기 엔진으로 견적서 비교 · 계약서 검토 · 건강검진 추이 AI 분석 도구 3종도 제공한다.")
     d.table(["구분", "내용"], [
         ["핵심 가치", "같은 문서를 ERP · 엑셀에 반복 입력하던 일을 'AI 추출 → 사람 검수 → 로봇 입력' 흐름으로 대체"],
         ["추진 목적", "생성형 AI(LLM) · RPA · 클라우드 배포를 한 서비스로 통합해 실무형 자동화 파이프라인을 4인 팀으로 구현"],
@@ -363,15 +364,15 @@ def output_02() -> Document:
     d.code("""
 Browser   --HTTPS / Bearer JWT-->  Frontend  React SPA        (Render Static Site)
 Frontend  --REST / CORS-------->  Backend   FastAPI          (Render Web Service, Docker)
-                                  ├─ routers  : auth · documents · admin · erp_demo
-                                  ├─ services : parser (Gemini / rules) · oauth · stats
+                                  ├─ routers  : auth · documents · admin · erp_demo · tools
+                                  ├─ services : parser (Gemini / rules) · oauth · stats · analyzers
                                   └─ rpa      : extract (OCR) · excel_writer · erp_typer (Playwright)
 Backend   --SQL / TLS---------->  TiDB Cloud Serverless      (MySQL compatible)
 Backend   --HTTPS-------------->  Google Gemini API          (structured output · multimodal)
 Backend   --OAuth 2.0---------->  Google · Naver · Kakao     (Authorization Code + state)""", "그림 1. 시스템 구성도")
     d.table(["구성 요소", "역할", "설계 근거"], [
-        ["frontend", "메인 · 로그인 · 대시보드 · 문서 처리 · 관리자 · 정책 화면", "정적 배포로 백엔드와 배포 주기 · 장애 범위 분리"],
-        ["backend.app", "routers(auth · documents · admin · erp_demo), services(parser · oauth · stats)", "웹 계층과 자동화 계층 분리"],
+        ["frontend", "메인 · 로그인 · 대시보드 · 문서 처리 · AI 도구 · 관리자 · 정책 화면", "정적 배포로 백엔드와 배포 주기 · 장애 범위 분리"],
+        ["backend.app", "routers(auth · documents · admin · erp_demo · tools), services(parser · oauth · stats · analyzers)", "웹 계층과 자동화 계층 분리"],
         ["rpa", "extract(텍스트 · OCR) · excel_writer · erp_typer(Playwright)", "CLI 단독 실행 가능 → 향후 별도 워커로 이전 용이"],
         ["TiDB Cloud", "회원 · 문서 · RPA 작업 이력 저장", "무상태 컨테이너 + 외부 DB → 재배포해도 데이터 유지"],
         ["Gemini API", "문서 구조화 추출", "구조화 출력 · 멀티모달"],
@@ -395,14 +396,15 @@ Backend   --OAuth 2.0---------->  Google · Naver · Kakao     (Authorization Co
         ["/admin/login", "운영 관리자 토큰 로그인", "누구나(토큰 필요)"], ["/oauth/callback", "OAuth 복귀 · 토큰 저장", "누구나"],
         ["/terms · /privacy", "이용약관 · 개인정보처리방침", "누구나"], ["/dashboard", "사용자 KPI · 추이 · 최근 문서", "로그인"],
         ["/documents", "업로드 · 검수 · RPA 실행 · 작업 이력", "로그인"], ["/admin/users", "회원 관리 · 권한 변경", "관리자(테스트 관리자는 조회)"],
-        ["/admin/monitoring", "파싱 · RPA 성공률, 분포, 최근 실패", "관리자(테스트 관리자는 조회)"]], widths=[22, 50, 28], label_col=True)
+        ["/admin/monitoring", "파싱 · RPA 성공률, 분포, 최근 실패", "관리자(테스트 관리자는 조회)"],
+        ["/tools/quotes · /tools/contract · /tools/health", "AI 분석 도구(견적서 비교 · 계약서 빨간펜 · 건강검진 추이)", "로그인"]], widths=[22, 50, 28], label_col=True)
     d.h2("3.2 백엔드 계층")
     d.table(["계층", "모듈", "책임"], [
         ["진입", "main.py", "앱 생성, CORS, 테이블 생성, 테스트 계정 시드 · 권한 복원"],
         ["설정 · DB", "config.py · database.py", "루트 .env 로드, SQLAlchemy 엔진(SQLite / TiDB + TLS)"],
         ["보안", "security.py · deps.py", "PBKDF2 해시 · JWT, 로그인 · 관리자 의존성, 테스트 관리자 쓰기 차단"],
-        ["API", "routers/*.py", "auth · documents · admin · erp_demo"],
-        ["도메인 로직", "services/*.py", "parser · oauth · stats"],
+        ["API", "routers/*.py", "auth · documents · admin · erp_demo · tools"],
+        ["도메인 로직", "services/*.py", "parser · oauth · stats · analyzers(AI 도구)"],
         ["자동화", "rpa/*.py", "extract · excel_writer · erp_typer"]], widths=[14, 30, 56], label_col=True)
 
     d.h1("4. 데이터베이스 및 테이블 설계")
@@ -539,8 +541,8 @@ def output_03() -> Document:
         ["backend/app/main.py", "앱 생성, CORS, 테이블 생성, 테스트 계정 시드 · 권한 복원"],
         ["backend/app/config.py · database.py", "루트 .env 설정, SQLAlchemy 엔진(SQLite / TiDB + TLS)"],
         ["backend/app/deps.py · security.py · test_accounts.py", "인증 · 권한 의존성, PBKDF2 · JWT, 공개 테스트 계정 정의"],
-        ["backend/app/routers/", "auth · documents · admin · erp_demo"],
-        ["backend/app/services/", "parser(Gemini/규칙) · oauth · stats"],
+        ["backend/app/routers/", "auth · documents · admin · erp_demo · tools"],
+        ["backend/app/services/", "parser(Gemini/규칙) · oauth · stats · analyzers(AI 도구)"],
         ["backend/tests/", "pytest (외부 키를 비워 로컬 설정과 무관하게 실행, 임시 DB)"],
         ["rpa/", "extract.py · excel_writer.py · erp_typer.py"],
         ["frontend/src/", "pages · components/layout · api(client · mock) · context(Auth · Toast) · utils"],
@@ -549,14 +551,15 @@ def output_03() -> Document:
 
     d.h1("3. 주요 모듈 및 파일별 역할")
     d.table(["모듈", "구현 내용"], [
-        ["routers/auth.py", "가입 · 로그인, 운영 관리자 토큰 로그인, OAuth 로그인/콜백(state 쿠키 검증), 내 정보, 활성 제공자 목록"],
+        ["routers/auth.py", "가입 · 로그인, 운영 관리자 토큰 로그인, OAuth 시작/콜백(state 레지스트리 검증) · exchange, 내 정보, 회원 탈퇴, 활성 제공자 목록"],
         ["routers/documents.py", "업로드(확장자 · 10MB 검사, UUID 파일명), 본문 입력(HTML 정리), 검수 PATCH(스키마 재검증), 재해석, 삭제, RPA 실행, 원장 다운로드"],
         ["routers/admin.py", "회원 목록 · 검색 · 필터, 권한 변경(본인 강등 · 테스트 계정 변경 차단), 통계"],
         ["routers/erp_demo.py", "데모 ERP 전표 입력 화면, 전표번호(JV-YYYYMMDD-NNNN) 발급 API"],
-        ["services/parser.py", "Gemini 구조화 출력 · 멀티모달 · 재시도, 규칙 기반 파서, ParseError 로 실패 사유 전달"],
+        ["services/parser.py", "Gemini 구조화 출력 · 멀티모달 · 재시도, 대체 모델(flash-lite) → 규칙 기반 파서 폴백, ParseError 로 실패 사유 전달"],
         ["services/stats.py", "파싱 성공률 parsed/(parsed+failed), RPA 성공률 success/(success+failed), 최근 14일 KST 일별 추이, 분포"],
         ["rpa/extract.py", "pypdf, Tesseract(kor+eng), EML(plain/html), HTML(BeautifulSoup), 인코딩 판별(utf-8 · cp949 · euc-kr)"],
-        ["rpa/excel_writer.py · erp_typer.py", "문서 ID 기준 upsert · 열 너비 조정 / Playwright 셀렉터 입력 → 저장 → 결과 확인, CLI 실행"]], widths=[28, 72], label_col=True)
+        ["rpa/excel_writer.py · erp_typer.py", "문서 ID 기준 upsert · 열 너비 조정 / Playwright 셀렉터 입력 → 저장 → 결과 확인, CLI 실행"],
+        ["routers/tools.py · services/analyzers.py", "AI 분석 도구 3종(견적서 비교 · 계약서 빨간펜 · 건강검진 추이): 원본 미저장, 규칙 파서 폴백, 결과 JSON 만 계정 보관"]], widths=[28, 72], label_col=True)
 
     d.h1("4. 기능별 구현 내용")
     d.h2("4.1 프런트엔드")
@@ -640,7 +643,7 @@ return result.get_attribute("data-voucher")       # 전표번호""", "코드 3. 
         ["통합", "대시보드 · 관리자", "사용자별 통계 범위, 관리자 권한 검사, 회원 관리 · 통계"],
         ["통합", "데모 ERP", "전표 입력 시 전표번호 발급"]], widths=[10, 20, 70], align=["C", "L", "L"])
     d.p("결과: pytest 19개 통과, 프런트 lint 오류 0 · build 성공. 실서버 E2E(로그인 → 영수증 업로드 → 규칙 파싱 → Playwright 데모 ERP 입력 · 전표번호 발급 → 엑셀 적재)와 "
-        "데스크톱(1440) · 모바일(390) 화면을 Playwright 로 점검하였다. 이후 단계에서 테스트가 22개(4단계) → 30개(5단계)로 늘었다(산출물 04 참조).")
+        "데스크톱(1440) · 모바일(390) 화면을 Playwright 로 점검하였다. 이후 단계에서 테스트가 22개(4단계) → 55개로 늘었다(산출물 04 참조).")
 
     d.h1("7. 트러블슈팅")
     d.table(["문제", "원인", "해결"], [
@@ -737,7 +740,7 @@ cd frontend && npm run lint && npm run build     # 프런트 검증""")
         ["T-17", "테스트 관리자 쓰기", "권한 변경 · 문서 생성 · 업로드 · 삭제 · RPA", "모두 403(읽기 전용 안내)", "통과"],
         ["T-18", "공개 계정 권한 고정", "테스트 계정 권한 변경 · 기동 시 복원", "400 · test_admin 복원", "통과"]],
         widths=[7, 20, 28, 34, 11], align=["C", "L", "L", "L", "C"])
-    d.caption("※ T-01 ~ T-18 은 backend/tests 의 pytest 30개 케이스를 기능 단위로 묶은 것이다. 최종 결과: 30 passed.")
+    d.caption("※ T-01 ~ T-18 은 backend/tests 의 pytest 케이스를 기능 단위로 묶은 것이다. 최종 결과: 55 passed.")
     d.h2("6.4 운영 환경 점검 결과")
     d.table(["항목", "결과"], [
         ["/api/health", "status ok, env production, parser gemini"],
@@ -752,7 +755,7 @@ cd frontend && npm run lint && npm run build     # 프런트 검증""")
         ["용량 초과", "10MB 를 넘는 파일", "업로드 거부", "413"], ["지원하지 않는 형식", "exe 등", "업로드 거부", "415"],
         ["약한 비밀번호", "규칙 미충족 비밀번호", "가입 거부", "422"], ["형식이 틀린 검수 값", "스키마 불일치 값", "저장 거부", "422"],
         ["해석 불가 문서", "금액 · 날짜 없음", "status=failed + 사유 저장", "201"], ["파싱 전 RPA", "failed 문서", "실행 거부", "409"],
-        ["위조된 OAuth state", "쿠키와 다른 state", "로그인 화면으로 오류 전달", "307"], ["LLM 일시 장애", "Gemini 503", "2 · 5 · 10초 재시도", "-"],
+        ["위조된 OAuth state", "레지스트리에 없는 state", "로그인 화면으로 오류 전달", "307"], ["LLM 일시 장애", "Gemini 503", "백오프 재시도 → 대체 모델 → 규칙 파서 폴백", "-"],
         ["관리자 토큰 무차별 대입", "틀린 토큰 5회", "같은 IP 10분 차단", "429"]], widths=[24, 26, 36, 14], align=["L", "L", "L", "C"])
     d.h2("6.6 발견된 오류 및 수정 내용")
     d.table(["이슈", "원인", "조치"], [
@@ -763,7 +766,7 @@ cd frontend && npm run lint && npm run build     # 프런트 검증""")
         ["/login 새로고침 404", "정적 호스팅 SPA 규칙 없음", "/* → /index.html Rewrite"]], widths=[24, 42, 34], label_col=True)
     d.h2("6.7 테스트 완료 여부 및 개선 사항")
     d.table(["구분", "결과", "개선 사항"], [
-        ["자동 테스트", "완료 — 30 passed(5단계 기준)", "프런트 컴포넌트 테스트 추가 검토"],
+        ["자동 테스트", "완료 — 55 passed", "프런트 컴포넌트 테스트 추가 검토"],
         ["프런트 검증", "완료 — lint 오류 0, build 성공", "-"],
         ["운영 점검", "완료 — 6.4 항목 정상", "운영 관리자 로그인은 ADMIN_TOKEN 등록 후 재점검 필요"],
         ["정확도 평가", "미실시 — 샘플 단위 검증만 수행", "문서 유형별 정답셋으로 필드 단위 정확도 측정"]], widths=[16, 40, 44], label_col=True)
@@ -790,7 +793,7 @@ def output_05() -> Document:
         ["5", "상용 서비스 수준의 푸터 · 정책 페이지 부재", "4열 푸터, 이용약관 · 개인정보처리방침 신설(가짜 사업자 정보 미기재)", "반영"],
         ["6", "글자 크기 · 여백이 화면마다 다름", "디자인 토큰(text-display ~ caption, container-page, section-y, page-y)", "반영"],
         ["7", "발표자료 화면 캡처가 개편 전 기준", "운영 서비스에서 재촬영해 발표자료 재생성", "반영"],
-        ["8", "발표 · 시연 영상 부재", "10분 발표 · 시연 영상(자막) · 60초 하이라이트 제작", "반영"],
+        ["8", "발표 · 시연 영상 부재", "10분 발표 · 시연 영상(자막) · 3분 하이라이트 제작", "반영"],
         ["9", "저장소 방문자가 결과물을 한곳에서 보기 어려움", "GitHub Pages 포트폴리오(제자리 영상 재생 · 챕터 이동)", "반영"],
         ["10", "산출물 문서의 글꼴 혼용 · 표와 제목 간격 부족", "표준 디자인(맑은 고딕, 녹색 표 제목 행, 셀 여백, 표-제목 간격)으로 재작성", "반영"]],
         widths=[6, 42, 42, 10], align=["C", "L", "L", "C"])
@@ -806,12 +809,13 @@ def output_05() -> Document:
 
     d.h1("4. 최종 구현 기능 및 결과")
     d.table(["영역", "구현 결과", "상태"], [
-        ["문서 처리", "6종 입력, 단계적 추출(텍스트 → OCR → 멀티모달), Gemini 구조화 출력 · 재시도, 규칙 파서", "완료"],
+        ["문서 처리", "6종 입력, 단계적 추출(텍스트 → OCR → 멀티모달), Gemini 구조화 출력 · 대체 모델 · 규칙 파서 폴백", "완료"],
+        ["AI 분석 도구", "견적서 비교 · 계약서 빨간펜 · 건강검진 추이(원본 미저장 · 결과만 보관 · 샘플 체험)", "완료"],
         ["검수 · RPA", "검수 저장(서버 재검증), 엑셀 원장 upsert · 다운로드, ERP 자동 타이핑(전표번호 확인)", "완료"],
-        ["회원 · 권한", "이메일 · OAuth 3사 · 테스트 계정, 운영/테스트 관리자 분리, 서버 권한 강제", "완료"],
-        ["화면", "메인 · 로그인 · 대시보드 · 문서 처리 · 관리자 · 정책, 반응형 · 디자인 토큰", "완료"],
+        ["회원 · 권한", "이메일 · OAuth 3사(state 레지스트리 검증) · 테스트 계정, 운영/테스트 관리자 분리, 회원 탈퇴, 서버 권한 강제", "완료"],
+        ["화면", "메인 · 로그인 · 대시보드 · 문서 처리 · AI 도구 3종 · 관리자 · 정책, 반응형 · 디자인 토큰", "완료"],
         ["운영", "Render 배포, CI/CD, 헬스 체크, 모니터링(파싱 · RPA 성공률)", "완료"],
-        ["결과물", "발표자료(16장 + 부록) · 10분 영상 · 60초 하이라이트 · README · 포트폴리오 · 진행일지 · 산출물", "완료"]],
+        ["결과물", "발표자료(17장 + 부록) · 10분 영상 · 3분 하이라이트 · README · 포트폴리오 · 진행일지 · 산출물", "완료"]],
         widths=[14, 74, 12], align=["L", "L", "C"], label_col=True)
 
     d.h1("5. 요구사항 충족 여부")
@@ -827,7 +831,7 @@ def output_05() -> Document:
 
     d.h1("6. 최종 검증 결과")
     d.table(["구분", "항목", "결과"], [
-        ["자동 테스트", "pytest(권한 테스트 8개 추가)", "30개 통과"],
+        ["자동 테스트", "pytest(권한 · OAuth · 폴백 · 탈퇴 테스트 추가)", "55개 통과"],
         ["프런트", "lint · build", "오류 0 · 성공"],
         ["화면 점검", "로컬 데모 인스턴스 Playwright 16항목", "통과(첫 접속 메인, 헤더/푸터, 읽기 전용 배너 · 버튼 비활성, 잘못된 토큰 거부 등)"],
         ["포트폴리오", "GitHub Pages 22항목", "통과(제자리 영상 재생 · 챕터 이동 · 종료 후 다시 재생 · 모바일)"],
@@ -850,7 +854,7 @@ def output_05() -> Document:
     d.h1("9. 최종 결과물 목록")
     d.table(["결과물", "위치"], [
         ["발표자료(PPTX · PDF)", "docs/프로젝트_발표자료.pptx · docs/pdf/프로젝트_발표자료.pdf"],
-        ["10분 발표 · 시연 영상 · 자막 · 60초 하이라이트", "docs/video/3조_final.mp4 · 3조_final.srt · 3조_highlight.mp4"],
+        ["10분 발표 · 시연 영상 · 자막 · 3분 하이라이트", "docs/video/3조_final.mp4 · 3조_final.srt · 3조_highlight_3min.mp4"],
         ["진행일지 · 산출물(HWPX · PDF)", "docs/ · docs/산출물/ · docs/pdf/"],
         ["작업 기록", "docs/md/"], ["포트폴리오 · README", f"{PORTFOLIO} · {REPO}"]], widths=[36, 64], label_col=True)
 

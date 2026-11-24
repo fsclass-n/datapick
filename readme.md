@@ -27,7 +27,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Render-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 [![CI/CD](https://img.shields.io/github/actions/workflow/status/fsclass-n/dataquill/deploy.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/fsclass-n/dataquill/actions/workflows/deploy.yml)
-![Tests](https://img.shields.io/badge/pytest-50%20passed-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
+![Tests](https://img.shields.io/badge/pytest-55%20passed-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
 [![Issues](https://img.shields.io/github/issues/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/issues)
 [![Last Commit](https://img.shields.io/github/last-commit/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/commits/main)
 ![Repo Size](https://img.shields.io/github/repo-size/fsclass-n/dataquill?style=flat-square)
@@ -264,7 +264,7 @@ dataquill/
 │   │   ├── deps.py · security.py# 인증 · 권한(테스트 관리자 쓰기 차단) · PBKDF2 · JWT
 │   │   ├── routers/             # auth · documents · admin · erp_demo · tools(AI 도구)
 │   │   └── services/            # parser(Gemini 공용 호출 · 규칙) · analyzers(견적 · 계약 · 검진 판정) · oauth · stats
-│   ├── tests/                   # pytest 50개 (임시 DB · 외부 키 격리)
+│   ├── tests/                   # pytest 55개 (임시 DB · 외부 키 격리)
 │   └── Dockerfile               # python:3.11-slim-bookworm + Tesseract + Chromium
 ├── rpa/                         # extract(OCR) · excel_writer · erp_typer(Playwright)
 ├── frontend/src/                # pages(tools/ 포함) · components(layout · tools) · api(client · mock · mockTools) · utils/tools.js
@@ -301,7 +301,7 @@ Docker: `docker compose up --build` (backend 8000 · frontend 5173)
 ## 10. Testing & Quality
 
 ```bash
-.venv/Scripts/python -m pytest backend/tests -q   # 50 passed
+.venv/Scripts/python -m pytest backend/tests -q   # 55 passed
 cd frontend && npm run lint && npm run build       # lint 오류 0 · build 성공
 ```
 
