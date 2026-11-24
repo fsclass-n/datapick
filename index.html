@@ -515,7 +515,7 @@ footer a:hover{color:var(--ink)}
 <!-- ============================================================ 02 SCREENING · video -->
 <section id="screening" data-stage="02" data-label="SCREENING" data-name="발표 · 시연 영상">
   <div class="wrap">
-    <div class="sec-head reveal"><span class="sec-no">02</span><div><span class="tag">Screening room · 온라인 발표</span><h2>10분 발표 · 시연, 그리고 60초 요약</h2><p>썸네일을 누르면 그 자리에서 바로 재생됩니다. 아래 타임라인이나 챕터를 누르면 해당 장면으로 이동합니다.</p></div></div>
+    <div class="sec-head reveal"><span class="sec-no">02</span><div><span class="tag">Screening room · 온라인 발표</span><h2>10분 발표 · 시연, 그리고 3분 요약</h2><p>썸네일을 누르면 그 자리에서 바로 재생됩니다. 아래 타임라인이나 챕터를 누르면 해당 장면으로 이동합니다.</p></div></div>
     <div class="theater">
       <div class="reveal">
         <div class="player main" data-media="full"></div>
@@ -525,7 +525,7 @@ footer a:hover{color:var(--ink)}
       <aside class="side">
         <div class="reveal hl">
           <div class="player small" data-media="highlight"></div>
-          <h4><span>바쁜 면접관을 위한 60초 하이라이트</span><span class="mono" style="color:var(--ink-3)">1:00</span></h4>
+          <h4><span>바쁜 면접관을 위한 3분 하이라이트</span><span class="mono" style="color:var(--ink-3)">3:01</span></h4>
         </div>
         <div class="card chapters reveal">
           <h4><span>챕터 · 10분 영상</span><span class="mono" style="font-size:11px;color:var(--ink-3)">click to seek</span></h4>
@@ -676,11 +676,11 @@ const MEDIA = {
     badge: 'ONLINE PRESENTATION',
   },
   highlight: {
-    src: 'docs/video/3조_highlight.mp4',
-    poster: 'docs/video/highlight-thumbnail.jpg',
-    title: '60초 하이라이트',
-    desc: '스캔 PDF 업로드 → Gemini 해석 → 검수 → RPA',
-    duration: '1:00',
+    src: 'docs/video/3조_highlight_3min.mp4',
+    poster: 'assets/img/poster-highlight.jpg',
+    title: '3분 하이라이트',
+    desc: '발표 → 스캔 PDF 업로드 → Gemini 해석 → 검수 → RPA 전표 → 권한 비교',
+    duration: '3:01',
     badge: 'HIGHLIGHT',
   },
 };
