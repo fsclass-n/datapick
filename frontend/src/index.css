@@ -69,6 +69,8 @@
   h1, h2, h3, h4 {
     @apply font-heading tracking-tight text-slate-900;
   }
+  /* 클릭 가능한 요소는 손가락 커서 (브라우저 기본값은 화살표) */
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]) { cursor: pointer; }
 }
 
 @utility card {
