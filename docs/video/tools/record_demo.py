@@ -265,7 +265,7 @@ def record_main(browser):
     page = ctx.new_page()
     r = Recorder(page, ctx, "main")
     page.goto(f"{SITE}/", wait_until="load", timeout=120000)
-    page.get_by_text("AI 추출 결과").first.wait_for(timeout=90000)
+    page.locator("div[role='tablist']").wait_for(timeout=90000)
     r.wait(1.5)
     header = page.locator("header").first
     nav = page.locator("nav[aria-label='주 메뉴']")
@@ -275,7 +275,7 @@ def record_main(browser):
     r.glide(520, 330, 600)
     r.hl(page.locator("h1").first, 3000)
     r.wait(3.2)
-    mock = page.get_by_text("AI 추출 결과").first.locator("xpath=ancestor::div[contains(@class,'shadow')][1]")
+    mock = page.locator("div[role='tablist']").locator("xpath=..")
     r.hl(mock, 4600)
     r.point(mock, 1.2, rest_offset=(330, 240))
     r.end()
@@ -294,7 +294,7 @@ def record_main(browser):
     r.type(pw, "data", 160)
     r.hl(page.locator("#password-rules"), 5600)
     r.wait(0.5)
-    pw.press_sequentially("Quill2026!", delay=230)
+    pw.press_sequentially("Pick2026!", delay=230)
     r.wait(2.0)
     r.click(page.locator("main p button", has_text="로그인"), 0.5)
     r.end()
@@ -311,7 +311,7 @@ def record_main(browser):
 
     # d03 스캔 영수증 PDF 업로드 → Gemini 멀티모달 해석
     r.begin("d03")
-    r.click(nav.get_by_role("link", name="문서 처리"))
+    r.click(nav.get_by_role("link", name="문서 자동 입력"))
     drop = page.get_by_text("파일을 끌어다 놓거나 클릭해서 선택").locator("xpath=ancestor::div[contains(@class,'border-dashed')][1]")
     drop.wait_for(timeout=60000)
     r.wait(0.5)
@@ -489,7 +489,7 @@ def record_main(browser):
 
     # a03 문서 처리: 업로드 · 해석 비활성
     r.begin("a03")
-    r.click(nav.get_by_role("link", name="문서 처리"))
+    r.click(nav.get_by_role("link", name="문서 자동 입력"))
     drop = page.get_by_text("파일을 끌어다 놓거나 클릭해서 선택").locator("xpath=ancestor::div[contains(@class,'border-dashed')][1]")
     r.cut_wait(lambda: drop.wait_for(timeout=60000))
     r.wait(0.4)

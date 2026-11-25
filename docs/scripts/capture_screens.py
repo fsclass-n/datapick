@@ -71,7 +71,7 @@ def main():
 
         ctx, page = desktop(b, 1080)
         login(page, "일반 사용자")
-        go(page, f"/documents?id={doc['id']}" if doc else "/documents", "추출 결과 검수" if doc else "문서 처리")
+        go(page, f"/documents?id={doc['id']}" if doc else "/documents", "추출 결과 검수" if doc else "처리 내역")
         page.screenshot(path=OUT / "documents.png")
         ctx.close()
 
