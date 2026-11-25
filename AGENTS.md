@@ -70,6 +70,11 @@
 - 응답 시각은 `schemas.UtcDatetime` 으로 UTC 표시를 붙인다(DB 가 시간대 없는 값을 돌려줘 새로고침 후 9시간 이르게 보이던 문제 해결)
 - 화면 점검: 데모 인스턴스(백엔드 :8001 임시 SQLite + `GEMINI_API_KEY=` 규칙 엔진, 프런트 :5180 `VITE_API_URL=http://localhost:8001`) + Mock 빌드(`vite preview` :5181)에서 Playwright 로 샘플 실행 · 콘솔 오류 · 가로 넘침 확인
 
+## ERP 연동 구조 (2026-11-25)
+- `rpa/erp.py`: `ErpAdapter` 인터페이스 + `WebFormAdapter`(Playwright, 셀렉터 맵·로그인을 `ERP_CONFIG` JSON으로 외부화) + `FileExportAdapter`(일괄등록 엑셀). `ERP_ADAPTER` env로 선택, 미설정 시 데모 ERP 동작
+- `external_erp/main.py`: 로그인+전표 목록이 있는 독립 미니 ERP — `uvicorn external_erp.main:app --port 8100` + `ERP_CONFIG=rpa/erp_target.example.json` + `ERP_USERNAME=erp ERP_PASSWORD=demo1234` 로 로컬 실연동 검증 가능
+- 데스크톱/사내망 ERP는 클라우드에서 접근 불가 → 로컬 에이전트가 필요하다는 한계를 문서로 남김(구현 안 함)
+
 ## 결정 사항
 - 소셜 로그인(Google/Naver/Kakao): 실제 OAuth 연동 (백엔드 콜백 구현, Client ID/Secret 필요)
 - 2026-11-17: 1단계 프런트엔드 완성 + 백엔드/RPA/AI 파이프라인 구현, 배포 설정 파일 작성 (실배포 전)

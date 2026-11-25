@@ -72,3 +72,19 @@ services:
         value: https://datapick-api.onrender.com
       - key: NODE_VERSION
         value: "22"
+
+  # ---------- (선택) 외부 ERP 연동 검증용 미니 ERP ----------
+  # datapick 의 ERP_CONFIG url 을 이 서비스 주소로 지정해 로그인+전표 입력 실연동을 재현한다.
+  # 별도 무료 서비스가 필요할 때만 주석을 해제해 사용한다.
+  # - type: web
+  #   name: datapick-erp-demo
+  #   runtime: python
+  #   plan: free
+  #   buildCommand: pip install -r requirements.txt
+  #   startCommand: uvicorn external_erp.main:app --host 0.0.0.0 --port $PORT
+  #   healthCheckPath: /api/health
+  #   autoDeploy: true
+  #   buildFilter:
+  #     paths:
+  #       - external_erp/**
+  #       - requirements.txt

@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from rpa import erp_typer, excel_writer, extract
+from rpa import erp, excel_writer, extract
 
 from ..config import settings
 from ..database import get_db
@@ -152,15 +152,9 @@ def run_rpa(doc_id: int, body: RpaIn, user: User = Depends(get_current_user), db
             rows = excel_writer.append_rows(_ledger_path(doc.user_id), [excel_writer.to_row(doc.id, doc.parsed)])
             job.message = f"엑셀 원장에 적재했습니다. (총 {rows}행)"
         else:
-            # 미설정 시 같은 컨테이너의 데모 ERP (Render 는 PORT=10000, 로컬은 8000).
-            # Render 에서 ERP_URL 이 localhost 를 가리키면 자기 컨테이너일 수밖에 없으므로(로컬 전용 값이
-            # 대시보드에 잘못 등록된 경우) 폴백과 동일한 자기 주소로 처리한다. 셀프 호스팅(RENDER 없음)에서는 유지.
-            url = os.getenv("ERP_URL")
-            if not url or (os.getenv("RENDER") and ("localhost" in url or "127.0.0.1" in url)):
-                url = f"http://127.0.0.1:{os.getenv('PORT', '8000')}/erp-demo"
-            headless = os.getenv("RPA_HEADLESS", "true").lower() != "false"
-            voucher = erp_typer.type_record(doc.parsed, url, headless=headless)
-            job.message = f"ERP 전표 입력 완료 (전표번호 {voucher})"
+            # ERP_ADAPTER 로 대상 결정: web_form(기본, ERP_CONFIG 셀렉터 맵) · file_export(일괄등록 엑셀)
+            voucher = erp.submit_record(doc.parsed)
+            job.message = f"ERP 입력 완료 ({voucher})"
         job.status = "success"
     except Exception as exc:
         job.status, job.message = "failed", str(exc)
