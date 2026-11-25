@@ -141,7 +141,8 @@ def test_admin_user_management_and_stats(client, admin_headers):
 
 
 def test_erp_demo_voucher(client):
-    assert "전표 입력" in client.get("/erp-demo").text
+    page = client.get("/erp-demo").text
+    assert "전표 입력" in page and "전표 목록" in page
     res = client.post("/erp-demo/api/vouchers", json={"vendor": "A", "date": "2026-11-17", "total_amount": 1000})
     assert res.json()["voucher_no"].startswith("JV-")
 

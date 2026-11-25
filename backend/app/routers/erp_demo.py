@@ -34,17 +34,34 @@ def list_vouchers():
 
 
 PAGE = """<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><title>Demo ERP - 전표 입력</title>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo ERP - 전표 입력</title>
 <style>
- body{font-family:system-ui,sans-serif;background:#f1f5f9;margin:0;padding:40px;color:#0f172a}
- form{max-width:520px;margin:auto;background:#fff;padding:28px;border-radius:12px;box-shadow:0 4px 20px #0001}
+ *{box-sizing:border-box}
+ body{font-family:system-ui,sans-serif;background:#f1f5f9;margin:0;color:#0f172a}
+ header{background:#1e293b;color:#fff;padding:14px 28px;font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+ header span{font-size:12px;font-weight:400;color:#94a3b8}
+ main{display:flex;gap:24px;padding:28px;max-width:1180px;margin:auto;align-items:flex-start;flex-wrap:wrap}
+ form{width:420px;flex-shrink:0;background:#fff;padding:28px;border-radius:12px;box-shadow:0 4px 20px #0001}
  h1{font-size:18px;margin:0 0 20px} label{display:block;font-size:13px;margin:12px 0 4px;color:#475569}
- input{width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px}
+ input{width:100%;padding:9px 11px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px}
  button{margin-top:20px;width:100%;padding:11px;border:0;border-radius:8px;background:#4f46e5;color:#fff;font-weight:600}
  #result{margin-top:16px;font-size:14px}
+ section{flex:1;min-width:340px;background:#fff;padding:24px 28px;border-radius:12px;box-shadow:0 4px 20px #0001}
+ h2{font-size:16px;margin:0 0 4px} .hint{font-size:12px;color:#64748b;margin:0 0 14px}
+ table{width:100%;border-collapse:collapse;font-size:13px}
+ th{text-align:left;padding:8px 10px;border-bottom:2px solid #e2e8f0;color:#64748b;font-size:12px;white-space:nowrap}
+ td{padding:8px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+ td.dt{white-space:nowrap}
+ td.no{font-family:ui-monospace,monospace;font-size:12px;white-space:nowrap}
+ tr.new td{background:#eef2ff}
+ .empty{padding:32px;text-align:center;color:#94a3b8;font-size:13px}
 </style></head><body>
+<header>Demo ERP <span>RPA 타이핑 시연용 가상 전표 시스템</span></header>
+<main>
 <form id="voucher">
- <h1>Demo ERP · 매입 전표 입력</h1>
+ <h1>매입 전표 입력</h1>
  <label for="vendor">거래처</label><input id="vendor" required>
  <label for="business_number">사업자번호</label><input id="business_number">
  <label for="date">거래일자</label><input id="date" placeholder="YYYY-MM-DD" required>
@@ -54,7 +71,31 @@ PAGE = """<!doctype html>
  <button id="submit" type="submit">전표 저장</button>
  <div id="result"></div>
 </form>
+<section>
+ <h2>전표 목록</h2>
+ <p class="hint">저장된 전표가 3초 간격으로 자동 갱신됩니다. DataQuill 에서 'ERP 자동 타이핑'을 실행하면 여기에 새 전표가 나타납니다.</p>
+ <table id="vlist"><thead><tr>
+  <th>전표번호</th><th>거래일자</th><th>거래처</th><th>사업자번호</th>
+  <th class="num">합계금액</th><th class="num">부가세</th><th>적요</th>
+ </tr></thead><tbody><tr><td colspan="7" class="empty">입력된 전표가 없습니다</td></tr></tbody></table>
+</section>
+</main>
 <script>
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const won = (n) => n == null ? '' : Number(n).toLocaleString('ko-KR');
+let known = new Set();
+async function loadList(highlight) {
+  const rows = await (await fetch('/erp-demo/api/vouchers')).json();
+  const tbody = document.querySelector('#vlist tbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty">입력된 전표가 없습니다</td></tr>'; return; }
+  tbody.innerHTML = [...rows].reverse().map((v) => {
+    const fresh = highlight && !known.has(v.voucher_no);
+    return `<tr class="${fresh ? 'new' : ''}"><td class="no">${esc(v.voucher_no)}</td><td class="dt">${esc(v.date)}</td>` +
+      `<td>${esc(v.vendor)}</td><td>${esc(v.business_number)}</td>` +
+      `<td class="num">${won(v.total_amount)}</td><td class="num">${won(v.vat)}</td><td>${esc(v.summary)}</td></tr>`;
+  }).join('');
+  known = new Set(rows.map((v) => v.voucher_no));
+}
 document.getElementById('voucher').addEventListener('submit', async (e) => {
   e.preventDefault();
   const v = (id) => document.getElementById(id).value.trim();
@@ -65,9 +106,11 @@ document.getElementById('voucher').addEventListener('submit', async (e) => {
       summary: v('summary')})});
   const data = await res.json();
   out.dataset.status = res.ok ? 'ok' : 'error';
-  if (res.ok) { out.dataset.voucher = data.voucher_no; out.textContent = '저장 완료: ' + data.voucher_no; }
+  if (res.ok) { out.dataset.voucher = data.voucher_no; out.textContent = '저장 완료: ' + data.voucher_no; loadList(true); }
   else { out.textContent = '저장 실패: ' + JSON.stringify(data.detail); }
 });
+loadList(false);
+setInterval(() => loadList(true), 3000);
 </script></body></html>"""
 
 
