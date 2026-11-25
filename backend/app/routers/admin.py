@@ -6,7 +6,7 @@ from ..database import get_db
 from ..deps import ADMIN_ROLES, require_admin
 from ..models import Document, User
 from ..schemas import RoleIn, UserOut
-from ..services import stats
+from ..services import account, stats
 from ..test_accounts import TEST_ACCOUNT_EMAILS
 
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(require_admin)])
@@ -38,6 +38,21 @@ def change_role(user_id: int, body: RoleIn, admin: User = Depends(require_admin)
     user.role = body.role
     db.commit()
     return user
+
+
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def expel_user(user_id: int, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """회원 강퇴: 대상 계정·문서·기록을 탈퇴와 동일하게 삭제한다."""
+    user = db.get(User, user_id)
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "사용자를 찾을 수 없습니다.")
+    if user.id == admin.id:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "본인 계정은 강퇴할 수 없습니다.")
+    if user.email in TEST_ACCOUNT_EMAILS:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "공개된 테스트 계정은 강퇴할 수 없습니다.")
+    if user.role in ADMIN_ROLES:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "관리자 계정은 권한을 먼저 해제한 뒤 강퇴할 수 있습니다.")
+    account.delete_account(db, user)
 
 
 @router.get("/stats")

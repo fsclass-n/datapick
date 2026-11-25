@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faMagnifyingGlass, faUserGear, faUserShield, faUsers } from '@fortawesome/free-solid-svg-icons'
+import { faMagnifyingGlass, faUserGear, faUserMinus, faUserShield, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { api } from '../../api/client'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
@@ -30,6 +30,32 @@ function RoleToggle({ user, self, busy, readOnly, onChange }) {
   )
 }
 
+function ExpelButton({ user, self, busy, readOnly, onExpel }) {
+  const fixed = TEST_ACCOUNT_EMAILS.includes(user.email)
+  const isAdminRole = user.role !== 'user'
+  const reason = readOnly
+    ? READ_ONLY_HINT
+    : self
+      ? '본인 계정은 강퇴할 수 없습니다.'
+      : fixed
+        ? '공개 테스트 계정은 강퇴할 수 없습니다.'
+        : isAdminRole
+          ? '관리자 계정은 권한을 먼저 해제한 뒤 강퇴할 수 있습니다.'
+          : null
+  return (
+    <button
+      type="button"
+      disabled={!!reason || busy}
+      onClick={() => onExpel(user)}
+      title={reason || '회원 강퇴 (계정·문서·기록 삭제)'}
+      aria-label={`${user.name} 강퇴`}
+      className="inline-flex size-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-400"
+    >
+      {busy ? <Spinner /> : <FontAwesomeIcon icon={faUserMinus} />}
+    </button>
+  )
+}
+
 export default function AdminUsers() {
   const { user: me, readOnly } = useAuth()
   const toast = useToast()
@@ -54,6 +80,20 @@ export default function AdminUsers() {
       const updated = await api(`/api/admin/users/${user.id}/role`, { method: 'PATCH', body: { role: next } })
       setUsers((list) => list.map((u) => (u.id === updated.id ? { ...u, role: updated.role } : u)))
       toast(`${user.name} 님의 권한을 ${label}(으)로 변경했습니다.`, 'success')
+    } catch (err) {
+      toast(err.message, 'error')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  async function expel(user) {
+    if (!window.confirm(`${user.name}(${user.email}) 님을 강퇴할까요? 계정과 문서·기록이 모두 삭제되며 되돌릴 수 없습니다.`)) return
+    setBusyId(user.id)
+    try {
+      await api(`/api/admin/users/${user.id}`, { method: 'DELETE' })
+      setUsers((list) => list.filter((u) => u.id !== user.id))
+      toast(`${user.name} 님을 강퇴했습니다.`, 'success')
     } catch (err) {
       toast(err.message, 'error')
     } finally {
@@ -104,6 +144,7 @@ export default function AdminUsers() {
                     <th className="px-5 py-3 text-left">최근 로그인</th>
                     <th className="px-5 py-3 text-left">권한</th>
                     <th className="px-5 py-3 text-center">관리자 지정</th>
+                    <th className="px-5 py-3 text-center">강퇴</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -126,6 +167,9 @@ export default function AdminUsers() {
                       <td className="px-5 py-3.5 text-center">
                         <RoleToggle user={u} self={u.id === me.id} busy={busyId === u.id} readOnly={readOnly} onChange={changeRole} />
                       </td>
+                      <td className="px-5 py-3.5 text-center">
+                        <ExpelButton user={u} self={u.id === me.id} busy={busyId === u.id} readOnly={readOnly} onExpel={expel} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -141,6 +185,7 @@ export default function AdminUsers() {
                     <p className="truncate text-xs text-slate-500">{u.email} · {PROVIDER_LABELS[u.provider]} · 문서 {u.document_count}</p>
                   </div>
                   <RoleToggle user={u} self={u.id === me.id} busy={busyId === u.id} readOnly={readOnly} onChange={changeRole} />
+                  <ExpelButton user={u} self={u.id === me.id} busy={busyId === u.id} readOnly={readOnly} onExpel={expel} />
                 </li>
               ))}
             </ul>

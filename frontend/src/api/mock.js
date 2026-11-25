@@ -342,6 +342,19 @@ export async function mockRequest(path, { method, body, token }) {
       target.role = body.role
       return done(publicUser(target))
     }
+    case 'DELETE /api/admin/users/:id': {
+      const target = db.users.find((u) => u.id === id)
+      if (!target) fail(404, '사용자를 찾을 수 없습니다.')
+      if (target.id === user.id) fail(400, '본인 계정은 강퇴할 수 없습니다.')
+      if (TEST_ACCOUNT_EMAILS.includes(target.email)) fail(400, '공개된 테스트 계정은 강퇴할 수 없습니다.')
+      if (target.role !== 'user') fail(400, '관리자 계정은 권한을 먼저 해제한 뒤 강퇴할 수 있습니다.')
+      db.users = db.users.filter((u) => u.id !== target.id)
+      const docIds = db.documents.filter((d) => d.user_id === target.id).map((d) => d.id)
+      db.documents = db.documents.filter((d) => d.user_id !== target.id)
+      db.jobs = db.jobs.filter((j) => !docIds.includes(j.document_id))
+      db.analyses = (db.analyses || []).filter((a) => a.user_id !== target.id)
+      return done(null)
+    }
     case 'GET /api/admin/stats':
       return computeStats(db)
   }

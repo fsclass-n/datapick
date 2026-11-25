@@ -45,6 +45,7 @@
 ## 권한 모델 (2026-11-17 개편)
 - `admin`(운영 관리자): `/api/auth/admin-login` + `ADMIN_TOKEN` 으로만 진입, 전체 CRUD. 5회 실패/10분 차단(프로세스 메모리)
 - `test_admin`(테스트 관리자, admin@datapick.io): 관리자 화면 조회만. `deps.get_current_user` 에서 GET/HEAD/OPTIONS 외 403
+- 회원 삭제: `services/account.delete_account` 공용 — 탈퇴(`DELETE /api/auth/me`, 비밀번호 계정은 재확인, 체험 계정 차단) · 강퇴(`DELETE /api/admin/users/{id}`, 본인/테스트 계정/관리자 계정 차단 — 관리자는 강등 후 강퇴)
 - 공개 테스트 계정 권한은 `backend/app/test_accounts.py` 기준으로 기동 시 복원, 권한 변경 API 로 변경 불가
 - 프런트 Mock(`src/api/mock.js`)도 같은 규칙을 따라야 함 (DB 키 `dp_mock_db_v2`)
 

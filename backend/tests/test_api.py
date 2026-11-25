@@ -317,3 +317,39 @@ def test_seed_restores_test_account_roles(client):
     seed_test_accounts()
     with SessionLocal() as db:
         assert db.scalar(select(User).where(User.email == "admin@datapick.io")).role == "test_admin"
+
+
+def test_admin_expel_user(client, admin_headers):
+    """운영 관리자는 일반 회원을 강퇴할 수 있고, 보호 규칙이 적용된다."""
+    email = f"expel-{time.time_ns()}@example.com"
+    reg = client.post("/api/auth/register", json={"name": "강퇴대상", "email": email, "password": "Expel123!"})
+    target_id = reg.json()["id"] if "id" in reg.json() else None
+    headers = {"Authorization": f"Bearer {reg.json()['access_token']}"}
+    if target_id is None:
+        target_id = client.get("/api/auth/me", headers=headers).json()["id"]
+    client.post("/api/documents/upload", headers=headers, files={"file": ("memo.txt", b"bye", "text/plain")})
+
+    # 본인 · 테스트 계정 · 관리자 계정은 강퇴 불가
+    me_id = client.get("/api/auth/me", headers=admin_headers).json()["id"]
+    assert client.delete(f"/api/admin/users/{me_id}", headers=admin_headers).status_code == 400
+    users = client.get("/api/admin/users", headers=admin_headers).json()
+    test_user_id = next(u["id"] for u in users if u["email"] == "user@datapick.io")
+    assert client.delete(f"/api/admin/users/{test_user_id}", headers=admin_headers).status_code == 400
+
+    # 강퇴 성공 → 목록에서 사라지고 대상 토큰도 무효
+    res = client.delete(f"/api/admin/users/{target_id}", headers=admin_headers)
+    assert res.status_code == 204, res.text
+    assert all(u["id"] != target_id for u in client.get("/api/admin/users", headers=admin_headers).json())
+    assert client.get("/api/auth/me", headers=headers).status_code == 401
+
+
+def test_admin_cannot_expel_admin_role(client, admin_headers):
+    """관리자 권한 계정은 먼저 강등해야 강퇴할 수 있다."""
+    email = f"expel-admin-{time.time_ns()}@example.com"
+    reg = client.post("/api/auth/register", json={"name": "관리자후보", "email": email, "password": "Expel123!"})
+    uid = client.get("/api/auth/me", headers={"Authorization": f"Bearer {reg.json()['access_token']}"}).json()["id"]
+    assert client.patch(f"/api/admin/users/{uid}/role", headers=admin_headers, json={"role": "admin"}).status_code == 200
+    assert client.delete(f"/api/admin/users/{uid}", headers=admin_headers).status_code == 400
+    # 강등 후에는 강퇴 가능
+    assert client.patch(f"/api/admin/users/{uid}/role", headers=admin_headers, json={"role": "user"}).status_code == 200
+    assert client.delete(f"/api/admin/users/{uid}", headers=admin_headers).status_code == 204

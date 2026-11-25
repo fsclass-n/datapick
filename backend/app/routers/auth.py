@@ -1,7 +1,6 @@
 import secrets
 import time
 from collections import defaultdict, deque
-from pathlib import Path
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -16,7 +15,7 @@ from ..deps import get_current_user
 from ..models import User, utcnow
 from ..schemas import LoginIn, RegisterIn, TokenOut, UserOut
 from ..security import PASSWORD_RULE, create_token, hash_password, is_valid_password, verify_password
-from ..services import oauth
+from ..services import account, oauth
 from ..test_accounts import TEST_ACCOUNT_EMAILS
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -109,12 +108,7 @@ def withdraw(body: WithdrawIn, user: User = Depends(get_current_user), db: Sessi
     if user.password_hash and (not body.password or not verify_password(body.password, user.password_hash)):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "비밀번호가 일치하지 않습니다.")
 
-    paths = [Path(d.storage_path) for d in user.documents if d.storage_path]
-    ledger = settings.storage_dir.parent / "exports" / f"ledger_user_{user.id}.xlsx"
-    db.delete(user)  # documents → rpa_jobs, analyses 는 관계 cascade 로 함께 삭제
-    db.commit()
-    for path in paths + [ledger]:
-        path.unlink(missing_ok=True)
+    account.delete_account(db, user)
 
 
 @router.get("/providers")
