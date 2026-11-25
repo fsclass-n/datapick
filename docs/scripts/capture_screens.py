@@ -1,4 +1,4 @@
-"""발표자료 · README 화면 캡처 (운영 서비스 dataquill.onrender.com, 공개 테스트 계정).
+"""발표자료 · README 화면 캡처 (운영 서비스 datapick.onrender.com, 공개 테스트 계정).
 
     .venv/Scripts/python docs/scripts/capture_screens.py
 
@@ -19,15 +19,15 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from rpa.erp_typer import FIELD_SELECTORS, RESULT_SELECTOR, SUBMIT_SELECTOR  # noqa: E402
 
-SITE = "https://dataquill.onrender.com"
-API = "https://dataquill-api.onrender.com"
+SITE = "https://datapick.onrender.com"
+API = "https://datapick-api.onrender.com"
 OUT = ROOT / "docs" / "assets" / "screenshots"
 HIDE = "::-webkit-scrollbar{width:0;height:0}"
 
 
 def receipt_doc():
     req = urllib.request.Request(f"{API}/api/auth/login", method="POST", headers={"Content-Type": "application/json"},
-                                 data=json.dumps({"email": "user@dataquill.io", "password": "User1234!"}).encode())
+                                 data=json.dumps({"email": "user@datapick.io", "password": "User1234!"}).encode())
     token = json.load(urllib.request.urlopen(req, timeout=120))["access_token"]
     req = urllib.request.Request(f"{API}/api/documents", headers={"Authorization": f"Bearer {token}"})
     docs = json.load(urllib.request.urlopen(req, timeout=120))

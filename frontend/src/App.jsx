@@ -51,8 +51,8 @@ function OAuthCallback() {
       const expected = sessionStorage.getItem(OAUTH_STATE_KEY)
       sessionStorage.removeItem(OAUTH_STATE_KEY)
       if (expected !== handoff.state) {
-        setError('로그인 요청이 만료되었거나 올바르지 않습니다. 다시 시도해 주세요.')
-        return
+        const timer = setTimeout(() => setError('로그인 요청이 만료되었거나 올바르지 않습니다. 다시 시도해 주세요.'))
+        return () => clearTimeout(timer)
       }
       api(`/api/auth/oauth/${handoff.provider}/exchange`, { method: 'POST', body: { code: handoff.code, state: handoff.state } })
         .then(({ access_token }) => loginWithToken(access_token))

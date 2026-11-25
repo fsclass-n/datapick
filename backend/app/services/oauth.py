@@ -122,14 +122,14 @@ def _profile(provider: str, access_token: str) -> OAuthProfile:
         info = body.get("response") or {}
         if not info.get("id"):
             raise OAuthError("네이버 프로필 응답이 올바르지 않습니다.")
-        email = info.get("email") or f"naver_{info['id']}@oauth.dataquill.local"
+        email = info.get("email") or f"naver_{info['id']}@oauth.datapick.local"
         return OAuthProfile(info["id"], email, info.get("name") or info.get("nickname") or "네이버 사용자")
 
     account = body.get("kakao_account") or {}
     kakao_id = str(body["id"])
     email = account.get("email") if account.get("is_email_verified") else None
     nickname = (account.get("profile") or {}).get("nickname") or "카카오 사용자"
-    return OAuthProfile(kakao_id, email or f"kakao_{kakao_id}@oauth.dataquill.local", nickname)
+    return OAuthProfile(kakao_id, email or f"kakao_{kakao_id}@oauth.datapick.local", nickname)
 
 
 def fetch_profile(provider: str, code: str, state: str) -> OAuthProfile:

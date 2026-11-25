@@ -275,7 +275,7 @@ def encode(master: Path, audio: Path, ass: Path) -> None:
     p1 = [FFMPEG, "-hide_banner", "-nostats", "-y", "-i", str(master), "-vf", vf, *common, "-pass", "1", "-passlogfile", "x264pass", "-an", "-f", "mp4", "NUL"]
     p2 = [FFMPEG, "-hide_banner", "-nostats", "-y", "-i", str(master), "-i", str(audio), "-vf", vf, *common, "-pass", "2", "-passlogfile", "x264pass",
           "-map", "0:v:0", "-map", "1:a:0", "-c:a", "aac", "-b:a", "160k", "-ar", "48000", "-ac", "2",
-          "-metadata:s:a:0", "language=kor", "-metadata", "title=dataquill 10분 발표·시연", "-t", str(TOTAL),
+          "-metadata:s:a:0", "language=kor", "-metadata", "title=datapick 10분 발표·시연", "-t", str(TOTAL),
           "-movflags", "+faststart", str(OUT)]
     for cmd in (p1, p2):
         res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", **cwd_args)

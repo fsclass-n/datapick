@@ -1,4 +1,4 @@
-"""dataquill 발표자료(PPTX) 생성 스크립트.
+"""datapick 발표자료(PPTX) 생성 스크립트.
 
 실행: .venv/Scripts/python docs/scripts/build_presentation.py
 출력: docs/프로젝트_발표자료.pptx (슬라이드 노트에 발표자 스크립트 포함)
@@ -30,9 +30,9 @@ BRAND, BRAND_DARK, BRAND_LIGHT, BRAND_200 = "4F46E5", "1E1B4B", "EEF2FF", "C7D2F
 INK, BODY, MUTED, LINE, PANEL, WHITE = "0F172A", "334155", "64748B", "E2E8F0", "F8FAFC", "FFFFFF"
 GREEN, ROSE, AMBER, SKY = "059669", "E11D48", "D97706", "0284C7"
 LINKS = {
-    "GitHub": "https://github.com/fsclass-n/dataquill",
-    "서비스": "https://dataquill.onrender.com",
-    "API 문서": "https://dataquill-api.onrender.com/docs",
+    "GitHub": "https://github.com/fsclass-n/datapick",
+    "서비스": "https://datapick.onrender.com",
+    "API 문서": "https://datapick-api.onrender.com/docs",
 }
 TOTAL_MAIN = 17
 INLINE = re.compile(r"(\*\*|`[^`]+`)")
@@ -229,7 +229,7 @@ def base(prs, num, section, title, subtitle=None):
     conn = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(0.6), Inches(7.02), Inches(12.73), Inches(7.02))
     conn.line.color.rgb = rgb(LINE)
     conn.line.width = Pt(0.75)
-    textbox(slide, 0.6, 7.07, 6, 0.3, [("dataquill  |  생성형 AI & RPA 데이터 입력 자동화  |  3조", {"size": 9, "color": MUTED})])
+    textbox(slide, 0.6, 7.07, 6, 0.3, [("datapick  |  생성형 AI & RPA 데이터 입력 자동화  |  3조", {"size": 9, "color": MUTED})])
     page = f"{num} / {TOTAL_MAIN}" if isinstance(num, int) else num
     textbox(slide, 10.7, 7.07, 2.03, 0.3, [(page, {"size": 9, "color": MUTED, "align": PP_ALIGN.RIGHT})])
     return slide
@@ -271,7 +271,7 @@ def s01_cover(prs, qrs):
     logo = box(s, 0.9, 1.05, 0.75, 0.75, BRAND, None, 0.22)
     write(logo.text_frame, [("dq", {"size": 22, "bold": True, "color": WHITE, "align": PP_ALIGN.CENTER})])
     logo.text_frame.vertical_anchor = MSO_ANCHOR.MIDDLE
-    textbox(s, 0.85, 1.95, 8, 1.1, [("dataquill", {"size": 60, "bold": True, "color": WHITE})])
+    textbox(s, 0.85, 1.95, 8, 1.1, [("datapick", {"size": 60, "bold": True, "color": WHITE})])
     textbox(s, 0.9, 3.1, 8.5, 0.6, [("문서를 올리면, 데이터가 답합니다.", {"size": 26, "bold": True, "color": BRAND_200})])
     textbox(s, 0.9, 3.75, 8.5, 0.5, [("문서를 데이터로 바꾸는 깃펜 · AI & RPA 데이터 입력 자동화 결과 발표", {"size": 16, "color": "E0E7FF"})])
     for i, label in enumerate(["비정형 문서", "OCR + Gemini 해석", "RPA → ERP · Excel"]):
@@ -285,7 +285,7 @@ def s01_cover(prs, qrs):
     qr_block(s, qrs, 8.35, 4.55)
     notes(s, """
 안녕하세요, 3조 발표를 맡은 이오리입니다.
-dataquill은 영수증 PDF나 거래 이메일처럼 형식이 제각각인 문서를 AI가 읽어서 정형 데이터로 바꾸고,
+datapick은 영수증 PDF나 거래 이메일처럼 형식이 제각각인 문서를 AI가 읽어서 정형 데이터로 바꾸고,
 RPA 로봇이 그 값을 ERP와 엑셀에 직접 입력해 주는 B2B 자동화 서비스입니다.
 오늘은 기능 소개보다는 왜 이렇게 설계했는지, 배포하면서 무엇이 터졌고 어떻게 해결했는지를 중심으로 말씀드리겠습니다.
 """)
@@ -359,14 +359,14 @@ def s04_architecture(prs):
     arrow(s, 4.45, 2.32, 4.45, 2.55)
     card(s, 0.6, 2.58, 7.7, 0.72, [
         ("Frontend   React 19 · Vite 8 · Tailwind CSS v4 · Recharts", {"size": 13, "bold": True, "color": INK, "space": 1}),
-        ("Render Static Site  —  dataquill.onrender.com  (Mock 모드 지원)", {"size": 11, "color": MUTED}),
+        ("Render Static Site  —  datapick.onrender.com  (Mock 모드 지원)", {"size": 11, "color": MUTED}),
     ], anchor=MSO_ANCHOR.MIDDLE, pad=0.15)
     arrow(s, 4.45, 3.32, 4.45, 3.58)
     textbox(s, 4.6, 3.3, 3.6, 0.3, [("REST · CORS 허용 도메인 제한", {"size": 10, "color": MUTED})])
     box(s, 0.6, 3.6, 7.7, 2.05, BRAND_LIGHT, BRAND_200, 0.04)
     textbox(s, 0.8, 3.68, 7.4, 0.6, [
         ("Backend   FastAPI · SQLAlchemy 2.0 · Pydantic", {"size": 13, "bold": True, "color": INK, "space": 1}),
-        ("Render Web Service (Docker: Python 3.11 + Tesseract + Chromium)  —  dataquill-api.onrender.com", {"size": 10.5, "color": MUTED}),
+        ("Render Web Service (Docker: Python 3.11 + Tesseract + Chromium)  —  datapick-api.onrender.com", {"size": 10.5, "color": MUTED}),
     ])
     modules = [("routers", "auth · documents\nadmin · erp_demo"), ("services", "parser (Gemini / 규칙)\noauth · stats"),
                ("rpa/", "extract (OCR)\nexcel_writer · erp_typer")]
@@ -662,8 +662,8 @@ def s12_devops(prs):
          fill=BRAND_DARK, line=None, anchor=MSO_ANCHOR.MIDDLE)
     lanes = [
         (1.8, 1.55, "GitHub Actions  ·  deploy.yml", ["paths-filter 로 바뀐 영역 판별", "`frontend/**` → npm ci · lint · build", "`backend/**` · `rpa/**` · requirements → pytest (55개)"], BRAND_LIGHT, BRAND_200),
-        (3.55, 1.05, "Render Static Site  ·  dataquill", ["Root Directory = frontend → frontend 변경 시에만 빌드", "SPA Rewrite: /* → /index.html"], PANEL, LINE),
-        (4.8, 1.05, "Render Web Service (Docker)  ·  dataquill-api", ["Build Filter: `backend/**` · `rpa/**` · requirements.txt", "헬스 체크 /api/health · PORT 환경 변수로 기동"], PANEL, LINE),
+        (3.55, 1.05, "Render Static Site  ·  datapick", ["Root Directory = frontend → frontend 변경 시에만 빌드", "SPA Rewrite: /* → /index.html"], PANEL, LINE),
+        (4.8, 1.05, "Render Web Service (Docker)  ·  datapick-api", ["Build Filter: `backend/**` · `rpa/**` · requirements.txt", "헬스 체크 /api/health · PORT 환경 변수로 기동"], PANEL, LINE),
     ]
     for y, h, title, items, fill, line in lanes:
         arrow(s, 2.52, 3.55, 3.08, y + h / 2, BRAND)
@@ -826,9 +826,9 @@ def s16_qna(prs, qrs):
     textbox(s, 0.9, 0.9, 8, 1.0, [("Q & A", {"size": 54, "bold": True, "color": WHITE})])
     textbox(s, 0.9, 2.0, 11.5, 0.6, [("형식이 제각각인 문서 → 검수 가능한 정형 데이터 → 로봇이 ERP · 엑셀에 입력",
                                       {"size": 20, "bold": True, "color": BRAND_200})])
-    rows = [("서비스", "https://dataquill.onrender.com"), ("API 문서", "https://dataquill-api.onrender.com/docs"),
-            ("GitHub", "https://github.com/fsclass-n/dataquill"), ("일반 사용자", "user@dataquill.io  /  User1234!"),
-            ("테스트 관리자", "admin@dataquill.io  /  Admin1234!  (조회 전용)")]
+    rows = [("서비스", "https://datapick.onrender.com"), ("API 문서", "https://datapick-api.onrender.com/docs"),
+            ("GitHub", "https://github.com/fsclass-n/datapick"), ("일반 사용자", "user@datapick.io  /  User1234!"),
+            ("테스트 관리자", "admin@datapick.io  /  Admin1234!  (조회 전용)")]
     for i, (label, value) in enumerate(rows):
         y = 3.0 + i * 0.52
         textbox(s, 0.9, y, 1.6, 0.45, [(label, {"size": 13, "bold": True, "color": "A5B4FC"})], anchor=MSO_ANCHOR.MIDDLE)
@@ -865,7 +865,7 @@ def s17_appendix(prs):
 def main():
     prs = Presentation()
     prs.slide_width, prs.slide_height = Inches(13.333), Inches(7.5)
-    prs.core_properties.title = "dataquill 프로젝트 결과 발표"
+    prs.core_properties.title = "datapick 프로젝트 결과 발표"
     prs.core_properties.author = "3조 (박미금 · 김모란 · 이오리 · 홍기흥)"
     qrs = make_qr_codes()
     s01_cover(prs, qrs)

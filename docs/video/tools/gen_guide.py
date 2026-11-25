@@ -8,25 +8,25 @@ from video_scenes import PITCH, RATE, SCENES, TOTAL, VOICE
 
 ACTIONS = {
     "d00": "메인(비로그인) 히어로 제목 강조 → 제품 화면 목업(원문 → AI 추출 → 엑셀/ERP 전표) 강조",
-    "d01": "헤더 `로그인` → 테스트 계정 버튼 2개 강조 → `회원가입` → 비밀번호 `dataQuill2026!` 입력(규칙 칩 초록 전환) → `로그인`",
+    "d01": "헤더 `로그인` → 테스트 계정 버튼 2개 강조 → `회원가입` → 비밀번호 `dataPick2026!` 입력(규칙 칩 초록 전환) → `로그인`",
     "d02": "`일반 사용자` 테스트 버튼 → 대시보드, 주 메뉴(대시보드 · 문서 처리) 강조",
     "d03": "`문서 처리` → 업로드 영역 클릭 → 스캔 영수증 PDF 선택 → '해석 완료' 토스트 → 오른쪽 검수 패널 (대기 구간은 편집 제거)",
     "d04": "추출 필드(거래처 · 사업자번호 · 일자 · 합계 · 부가세 · 결제수단 · 적요) → 파서 gemini · 신뢰도 → 품목 표",
     "d05": "`적요` 수정(역삼점 팀 점심 식대) → `검수 저장` → '검수 내용을 저장했습니다' 토스트",
     "d06": "RPA 자동 입력 → `엑셀 원장 적재` → `ERP 자동 타이핑` → 전표번호 토스트 · 작업 이력",
-    "d07": "`dataquill-api.onrender.com/erp-demo` 에서 rpa/erp_typer.py 와 같은 셀렉터 맵으로 입력 재현 → `전표 저장` → '저장 완료: JV-…'",
+    "d07": "`datapick-api.onrender.com/erp-demo` 에서 rpa/erp_typer.py 와 같은 셀렉터 맵으로 입력 재현 → `전표 저장` → '저장 완료: JV-…'",
     "d08": "`이메일 본문` 탭 → `샘플 채우기` → `AI 해석 실행` → 추출 결과",
     "d09": "`대시보드` → KPI 카드 갱신",
     "d10": "주 메뉴 강조(관리자 없음) → 주소 `/admin/users` 직접 이동 → 대시보드로 되돌아옴 (주소 칩 표시)",
     "d11": "헤더 `로그아웃` → 로그인 화면",
     "a00": "`테스트 관리자` 테스트 버튼 → 주 메뉴(회원 관리 · 모니터링 추가) → 읽기 전용 배너",
     "a01": "`모니터링` → KPI 카드 → 성공률 게이지 2개 → 일별 차트 → 문서 소스 · 파서 엔진 · 가입 경로 분포",
-    "a02": "`회원 관리` → 검색 `dataquill` → 권한 필터 변경·복귀 → 잠긴 권한 스위치",
+    "a02": "`회원 관리` → 검색 `datapick` → 권한 필터 변경·복귀 → 잠긴 권한 스위치",
     "a03": "`문서 처리` → 비활성 업로드 영역 → `이메일 본문` → 비활성 `AI 해석 실행`",
     "a04": "녹화 시점에 운영 API 를 실제로 호출한 응답: 일반 사용자 `GET /api/admin/users` → 403, 테스트 관리자 `PATCH …/role` → 403",
     "a05": "주소 `/admin/login` → 관리자 토큰 입력 폼 강조 (운영 서버에 ADMIN_TOKEN 미등록 → 비활성 안내, 제출하지 않음)",
     "c00": "계정 비교표(일반 사용자 · 테스트 관리자 · 운영 관리자) 정지 화면",
-    "s01": "`dataquill-api.onrender.com/docs` Swagger: auth → documents → admin 태그 순서로 이동",
+    "s01": "`datapick-api.onrender.com/docs` Swagger: auth → documents → admin 태그 순서로 이동",
     "s02": "`/api/health` 응답(status · env · parser) — 값은 그대로, 들여쓰기만 적용",
     "s03": "GitHub Actions 최근 실행(CI/CD) 강조",
 }
@@ -49,7 +49,7 @@ def main() -> None:
         elif s["id"].startswith("s") or s["id"] in ("d07", "a04"):
             screen = "운영 API · 외부 페이지"
         else:
-            screen = "dataquill.onrender.com"
+            screen = "datapick.onrender.com"
         action = ACTIONS.get(s["id"], "슬라이드 표시" + (" · 강조 테두리" if s["hl"] else ""))
         text = " ".join(shown for shown, _ in s["lines"])
         rows.append(f"| {mmss(a)}–{mmss(b)} | {s['label']} | {screen} | {action} | {text} | {s['tag'] or ''} |")
@@ -60,7 +60,7 @@ def main() -> None:
                       + "\n" + "\n".join(f"> {shown}" for shown, _ in s["lines"])
                       + ("\n\n발음용 문장: " + " / ".join(spoken) if spoken else "") + "\n")
     speech = sum(t["speech"] for t in timings.values()) if timings else 0
-    md = f"""# dataquill 10분 발표·시연 영상 — 대본 및 연출 가이드
+    md = f"""# datapick 10분 발표·시연 영상 — 대본 및 연출 가이드
 
 > 자동 생성 문서 (`docs/video/tools/gen_guide.py`). 대본·시간은 `video_scenes.py` 에서만 수정합니다.
 
@@ -69,7 +69,7 @@ def main() -> None:
 | 파일 | `3조_final.mp4` (1920×1080 · 30fps · H.264 High · AAC 160k 스테레오 · 한국어), 자막 `3조_final.srt`, 하이라이트 `3조_highlight.mp4`, 썸네일 `video-thumbnail.png` |
 | 길이 | {mmss(TOTAL)} · 장면 {len(SCENES)}개 · 실제 발화 약 {speech:.0f}초 |
 | 구성 | PPT 1~14장 → 일반 사용자 시연 → 테스트 관리자(읽기 전용) 시연 → 계정 비교 → 운영 근거(/docs · /api/health · CI) → 클로징 15·16장 |
-| 시연 환경 | 운영 서비스 `https://dataquill.onrender.com` (공개 테스트 계정 2개 비교: 일반 사용자 · 테스트 관리자) |
+| 시연 환경 | 운영 서비스 `https://datapick.onrender.com` (공개 테스트 계정 2개 비교: 일반 사용자 · 테스트 관리자) |
 | 내레이션 | 신경망 합성 음성 `{VOICE}` (속도 {RATE}, 톤 {PITCH}), 문장 단위 합성 + 문장 사이 0.35초 쉼, 저역 제거·압축·명료도 보강 후 −16 LUFS |
 | 자막 | 화면 자막(한 줄 30자 이내) + `3조_final.srt` |
 | 연출 | 노란 원형 커서·클릭 링, 시안 테두리 강조(0.3초 페이드), 주소 칩, 구간 라벨(슬라이드 오른쪽 위 · 시연 왼쪽 아래), 노란 안내 태그 |

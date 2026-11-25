@@ -358,7 +358,7 @@ export default function Documents() {
   const upsert = useCallback((doc) => setDocs((list) => [doc, ...(list || []).filter((d) => d.id !== doc.id)].sort((a, b) => b.id - a.id)), [])
 
   const downloadLedger = () =>
-    download('/api/documents/ledger.xlsx', IS_MOCK ? 'dataquill_ledger.csv' : 'dataquill_ledger.xlsx').catch((err) => toast(err.message, 'error'))
+    download('/api/documents/ledger.xlsx', IS_MOCK ? 'datapick_ledger.csv' : 'datapick_ledger.xlsx').catch((err) => toast(err.message, 'error'))
 
   const visible = (docs || []).filter((d) => !filter || d.status === filter)
 

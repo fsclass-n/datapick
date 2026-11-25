@@ -1,9 +1,9 @@
 # Render Blueprint (Dashboard > New > Blueprint 로 연결하거나, 대시보드 수동 설정의 기준으로 사용)
 # main 푸시 시 각 서비스의 buildFilter 경로가 바뀐 경우에만 해당 서비스가 자동 배포된다.
 services:
-  # ---------- 백엔드 API: https://dataquill-api.onrender.com ----------
+  # ---------- 백엔드 API: https://datapick-api.onrender.com ----------
   - type: web
-    name: dataquill-api
+    name: datapick-api
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
     dockerContext: .
@@ -21,15 +21,15 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: ADMIN_EMAIL
-        value: operator@dataquill.io
+        value: operator@datapick.io
       - key: ADMIN_PASSWORD
         sync: false
       - key: FRONTEND_URL
-        value: https://dataquill.onrender.com
+        value: https://datapick.onrender.com
       - key: BACKEND_URL
-        value: https://dataquill-api.onrender.com
+        value: https://datapick-api.onrender.com
       - key: CORS_ORIGINS
-        value: https://dataquill.onrender.com,http://localhost:5173
+        value: https://datapick.onrender.com,https://datapick.netlify.app,https://datapick.duckdns.org,http://localhost:5173
       - key: DB_SSL
         value: "true"
       - key: SEED_TEST_ACCOUNTS
@@ -53,9 +53,9 @@ services:
       - key: KAKAO_CLIENT_SECRET
         sync: false
 
-  # ---------- 프런트엔드: https://dataquill.onrender.com ----------
+  # ---------- 프런트엔드: https://datapick.onrender.com ----------
   - type: web
-    name: dataquill
+    name: datapick
     runtime: static
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: frontend/dist
@@ -69,6 +69,6 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://dataquill-api.onrender.com
+        value: https://datapick-api.onrender.com
       - key: NODE_VERSION
         value: "22"

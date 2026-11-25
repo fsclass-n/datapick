@@ -29,7 +29,7 @@ def main() -> None:
     run(["ffmpeg", "-y", *inputs, "-filter_complex", ";".join(chains), "-map", "[v]", "-map", "[a]",
          "-c:v", "libx264", "-preset", "slow", "-profile:v", "high", "-pix_fmt", "yuv420p", "-b:v", "1100k", "-maxrate", "2200k",
          "-bufsize", "4400k", "-c:a", "aac", "-b:a", "128k", "-ar", "48000", "-ac", "2", "-metadata:s:a:0", "language=kor",
-         "-metadata", "title=dataquill 3분 하이라이트", "-movflags", "+faststart", OUT])
+         "-metadata", "title=datapick 3분 하이라이트", "-movflags", "+faststart", OUT])
     print(f"highlight: {OUT.name} {duration(OUT):.1f}s {OUT.stat().st_size / 1e6:.1f}MB  ({' → '.join(PICK)})")
 
     IMG.mkdir(parents=True, exist_ok=True)

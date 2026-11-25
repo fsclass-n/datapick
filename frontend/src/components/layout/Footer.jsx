@@ -7,7 +7,7 @@ import { API_URL, IS_MOCK } from '../../api/client'
 import Logo from './Logo'
 import { DOCUMENT_TOOL, IMAGE_CREDITS, TOOL_LIST } from '../../utils/tools'
 
-const REPO = 'https://github.com/fsclass-n/dataquill'
+const REPO = 'https://github.com/fsclass-n/datapick'
 
 const COLUMNS = [
   {
@@ -110,7 +110,7 @@ export default function Footer() {
         <div className="container-page flex flex-col gap-3 py-6 text-caption text-white/45 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <p>
-              <span className="font-semibold text-white/70">dataquill</span> · 운영 홍기흥 · 고객센터{' '}
+              <span className="font-semibold text-white/70">datapick</span> · 운영 홍기흥 · 고객센터{' '}
               <a href={`${REPO}/issues`} target="_blank" rel="noreferrer" className="underline-offset-2 hover:underline">GitHub Issues</a>
             </p>
             <p>개인 포트폴리오 프로젝트로 별도의 사업자 등록 정보가 없습니다. 업로드 문서는 데모 목적 외에 사용하지 않습니다.</p>
@@ -125,7 +125,7 @@ export default function Footer() {
               on Unsplash (Unsplash License)
             </p>
           </div>
-          <p>© {new Date().getFullYear()} dataquill. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} datapick. All rights reserved.</p>
         </div>
       </div>
       <TopButton />

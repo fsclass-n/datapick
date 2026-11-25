@@ -29,11 +29,11 @@ OUT_DIR = DOCS / "산출물"
 PDF_DIR = DOCS / "pdf"
 
 TEAM = "박미금(조장) · 김모란 · 이오리 · 홍기흥"
-TOPIC = "DataQuill — 생성형 AI × RPA 기반 데이터 입력 자동화 플랫폼"
+TOPIC = "DataPick — 생성형 AI × RPA 기반 데이터 입력 자동화 플랫폼"
 COURSE = "[K-Digital] 심화_생성형 AI와 AWS 클라우드를 활용한 풀스택 & 자동화 실무 개발 Final-Project"
-REPO = "https://github.com/fsclass-n/dataquill"
-SERVICE = "https://dataquill.onrender.com (API 문서: https://dataquill-api.onrender.com/docs)"
-PORTFOLIO = "https://fsclass-n.github.io/dataquill/"
+REPO = "https://github.com/fsclass-n/datapick"
+SERVICE = "https://datapick.onrender.com (API 문서: https://datapick-api.onrender.com/docs)"
+PORTFOLIO = "https://fsclass-n.github.io/datapick/"
 
 # ============================================================================ 1. 진행일지 (행 번호 → 줄 목록)
 # 행: 1 주제 · 2 팀원 · 3 수행과제 · 4 도달목표 · 5 지시사항 · 6 수행사항 · 7 미수행사항 · 8 수행결과
@@ -52,7 +52,7 @@ JOURNAL = {
             "[완료] 해결 방향: 형식 문제는 생성형 AI 구조화 출력, API가 없는 문제는 화면에 입력하는 RPA, AI 오류에 대비해 사람 검수 단계를 둠",
             "[완료] 입력 형식(PDF · 이미지 · EML · HTML · TXT · 본문 붙여넣기)과 추출 필드(거래처 · 사업자번호 · 거래일자 · 합계 · 부가세 · 결제수단 · 품목 · 적요 · 신뢰도) 정의",
             "[완료] 기술 스택 선정: FastAPI · SQLAlchemy · Gemini · Playwright · pandas · React · Tailwind · TiDB · Render",
-            "[완료] 저장소 origin 을 fsclass-n/dataquill 로 변경, 작업 내용을 docs/md 에 날짜별로 누적 기록하기로 결정"],
+            "[완료] 저장소 origin 을 fsclass-n/datapick 로 변경, 작업 내용을 docs/md 에 날짜별로 누적 기록하기로 결정"],
         7: ["[보류] 실제 ERP 연동 대상 선정 — 범위 외로 두고 데모 ERP 화면(/erp-demo)으로 검증하기로 결정",
             "[향후 과제] 파싱 정확도 정량 평가셋 구축"],
         8: ["[완료] 요구사항 정의(FR-01~11, NFR-01~06), 추출 필드 정의, 기술 스택 선정, 일정 · 위험 요소 정리(산출물 01)",
@@ -115,7 +115,7 @@ JOURNAL = {
     },
     "프로젝트_진행일지_4단계_배포.hwpx": {
         3: ["Docker 이미지 빌드, Render(백엔드 Web Service · 프런트 Static Site) · Netlify 배포, TiDB Cloud 연결, GitHub Actions CI/CD, 운영 점검"],
-        4: ["- 운영 서비스 dataquill.onrender.com · API dataquill-api.onrender.com 정상 동작",
+        4: ["- 운영 서비스 datapick.onrender.com · API datapick-api.onrender.com 정상 동작",
             "- main 푸시 시 변경 영역만 검증 · 배포"],
         5: ["- 비밀 값은 Render 대시보드에만 등록, .env.example 에 [LOCAL]/[RENDER]/[RENDER-FE] 등록 위치 표기",
             "- 운영 DB 는 직접 건드리지 않고 임시 DB 로 검증"],
@@ -219,7 +219,7 @@ BREAKS: dict[str, set] = {}   # 산출물별로 쪽 나눔이 필요한 제목 (
 
 
 def new_doc(no: str, title: str, stage: str, period: str) -> Document:
-    d = Document(f"DataQuill  ·  {no}. {title}", frozenset(BREAKS.get(no, ())))
+    d = Document(f"DataPick  ·  {no}. {title}", frozenset(BREAKS.get(no, ())))
     d.title(f"{no}. {title}", TOPIC)
     d.meta([["프로젝트", TOPIC], ["과정", COURSE], ["단계", stage], ["기간", period],
             ["작성", f"3조 · {TEAM}"], ["서비스", SERVICE], ["저장소", REPO]])
@@ -229,7 +229,7 @@ def new_doc(no: str, title: str, stage: str, period: str) -> Document:
 def output_01() -> Document:
     d = new_doc("01", "기획·분석 산출물", "1단계 기획·분석", "2026년 11월 23일(월) ~ 11월 24일(화)")
     d.h1("1. 프로젝트 개요 및 추진 목적")
-    d.p("DataQuill 은 영수증 · 세금계산서 · 거래 이메일 같은 비정형 문서를 생성형 AI(Google Gemini)가 읽어 정형 데이터로 바꾸고, "
+    d.p("DataPick 은 영수증 · 세금계산서 · 거래 이메일 같은 비정형 문서를 생성형 AI(Google Gemini)가 읽어 정형 데이터로 바꾸고, "
         "사람이 검수한 값을 RPA(Playwright) 로봇이 웹 ERP 전표 화면과 엑셀 원장에 대신 입력하는 B2B 데이터 입력 자동화 플랫폼이다. "
         "같은 읽기 엔진으로 견적서 비교 · 계약서 검토 · 건강검진 추이 AI 분석 도구 3종도 제공한다.")
     d.table(["구분", "내용"], [
@@ -658,9 +658,9 @@ def output_04() -> Document:
     d = new_doc("04", "배포 산출물", "4단계 배포", "2026년 12월 10일(목) ~ 12월 17일(목)")
     d.h1("1. 배포 구성")
     d.table(["구분", "주소", "플랫폼"], [
-        ["프런트엔드", "https://dataquill.onrender.com", "Render Static Site (/* → /index.html Rewrite)"],
-        ["백엔드 API", "https://dataquill-api.onrender.com (/docs, /api/health)", "Render Web Service (Docker)"],
-        ["프런트엔드(보조)", "https://dataquill.netlify.app", "Netlify"],
+        ["프런트엔드", "https://datapick.onrender.com", "Render Static Site (/* → /index.html Rewrite)"],
+        ["백엔드 API", "https://datapick-api.onrender.com (/docs, /api/health)", "Render Web Service (Docker)"],
+        ["프런트엔드(보조)", "https://datapick.netlify.app", "Netlify"],
         ["데이터베이스", "TiDB Cloud Serverless", "MySQL 호환 · TLS 필수"],
         ["포트폴리오", PORTFOLIO, "GitHub Pages (index.html)"],
         ["저장소", REPO, "GitHub"]], widths=[18, 46, 36], label_col=True)
@@ -717,7 +717,7 @@ cd frontend && npm run lint && npm run build     # 프런트 검증""")
         ["자동 테스트", "pytest 8.3.5 + FastAPI TestClient, 임시 SQLite, GEMINI_API_KEY · OAuth 키를 비워 로컬 설정과 무관하게 실행"],
         ["관리자 토큰", "테스트 전용 ADMIN_TOKEN 을 환경 변수로 주입"],
         ["외부 API", "Gemini 재시도는 가짜 클라이언트로 429/503/400 응답을 재현"],
-        ["운영 점검", "dataquill.onrender.com · dataquill-api.onrender.com, 운영 DB 는 건드리지 않고 임시 DB 로 별도 검증"],
+        ["운영 점검", "datapick.onrender.com · datapick-api.onrender.com, 운영 DB 는 건드리지 않고 임시 DB 로 별도 검증"],
         ["화면 점검", "Playwright(Chromium) 데스크톱 1440px · 모바일 390px"]], widths=[18, 82], label_col=True)
     d.h2("6.3 기능별 테스트 항목 및 결과")
     d.table(["ID", "테스트 항목", "입력값", "예상 결과", "결과"], [
@@ -736,7 +736,7 @@ cd frontend && npm run lint && npm run build     # 프런트 검증""")
         ["T-13", "데모 ERP 전표", "거래처 · 일자 · 금액", "JV- 전표번호 발급", "통과"],
         ["T-14", "Gemini 재시도", "503 ×2 / 503 ×9 / 400 ×1", "3회째 성공 / 4회 후 실패 / 즉시 실패", "통과"],
         ["T-15", "운영 관리자 토큰", "올바른 토큰 / 틀린 토큰 5회 / 미설정", "admin 발급 / 429 차단 / 503", "통과"],
-        ["T-16", "테스트 관리자 조회", "admin@dataquill.io", "role=test_admin, 관리자 GET 200", "통과"],
+        ["T-16", "테스트 관리자 조회", "admin@datapick.io", "role=test_admin, 관리자 GET 200", "통과"],
         ["T-17", "테스트 관리자 쓰기", "권한 변경 · 문서 생성 · 업로드 · 삭제 · RPA", "모두 403(읽기 전용 안내)", "통과"],
         ["T-18", "공개 계정 권한 고정", "테스트 계정 권한 변경 · 기동 시 복원", "400 · test_admin 복원", "통과"]],
         widths=[7, 20, 28, 34, 11], align=["C", "L", "L", "L", "C"])
@@ -773,8 +773,8 @@ cd frontend && npm run lint && npm run build     # 프런트 검증""")
 
     d.h1("7. 결과물")
     d.table(["결과물", "위치"], [
-        ["소스 코드 · README", REPO], ["운영 서비스", "https://dataquill.onrender.com"],
-        ["API 문서", "https://dataquill-api.onrender.com/docs"], ["포트폴리오", PORTFOLIO], ["작업 기록", "docs/md/"]], widths=[22, 78], label_col=True)
+        ["소스 코드 · README", REPO], ["운영 서비스", "https://datapick.onrender.com"],
+        ["API 문서", "https://datapick-api.onrender.com/docs"], ["포트폴리오", PORTFOLIO], ["작업 기록", "docs/md/"]], widths=[22, 78], label_col=True)
     return d
 
 
@@ -839,16 +839,16 @@ def output_05() -> Document:
 
     d.h1("7. 시스템 운영 및 관리 방법")
     d.table(["작업", "방법"], [
-        ["상태 확인", "https://dataquill-api.onrender.com/api/health (status · env · parser) — 무료 플랜이라 시연 전 호출해 서버를 깨움"],
+        ["상태 확인", "https://datapick-api.onrender.com/api/health (status · env · parser) — 무료 플랜이라 시연 전 호출해 서버를 깨움"],
         ["운영 관리자", "Render 대시보드에 ADMIN_TOKEN 등록 → /admin/login 에서 토큰 입력"],
-        ["테스트 계정", "user@dataquill.io / admin@dataquill.io(읽기 전용) — 권한은 서버 기동 시 자동 복원"],
+        ["테스트 계정", "user@datapick.io / admin@datapick.io(읽기 전용) — 권한은 서버 기동 시 자동 복원"],
         ["비밀 값 변경", "Render 대시보드 Environment 수정 → 자동 재배포"],
         ["배포", "main 푸시 → Actions 테스트 · 빌드 → Render 가 변경 영역만 배포"],
         ["문서 재생성", "python docs/tools/build_docs.py (HWPX · PDF 동시 생성 및 검수)"]], widths=[16, 84], label_col=True)
 
     d.h1("8. 배포 환경 및 실행 방법")
     d.table(["대상", "주소", "비고"], [
-        ["서비스", "https://dataquill.onrender.com", "Render Static Site"], ["API", "https://dataquill-api.onrender.com/docs", "Render Web Service(Docker)"],
+        ["서비스", "https://datapick.onrender.com", "Render Static Site"], ["API", "https://datapick-api.onrender.com/docs", "Render Web Service(Docker)"],
         ["포트폴리오", PORTFOLIO, "GitHub Pages"], ["로컬 실행", "산출물 04 · 5. 실행 방법", "Python 3.11 · Node.js"]], widths=[14, 50, 36], label_col=True)
 
     d.h1("9. 최종 결과물 목록")

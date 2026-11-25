@@ -1,11 +1,11 @@
-# dataquill - 에이전트 작업 메모
+# datapick - 에이전트 작업 메모
 
 ## 프로젝트
 - PDF 영수증/이메일 등 비정형 데이터 → OCR + LLM(Gemini) 해석 → RPA로 ERP/엑셀 자동 입력하는 B2B 솔루션
 - 2026-11-24: AI 도구 3종(견적서 비교 · 계약서 빨간펜 · 건강검진 추이) 추가, 브랜드 · 로고 · 프런트 전면 개편
 - 3조 팀 프로젝트 — 팀원 4명: 박미금(조장) · 김모란 · 이오리(발표자) · 홍기흥
-- Repo: https://github.com/fsclass-n/dataquill (origin을 omnitask.git에서 변경함, 2026-11-16)
-- Frontend: Netlify (https://dataquill.netlify.app) / Backend: Render (https://dataquill.onrender.com)
+- Repo: https://github.com/fsclass-n/datapick (origin을 omnitask.git에서 변경함, 2026-11-16)
+- Frontend: Netlify (https://datapick.netlify.app) / Backend: Render (https://datapick.onrender.com)
 
 ## 로컬 환경 (확인됨)
 - Windows, Node v24.15.0, npm 11.12.1, Python 3.11.9 (`py -3.11`)
@@ -44,9 +44,9 @@
 
 ## 권한 모델 (2026-11-17 개편)
 - `admin`(운영 관리자): `/api/auth/admin-login` + `ADMIN_TOKEN` 으로만 진입, 전체 CRUD. 5회 실패/10분 차단(프로세스 메모리)
-- `test_admin`(테스트 관리자, admin@dataquill.io): 관리자 화면 조회만. `deps.get_current_user` 에서 GET/HEAD/OPTIONS 외 403
+- `test_admin`(테스트 관리자, admin@datapick.io): 관리자 화면 조회만. `deps.get_current_user` 에서 GET/HEAD/OPTIONS 외 403
 - 공개 테스트 계정 권한은 `backend/app/test_accounts.py` 기준으로 기동 시 복원, 권한 변경 API 로 변경 불가
-- 프런트 Mock(`src/api/mock.js`)도 같은 규칙을 따라야 함 (DB 키 `dq_mock_db_v2`)
+- 프런트 Mock(`src/api/mock.js`)도 같은 규칙을 따라야 함 (DB 키 `dp_mock_db_v2`)
 
 ## UI 구조
 - 모든 페이지 공통 `components/layout/SiteLayout` (Header · Footer · 원형 Top 버튼), `/` 는 항상 메인(랜딩) `pages/Home`
@@ -74,7 +74,7 @@
 - 소셜 로그인(Google/Naver/Kakao): 실제 OAuth 연동 (백엔드 콜백 구현, Client ID/Secret 필요)
 - 2026-11-17: 1단계 프런트엔드 완성 + 백엔드/RPA/AI 파이프라인 구현, 배포 설정 파일 작성 (실배포 전)
 - 배포: 플랫폼 Git 연동 자동 배포 (Netlify: netlify.toml ignore 로 frontend/ 변경 시만, Render: render.yaml buildFilter). Actions(deploy.yml)는 테스트·빌드만, Secrets 미등록 시 배포 단계 skip
-- 도메인: 프런트 https://dataquill.onrender.com (Render Static Site), 백엔드 https://dataquill-api.onrender.com (Render Web Service). Netlify 는 보조
+- 도메인: 프런트 https://datapick.onrender.com (Render Static Site), 백엔드 https://datapick-api.onrender.com (Render Web Service). Netlify 는 보조
 - TiDB Cloud 는 DB_SSL=true 필수 (false 면 1105 insecure transport 오류로 기동 실패)
 
 ## 진행일지 · 산출물 (docs/*.hwpx → docs/pdf)

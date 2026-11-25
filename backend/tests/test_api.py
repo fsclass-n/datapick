@@ -40,7 +40,7 @@ def test_register_and_me(client):
 
 
 def test_login_failure(client):
-    assert client.post("/api/auth/login", json={"email": "user@dataquill.io", "password": "Wrong123!"}).status_code == 401
+    assert client.post("/api/auth/login", json={"email": "user@datapick.io", "password": "Wrong123!"}).status_code == 401
 
 
 def test_oauth_unconfigured_redirects_to_login(client):
@@ -128,9 +128,9 @@ def test_admin_user_management_and_stats(client, admin_headers):
     res = client.patch(f"/api/admin/users/{target['id']}/role", headers=admin_headers, json={"role": "admin"})
     assert res.json()["role"] == "admin"
     admins = {u["email"] for u in client.get("/api/admin/users?role=admin", headers=admin_headers).json()}
-    assert admins == {"new@example.com", "operator@dataquill.io"}
+    assert admins == {"new@example.com", "operator@datapick.io"}
 
-    me = next(u for u in users if u["email"] == "operator@dataquill.io")
+    me = next(u for u in users if u["email"] == "operator@datapick.io")
     res = client.patch(f"/api/admin/users/{me['id']}/role", headers=admin_headers, json={"role": "user"})
     assert res.status_code == 400
 
@@ -244,7 +244,7 @@ def test_admin_login_issues_full_admin(client, admin_headers):
 
 
 def test_admin_credentials_also_work_on_normal_login(client):
-    res = client.post("/api/auth/login", json={"email": "operator@dataquill.io", "password": "test-admin-pw-0123!"})
+    res = client.post("/api/auth/login", json={"email": "operator@datapick.io", "password": "test-admin-pw-0123!"})
     assert res.status_code == 200 and res.json()["user"]["role"] == "admin"
 
 
@@ -252,13 +252,13 @@ def test_admin_login_rejects_wrong_credentials_and_rate_limits(client):
     from backend.app.routers import auth
 
     auth.ADMIN_LOGIN_FAILURES.clear()
-    for body in ({"email": "operator@dataquill.io", "password": "wrong"},
-                 {"email": "nobody@dataquill.io", "password": "test-admin-pw-0123!"},
-                 {"email": "operator@dataquill.io", "password": "wrong"},
-                 {"email": "operator@dataquill.io", "password": "wrong"},
-                 {"email": "operator@dataquill.io", "password": "wrong"}):
+    for body in ({"email": "operator@datapick.io", "password": "wrong"},
+                 {"email": "nobody@datapick.io", "password": "test-admin-pw-0123!"},
+                 {"email": "operator@datapick.io", "password": "wrong"},
+                 {"email": "operator@datapick.io", "password": "wrong"},
+                 {"email": "operator@datapick.io", "password": "wrong"}):
         assert client.post("/api/auth/admin-login", json=body).status_code == 401
-    res = client.post("/api/auth/admin-login", json={"email": "operator@dataquill.io", "password": "test-admin-pw-0123!"})
+    res = client.post("/api/auth/admin-login", json={"email": "operator@datapick.io", "password": "test-admin-pw-0123!"})
     assert res.status_code == 429
     auth.ADMIN_LOGIN_FAILURES.clear()
 
@@ -283,7 +283,7 @@ def test_test_admin_can_view_admin_pages(client, test_admin_headers):
 
 def test_test_admin_writes_are_blocked(client, test_admin_headers, admin_headers):
     users = client.get("/api/admin/users", headers=admin_headers).json()
-    target = next(u for u in users if u["email"] == "user@dataquill.io")
+    target = next(u for u in users if u["email"] == "user@datapick.io")
     blocked = [
         client.patch(f"/api/admin/users/{target['id']}/role", headers=test_admin_headers, json={"role": "admin"}),
         client.post("/api/documents/text", headers=test_admin_headers, json={"text": "합계: 1,000원 2026-11-17"}),
@@ -298,7 +298,7 @@ def test_test_admin_writes_are_blocked(client, test_admin_headers, admin_headers
 
 def test_test_accounts_roles_cannot_be_changed(client, admin_headers):
     users = client.get("/api/admin/users", headers=admin_headers).json()
-    for email in ("admin@dataquill.io", "user@dataquill.io"):
+    for email in ("admin@datapick.io", "user@datapick.io"):
         target = next(u for u in users if u["email"] == email)
         res = client.patch(f"/api/admin/users/{target['id']}/role", headers=admin_headers, json={"role": "admin"})
         assert res.status_code == 400, email
@@ -312,8 +312,8 @@ def test_seed_restores_test_account_roles(client):
     from backend.app.models import User
 
     with SessionLocal() as db:
-        db.scalar(select(User).where(User.email == "admin@dataquill.io")).role = "admin"
+        db.scalar(select(User).where(User.email == "admin@datapick.io")).role = "admin"
         db.commit()
     seed_test_accounts()
     with SessionLocal() as db:
-        assert db.scalar(select(User).where(User.email == "admin@dataquill.io")).role == "test_admin"
+        assert db.scalar(select(User).where(User.email == "admin@datapick.io")).role == "test_admin"

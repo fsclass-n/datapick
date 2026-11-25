@@ -25,8 +25,8 @@ import { Spinner } from '../components/ui'
 import { PASSWORD_RULES, isValidEmail, isValidPassword } from '../utils/format'
 
 const TEST_ACCOUNTS = {
-  user: { email: 'user@dataquill.io', password: 'User1234!', label: '일반 사용자', desc: 'AI 도구 · 문서 자동 입력', icon: faUser },
-  admin: { email: 'admin@dataquill.io', password: 'Admin1234!', label: '테스트 관리자', desc: '관리자 화면 · 읽기 전용', icon: faEyeIcon },
+  user: { email: 'user@datapick.io', password: 'User1234!', label: '일반 사용자', desc: 'AI 도구 · 문서 자동 입력', icon: faUser },
+  admin: { email: 'admin@datapick.io', password: 'Admin1234!', label: '테스트 관리자', desc: '관리자 화면 · 읽기 전용', icon: faEyeIcon },
 }
 
 const SOCIAL = [
@@ -180,7 +180,7 @@ export default function Login() {
 
           <h1 className="text-2xl font-bold sm:text-3xl">{isSignup ? '계정 만들기' : '다시 오신 것을 환영합니다'}</h1>
           <p className="mt-2 text-sm text-slate-500">
-            {isSignup ? '문서를 데이터로 바꿀 계정을 만들어 주세요.' : 'dataquill 문서 데이터 워크스페이스에 로그인하세요.'}
+            {isSignup ? '문서를 데이터로 바꿀 계정을 만들어 주세요.' : 'datapick 문서 데이터 워크스페이스에 로그인하세요.'}
           </p>
 
           {!isSignup && (

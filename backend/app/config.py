@@ -20,11 +20,11 @@ class Settings:
     app_env = os.getenv("APP_ENV", "local")
     secret_key = os.getenv("SECRET_KEY", "dev-secret-change-me")
     # 운영 관리자 계정 (비우면 운영 관리자 로그인 비활성)
-    admin_email = os.getenv("ADMIN_EMAIL", "operator@dataquill.io").lower()
+    admin_email = os.getenv("ADMIN_EMAIL", "operator@datapick.io").lower()
     admin_password = os.getenv("ADMIN_PASSWORD", "")
     jwt_expire_minutes = int(os.getenv("JWT_EXPIRE_MINUTES", "720"))
 
-    database_url = os.getenv("DATABASE_URL", "sqlite:///./storage/dataquill.db")
+    database_url = os.getenv("DATABASE_URL", "sqlite:///./storage/datapick.db")
     db_ssl = _bool("DB_SSL")
     db_ssl_ca = os.getenv("DB_SSL_CA", "")
 
@@ -33,7 +33,7 @@ class Settings:
 
     frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/")
     backend_url = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
-    cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,https://dataquill.onrender.com").split(",") if o.strip()]
+    cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173,https://datapick.onrender.com").split(",") if o.strip()]
 
     gemini_api_key = os.getenv("GEMINI_API_KEY", "")
     gemini_model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")

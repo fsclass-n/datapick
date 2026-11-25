@@ -80,7 +80,7 @@ export default function AdminLogin() {
                 autoComplete="username"
                 spellCheck={false}
                 disabled={!enabled}
-                placeholder="operator@dataquill.io"
+                placeholder="operator@datapick.io"
               />
             </div>
           </div>

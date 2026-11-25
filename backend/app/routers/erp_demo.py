@@ -73,7 +73,7 @@ PAGE = """<!doctype html>
 </form>
 <section>
  <h2>전표 목록</h2>
- <p class="hint">저장된 전표가 3초 간격으로 자동 갱신됩니다. DataQuill 에서 'ERP 자동 타이핑'을 실행하면 여기에 새 전표가 나타납니다.</p>
+ <p class="hint">저장된 전표가 3초 간격으로 자동 갱신됩니다. DataPick 에서 'ERP 자동 타이핑'을 실행하면 여기에 새 전표가 나타납니다.</p>
  <table id="vlist"><thead><tr>
   <th>전표번호</th><th>거래일자</th><th>거래처</th><th>사업자번호</th>
   <th class="num">합계금액</th><th class="num">부가세</th><th>적요</th>

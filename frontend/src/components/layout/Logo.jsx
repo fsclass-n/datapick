@@ -45,14 +45,14 @@ export function LogoMark({ tone = 'tile', className = 'size-9' }) {
 export function Wordmark({ light = false, className = 'text-lg' }) {
   return (
     <span className={`font-heading font-bold tracking-tight ${className} ${light ? 'text-white' : 'text-ink'}`}>
-      data<span className="text-gold-500">quill</span>
+      data<span className="text-gold-500">pick</span>
     </span>
   )
 }
 
 export default function Logo({ light = false, to = '/' }) {
   return (
-    <Link to={to} className="flex items-center gap-2.5" aria-label="dataquill 메인으로">
+    <Link to={to} className="flex items-center gap-2.5" aria-label="datapick 메인으로">
       <LogoMark className="size-9 drop-shadow-sm" />
       <Wordmark light={light} />
     </Link>

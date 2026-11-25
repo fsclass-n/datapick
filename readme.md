@@ -1,16 +1,16 @@
 <div align="center">
 
-# DataQuill
+# DataPick
 
 ### 문서를 올리면, 데이터가 답합니다 — 생성형 AI × 규칙 판정 × RPA
 
 **견적서는 한 표로 비교하고, 계약서는 위험 조항에 빨간 줄을 긋고, 건강검진은 나빠진 수치만 골라냅니다.<br/>영수증 · 청구 메일은 AI가 정형화하고, 사람이 검수한 값을 RPA 로봇이 ERP 와 엑셀 원장에 입력합니다.**
 
-<a href="https://fsclass-n.github.io/dataquill/">
-  <img src="docs/assets/portfolio-banner.jpg" alt="DataQuill 포트폴리오 — fsclass-n.github.io/dataquill" width="900"/>
+<a href="https://fsclass-n.github.io/datapick/">
+  <img src="docs/assets/portfolio-banner.jpg" alt="DataPick 포트폴리오 — fsclass-n.github.io/datapick" width="900"/>
 </a>
 
-**🔗 포트폴리오 → [fsclass-n.github.io/dataquill](https://fsclass-n.github.io/dataquill/)**
+**🔗 포트폴리오 → [fsclass-n.github.io/datapick](https://fsclass-n.github.io/datapick/)**
 
 <br/>
 
@@ -26,19 +26,19 @@
 ![TiDB](https://img.shields.io/badge/TiDB_Cloud-MySQL-E30C34?style=for-the-badge&logo=tidb&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Render-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-[![CI/CD](https://img.shields.io/github/actions/workflow/status/fsclass-n/dataquill/deploy.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/fsclass-n/dataquill/actions/workflows/deploy.yml)
+[![CI/CD](https://img.shields.io/github/actions/workflow/status/fsclass-n/datapick/deploy.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/fsclass-n/datapick/actions/workflows/deploy.yml)
 ![Tests](https://img.shields.io/badge/pytest-55%20passed-0A9EDC?style=flat-square&logo=pytest&logoColor=white)
-[![Issues](https://img.shields.io/github/issues/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/issues)
-[![Last Commit](https://img.shields.io/github/last-commit/fsclass-n/dataquill?style=flat-square)](https://github.com/fsclass-n/dataquill/commits/main)
-![Repo Size](https://img.shields.io/github/repo-size/fsclass-n/dataquill?style=flat-square)
-![Top Language](https://img.shields.io/github/languages/top/fsclass-n/dataquill?style=flat-square)
+[![Issues](https://img.shields.io/github/issues/fsclass-n/datapick?style=flat-square)](https://github.com/fsclass-n/datapick/issues)
+[![Last Commit](https://img.shields.io/github/last-commit/fsclass-n/datapick?style=flat-square)](https://github.com/fsclass-n/datapick/commits/main)
+![Repo Size](https://img.shields.io/github/repo-size/fsclass-n/datapick?style=flat-square)
+![Top Language](https://img.shields.io/github/languages/top/fsclass-n/datapick?style=flat-square)
 
-[**라이브 서비스**](https://dataquill.onrender.com) · [**API 문서 (Swagger)**](https://dataquill-api.onrender.com/docs) · [**포트폴리오**](https://fsclass-n.github.io/dataquill/) · [**발표자료 (PDF)**](docs/pdf/프로젝트_발표자료.pdf)
+[**라이브 서비스**](https://datapick.onrender.com) · [**API 문서 (Swagger)**](https://datapick-api.onrender.com/docs) · [**포트폴리오**](https://fsclass-n.github.io/datapick/) · [**발표자료 (PDF)**](docs/pdf/프로젝트_발표자료.pdf)
 
 </div>
 
 > **테스트 계정** — 로그인 화면의 버튼 한 번으로 체험할 수 있습니다.<br/>
-> 일반 사용자 `user@dataquill.io / User1234!` · 테스트 관리자(읽기 전용) `admin@dataquill.io / Admin1234!`<br/>
+> 일반 사용자 `user@datapick.io / User1234!` · 테스트 관리자(읽기 전용) `admin@datapick.io / Admin1234!`<br/>
 > 무료 플랜이라 첫 접속 시 서버가 깨어나는 데 1분 정도 걸릴 수 있습니다.
 
 ---
@@ -63,7 +63,7 @@
 
 ## 1. Overview
 
-| 문제 | 현상 | DataQuill 의 해결 |
+| 문제 | 현상 | DataPick 의 해결 |
 | --- | --- | --- |
 | **이중 수기 입력** | 같은 영수증 · 청구 메일을 ERP 에 한 번, 엑셀 원장에 또 한 번 입력 | 한 번 추출한 값을 엑셀 원장 적재 + ERP 자동 타이핑 |
 | **비정형 문서** | 거래처마다 양식이 달라 정규식 규칙이 쉽게 깨짐 | Gemini 구조화 출력(Pydantic 스키마 강제) |
@@ -77,7 +77,7 @@
 
 ## 2. Key Features
 
-[![▶ 10분 발표 · 시연 영상 보기](https://img.shields.io/badge/%E2%96%B6%20%EB%B0%9C%ED%91%9C%20%C2%B7%20%EC%8B%9C%EC%97%B0%20%EC%98%81%EC%83%81%20%EB%B3%B4%EA%B8%B0-10%EB%B6%84%20%C2%B7%20GitHub%20Pages-6366F1?style=for-the-badge&logo=githubpages&logoColor=white)](https://fsclass-n.github.io/dataquill/#screening)
+[![▶ 10분 발표 · 시연 영상 보기](https://img.shields.io/badge/%E2%96%B6%20%EB%B0%9C%ED%91%9C%20%C2%B7%20%EC%8B%9C%EC%97%B0%20%EC%98%81%EC%83%81%20%EB%B3%B4%EA%B8%B0-10%EB%B6%84%20%C2%B7%20GitHub%20Pages-6366F1?style=for-the-badge&logo=githubpages&logoColor=white)](https://fsclass-n.github.io/datapick/#screening)
 
 <sub>포트폴리오 페이지에서 바로 재생됩니다(다운로드 없음) — 챕터 17개로 원하는 장면 이동, 60초 하이라이트 포함.</sub>
 
@@ -255,7 +255,7 @@ flowchart TD
 ## 7. Directory Structure
 
 ```text
-dataquill/
+datapick/
 ├── backend/
 │   ├── app/
 │   │   ├── main.py              # 앱 생성 · CORS · 테이블 생성 · 테스트 계정 시드/권한 복원
@@ -318,9 +318,9 @@ cd frontend && npm run lint && npm run build       # lint 오류 0 · build 성�
 
 | 대상 | 주소 | 플랫폼 |
 | --- | --- | --- |
-| 서비스 | https://dataquill.onrender.com | Render Static Site (`/* → /index.html`) |
-| API | https://dataquill-api.onrender.com/docs | Render Web Service (Docker) |
-| 포트폴리오 | https://fsclass-n.github.io/dataquill/ | GitHub Pages |
+| 서비스 | https://datapick.onrender.com | Render Static Site (`/* → /index.html`) |
+| API | https://datapick-api.onrender.com/docs | Render Web Service (Docker) |
+| 포트폴리오 | https://fsclass-n.github.io/datapick/ | GitHub Pages |
 | DB | TiDB Cloud Serverless | MySQL 호환 · TLS |
 
 - **변경 영역만 검증 · 배포** — GitHub Actions `paths-filter` 로 `frontend/**` 는 lint · build, `backend/** · rpa/** · requirements.txt` 는 pytest. Render Build Filter 로 해당 서비스만 재배포 → 문서만 고친 커밋은 어떤 서비스도 다시 빌드하지 않음
@@ -348,5 +348,5 @@ cd frontend && npm run lint && npm run build       # lint 오류 0 · build 성�
 | 데모 ERP 대상 검증 · JWT 를 localStorage 에 저장 | 실제 ERP 커넥터(API 우선), HttpOnly 쿠키 인증 |
 
 <div align="center">
-<sub>DataQuill · 3조 (조장 박미금 · 발표 이오리 · 김모란 · 홍기흥)</sub>
+<sub>DataPick · 3조 (조장 박미금 · 발표 이오리 · 김모란 · 홍기흥)</sub>
 </div>

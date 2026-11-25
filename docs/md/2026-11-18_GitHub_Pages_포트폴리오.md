@@ -1,7 +1,7 @@
 # 2026-11-18 GitHub Pages 포트폴리오 (index.html)
 
 ## 결과물
-- `index.html`: 단일 파일 포트폴리오 (CSS · JS 내장, 빌드 없음) → https://fsclass-n.github.io/dataquill/
+- `index.html`: 단일 파일 포트폴리오 (CSS · JS 내장, 빌드 없음) → https://fsclass-n.github.io/datapick/
 - `.nojekyll`: Jekyll 처리 없이 저장소 파일을 그대로 서빙
 - `docs/video/highlight-thumbnail.jpg`: 하이라이트 영상 0:28 프레임에서 추출한 썸네일 (가상 이미지 아님)
 - `readme.md`: 최상단에 포트폴리오 · 라이브 서비스 링크 추가 (기존 내용 유지)
@@ -23,10 +23,10 @@
 - 영상 · 챕터 · 단계 · 사건 · 산출물은 `<script>` 상단 데이터(MEDIA, CHAPTERS, STEPS, INCIDENTS, FILES)만 고치면 됨
 
 ## 버튼
-- 상단 고정 CTA: `라이브 서비스` (https://dataquill.onrender.com)
+- 상단 고정 CTA: `라이브 서비스` (https://datapick.onrender.com)
 - 히어로 · 메뉴 · 마무리: `온라인 발표 보기` (10분 영상 섹션으로 이동하며 제자리 재생)
 
-## 검증 (로컬: /dataquill/ 경로 + Range 지원 서버, Google Chrome)
+## 검증 (로컬: /datapick/ 경로 + Range 지원 서버, Google Chrome)
 - 로컬 리소스 27개 전부 200, 콘솔 오류 0
 - 썸네일 → 같은 영역(926×520)에서 재생, 페이지 이동 · 모달 없음, 기본 컨트롤 · 음소거
 - 챕터(03:48) · 타임라인(06:30) 이동, 하이라이트 재생 시 본편 자동 정지, 종료 카드 → 다시 재생 / 썸네일 복귀

@@ -3,9 +3,9 @@ import { runTool } from './mockTools'
 // VITE_API_URL 이 비어 있을 때(Netlify 단독 배포 1단계) 사용하는 브라우저 내 목업 API.
 // 실제 백엔드(FastAPI)와 동일한 경로·응답 형태를 localStorage 로 흉내 낸다.
 
-const DB_KEY = 'dq_mock_db_v2'
+const DB_KEY = 'dp_mock_db_v2'
 const ADMIN_ROLES = ['admin', 'test_admin']
-const TEST_ACCOUNT_EMAILS = ['user@dataquill.io', 'admin@dataquill.io']
+const TEST_ACCOUNT_EMAILS = ['user@datapick.io', 'admin@datapick.io']
 const PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/
 
 const fail = (status, message) => {
@@ -23,8 +23,8 @@ const VENDORS = ['스타벅스 강남R점', '쿠팡(주)', '네이버클라우�
 
 function seed() {
   const users = [
-    { id: 1, email: 'user@dataquill.io', name: '테스트 사용자', password: 'User1234!', role: 'user', provider: 'local', created_at: daysAgo(30), last_login_at: null },
-    { id: 2, email: 'admin@dataquill.io', name: '테스트 관리자', password: 'Admin1234!', role: 'test_admin', provider: 'local', created_at: daysAgo(30), last_login_at: null },
+    { id: 1, email: 'user@datapick.io', name: '테스트 사용자', password: 'User1234!', role: 'user', provider: 'local', created_at: daysAgo(30), last_login_at: null },
+    { id: 2, email: 'admin@datapick.io', name: '테스트 관리자', password: 'Admin1234!', role: 'test_admin', provider: 'local', created_at: daysAgo(30), last_login_at: null },
     { id: 3, email: 'kim.hr@acme.co.kr', name: '김인사', password: null, role: 'user', provider: 'google', created_at: daysAgo(12), last_login_at: daysAgo(1) },
     { id: 4, email: 'lee.fin@acme.co.kr', name: '이재무', password: null, role: 'user', provider: 'naver', created_at: daysAgo(8), last_login_at: daysAgo(2) },
     { id: 5, email: 'park@acme.co.kr', name: '박회계', password: null, role: 'user', provider: 'kakao', created_at: daysAgo(4), last_login_at: daysAgo(0) },
@@ -258,7 +258,7 @@ export async function mockRequest(path, { method, body, token }) {
     case 'GET /api/auth/me':
       return publicUser(user)
     case 'DELETE /api/auth/me': {
-      if (['user@dataquill.io', 'admin@dataquill.io'].includes(user.email)) fail(403, '공개 체험용 계정은 탈퇴할 수 없습니다.')
+      if (['user@datapick.io', 'admin@datapick.io'].includes(user.email)) fail(403, '공개 체험용 계정은 탈퇴할 수 없습니다.')
       if (user.password && body?.password !== user.password) fail(401, '비밀번호가 일치하지 않습니다.')
       db.users = db.users.filter((u) => u.id !== user.id)
       const docIds = db.documents.filter((d) => d.user_id === user.id).map((d) => d.id)

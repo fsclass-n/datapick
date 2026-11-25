@@ -101,7 +101,7 @@ def download_ledger(user: User = Depends(get_current_user)):
     path = _ledger_path(user.id)
     if not path.exists():
         raise HTTPException(status.HTTP_404_NOT_FOUND, "아직 엑셀에 적재된 데이터가 없습니다.")
-    return FileResponse(path, filename="dataquill_ledger.xlsx")
+    return FileResponse(path, filename="datapick_ledger.xlsx")
 
 
 @router.get("/documents/{doc_id}", response_model=DocumentDetailOut)

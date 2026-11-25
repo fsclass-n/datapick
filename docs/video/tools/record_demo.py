@@ -1,4 +1,4 @@
-"""dataquill.onrender.com 시연 자동 녹화 (Playwright + Microsoft Edge, 1920x1080).
+"""datapick.onrender.com 시연 자동 녹화 (Playwright + Microsoft Edge, 1920x1080).
 
     .venv/Scripts/python docs/video/tools/record_demo.py [main|ext|compare|all]
 
@@ -27,10 +27,10 @@ from video_scenes import SCENES
 sys.path.insert(0, str(ROOT))
 from rpa.erp_typer import FIELD_SELECTORS, RESULT_SELECTOR, SUBMIT_SELECTOR  # noqa: E402  같은 셀렉터 맵으로 재현
 
-SITE = "https://dataquill.onrender.com"
-API = "https://dataquill-api.onrender.com"
-USER = {"email": "user@dataquill.io", "password": "User1234!"}
-TEST_ADMIN = {"email": "admin@dataquill.io", "password": "Admin1234!"}
+SITE = "https://datapick.onrender.com"
+API = "https://datapick-api.onrender.com"
+USER = {"email": "user@datapick.io", "password": "User1234!"}
+TEST_ADMIN = {"email": "admin@datapick.io", "password": "Admin1234!"}
 RECEIPT = VIDEO / "assets" / "sample_receipt_scan.pdf"
 RECEIPT_NAME = "스캔영수증_브런치카페퀼_1117.pdf"
 REVIEWED_SUMMARY = "역삼점 팀 점심 식대"
@@ -473,7 +473,7 @@ def record_main(browser):
     search = page.get_by_placeholder("이름 또는 이메일 검색")
     r.cut_wait(lambda: search.wait_for(timeout=60000))
     r.wait(0.5)
-    r.type(search, "dataquill", 130)
+    r.type(search, "datapick", 130)
     r.wait(1.2)
     role = page.get_by_label("권한 필터")
     r.click(role, 0.5)
@@ -549,10 +549,10 @@ def proof_html() -> str:
     esc = lambda o: json.dumps(o, ensure_ascii=False).replace("&", "&amp;").replace("<", "&lt;")
     return f"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>{PROOF_CSS}</style></head><body>
 <div class="k">SERVER-SIDE AUTHORIZATION</div><h1>화면이 아니라 서버가 거부합니다</h1>
-<div class="card" id="c1"><div class="who">일반 사용자 토큰 (user@dataquill.io)</div>
+<div class="card" id="c1"><div class="who">일반 사용자 토큰 (user@datapick.io)</div>
 <div class="req">GET {API}/api/admin/users</div>
 <div class="res"><span class="code">{s1}</span>{esc(b1)}</div></div>
-<div class="card" id="c2"><div class="who">테스트 관리자 토큰 (admin@dataquill.io)</div>
+<div class="card" id="c2"><div class="who">테스트 관리자 토큰 (admin@datapick.io)</div>
 <div class="req">PATCH {API}/api/admin/users/{target['id']}/role  {{"role": "admin"}}</div>
 <div class="res"><span class="code">{s2}</span>{esc(b2)}</div></div>
 <div class="note">녹화 시점에 운영 서버를 실제로 호출한 응답입니다. (backend/app/deps.py · require_admin / get_current_user)</div>
@@ -658,7 +658,7 @@ def record_actions(browser):
     ctx = new_context(browser)
     page = ctx.new_page()
     r = Recorder(page, ctx, "actions")
-    page.goto("https://github.com/fsclass-n/dataquill/actions", wait_until="load", timeout=120000)
+    page.goto("https://github.com/fsclass-n/datapick/actions", wait_until="load", timeout=120000)
     page.locator("a[href*='/actions/runs/']").first.wait_for(timeout=60000)
     r.wait(1.5)
     r.begin("s03")
