@@ -36,3 +36,13 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def migrate() -> None:
+    """create_all 이 추가하지 않는 신규 컬럼을 기존 테이블에 붙인다(SQLite · TiDB/MySQL 공용)."""
+    from sqlalchemy import inspect, text
+
+    existing = {c["name"] for c in inspect(engine).get_columns("users")}
+    if "plan" not in existing:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE users ADD COLUMN plan VARCHAR(20) NOT NULL DEFAULT 'free'"))

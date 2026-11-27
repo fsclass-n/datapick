@@ -9,6 +9,7 @@ import { EmptyState, LoadingBlock } from './components/ui'
 import Home from './pages/Home'
 import Login from './pages/Login'
 
+const Billing = lazy(() => import('./pages/Billing'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Documents = lazy(() => import('./pages/Documents'))
 const QuoteCompare = lazy(() => import('./pages/tools/QuoteCompare'))
@@ -98,6 +99,7 @@ export default function App() {
           <Route path="/privacy" element={<Privacy />} />
           <Route element={<RequireAuth />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/billing" element={<Billing />} />
             <Route path="/documents" element={<Documents />} />
             <Route path="/tools/quotes" element={<QuoteCompare />} />
             <Route path="/tools/contract" element={<ContractReview />} />

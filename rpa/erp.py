@@ -62,7 +62,8 @@ class WebFormAdapter(ErpAdapter):
       voucher_attr   전표번호가 들어있는 속성(기본 data-voucher, 없으면 요소 텍스트)
       voucher_regex  텍스트에서 전표번호를 뽑는 정규식(선택)
       login          선택. {"url", "username", "password", "submit", "username_env",
-                     "password_env"} — 값은 env 이름으로 지정하고 비밀 값은 .env 에 둔다
+                     "password_env"} — 값은 env 이름으로 지정하고 비밀 값은 .env 에 둔다.
+                     계정별 연결에서는 "username_value" / "password_value" 로 값을 직접 넘길 수 있다.
       delay_ms       키 입력 간 지연(기본 20)
     """
 
@@ -114,8 +115,8 @@ class WebFormAdapter(ErpAdapter):
         login = self.cfg.get("login")
         if not login:
             return
-        username = os.getenv(login.get("username_env", "ERP_USERNAME"), "")
-        password = os.getenv(login.get("password_env", "ERP_PASSWORD"), "")
+        username = login.get("username_value") or os.getenv(login.get("username_env", "ERP_USERNAME"), "")
+        password = login.get("password_value") or os.getenv(login.get("password_env", "ERP_PASSWORD"), "")
         if not username or not password:
             raise ErpTypingError(
                 f"ERP 로그인 자격증명이 없습니다({login.get('username_env')}, {login.get('password_env')})."
@@ -214,7 +215,32 @@ def get_adapter() -> ErpAdapter:
     raise ErpTypingError(f"알 수 없는 ERP_ADAPTER: {kind}")
 
 
-def submit_record(record: dict) -> str:
-    """환경 변수로 선택된 어댑터로 파싱 결과를 입력한다."""
+def config_for_connection(
+    *, url: str, username: str, password: str, login_url: str | None = None, fields: dict | None = None
+) -> dict:
+    """고객사 ERP 연결 정보로 web_form 설정을 만든다.
+
+    셀렉터 맵은 플랫폼 공용 설정(ERP_CONFIG / 데모)을 기본으로 쓰고,
+    고객이 fields 를 지정하면 그 맵으로 교체한다.
+    """
+    cfg = load_target_config()
+    cfg["url"] = url
+    if fields:
+        cfg["fields"] = fields
+    base_login = cfg.get("login") if isinstance(cfg.get("login"), dict) else {}
+    cfg["login"] = {
+        "url": login_url or url.rstrip("/") + "/login",
+        "username": base_login.get("username", "#login_id"),
+        "password": base_login.get("password", "#login_pw"),
+        "submit": base_login.get("submit", "#login_btn"),
+        "username_value": username,
+        "password_value": password,
+    }
+    return cfg
+
+
+def submit_record(record: dict, config: dict | None = None) -> str:
+    """환경 변수로 선택된 어댑터(또는 주어진 계정별 설정)로 파싱 결과를 입력한다."""
     headless = os.getenv("RPA_HEADLESS", "true").lower() != "false"
-    return get_adapter().submit(record, headless=headless)
+    adapter = WebFormAdapter(config) if config else get_adapter()
+    return adapter.submit(record, headless=headless)

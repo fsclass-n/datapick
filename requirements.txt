@@ -29,3 +29,4 @@ httpx==0.28.1
 # ---- Docs (발표자료 생성: docs/scripts/build_presentation.py) ----
 python-pptx==1.0.2
 qrcode==8.2
+cryptography==43.0.3

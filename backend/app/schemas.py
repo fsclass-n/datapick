@@ -14,6 +14,7 @@ class UserOut(BaseModel):
     email: str
     name: str
     role: str
+    plan: str
     provider: str
     created_at: UtcDatetime
     last_login_at: UtcDatetime | None = None
@@ -91,3 +92,26 @@ class AnalysisOut(BaseModel):
 
 class AnalysisDetailOut(AnalysisOut):
     result: dict
+
+
+class UsageOut(BaseModel):
+    plan: str
+    plan_label: str
+    price: int
+    docs_used: int
+    docs_limit: int
+    docs_remaining: int
+    erp_connection: bool
+
+
+class ErpConnectionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+    erp_url: str
+    login_url: str | None = None
+    username: str
+    has_password: bool
+    fields: dict | None = None
+    updated_at: UtcDatetime

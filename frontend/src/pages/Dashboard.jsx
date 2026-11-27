@@ -224,9 +224,14 @@ export default function Dashboard() {
               <p className="mt-0.5 text-xs text-slate-500">가입일 {dateTime(user.created_at)}</p>
             </div>
           </div>
-          <button type="button" onClick={() => setWithdrawOpen(true)} className="text-sm font-semibold text-rose-600 transition hover:text-rose-700">
-            회원 탈퇴
-          </button>
+          <div className="flex items-center gap-4">
+            <Link to="/billing" className="text-sm font-semibold text-brand-700 transition hover:text-ink">
+              구독 · ERP 연동
+            </Link>
+            <button type="button" onClick={() => setWithdrawOpen(true)} className="text-sm font-semibold text-rose-600 transition hover:text-rose-700">
+              회원 탈퇴
+            </button>
+          </div>
         </div>
       </section>
 

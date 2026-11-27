@@ -5,9 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
 from .config import settings
-from .database import Base, SessionLocal, engine
+from .database import Base, SessionLocal, engine, migrate
 from .models import User
-from .routers import admin, auth, documents, erp_demo, tools
+from .routers import admin, auth, billing, documents, erp_connection, erp_demo, tools
 from .security import hash_password, verify_password
 from .test_accounts import TEST_ACCOUNT_EMAILS, TEST_ACCOUNTS
 
@@ -52,6 +52,7 @@ def seed_admin_account() -> None:
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(engine)
+    migrate()
     settings.storage_dir.mkdir(parents=True, exist_ok=True)
     if settings.seed_test_accounts:
         seed_test_accounts()
@@ -67,7 +68,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-for module in (auth, admin, documents, erp_demo, tools):
+for module in (auth, admin, documents, erp_demo, tools, billing, erp_connection):
     app.include_router(module.router)
 
 

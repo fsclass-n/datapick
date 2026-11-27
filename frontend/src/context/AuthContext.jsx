@@ -41,6 +41,13 @@ export function AuthProvider({ children }) {
     return me
   }, [])
 
+  // 요금제 변경 등으로 서버의 사용자 정보가 바뀐 뒤 다시 읽어온다
+  const refreshUser = useCallback(async () => {
+    const me = await api('/api/auth/me')
+    setUser(me)
+    return me
+  }, [])
+
   useEffect(() => {
     if (!tokenStore.get()) return
     api('/api/auth/me')
@@ -69,8 +76,9 @@ export function AuthProvider({ children }) {
       register,
       logout,
       loginWithToken,
+      refreshUser,
     }),
-    [user, loading, login, adminLogin, register, logout, loginWithToken],
+    [user, loading, login, adminLogin, register, logout, loginWithToken, refreshUser],
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

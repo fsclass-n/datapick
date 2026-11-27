@@ -12,9 +12,9 @@ from rpa import erp, excel_writer, extract
 from ..config import settings
 from ..database import get_db
 from ..deps import ADMIN_ROLES, get_current_user
-from ..models import Document, RpaJob, User, utcnow
+from ..models import Document, ErpConnection, RpaJob, User, utcnow
 from ..schemas import DocumentDetailOut, DocumentOut, RpaIn, RpaJobOut, TextDocumentIn
-from ..services import parser, stats
+from ..services import billing, crypto, parser, stats
 
 router = APIRouter(prefix="/api", tags=["documents"])
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
@@ -68,6 +68,7 @@ def list_documents(status_filter: str = "", user: User = Depends(get_current_use
 async def upload_document(
     file: UploadFile = File(...), user: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
+    billing.check_quota(db, user)
     filename = os.path.basename(file.filename or "upload")
     if Path(filename).suffix.lower() not in extract.SUPPORTED_TYPES:
         raise HTTPException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, "PDF, 이미지, EML, HTML, TXT 파일만 업로드할 수 있습니다.")
@@ -88,6 +89,7 @@ async def upload_document(
 
 @router.post("/documents/text", response_model=DocumentDetailOut, status_code=status.HTTP_201_CREATED)
 def create_text_document(body: TextDocumentIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    billing.check_quota(db, user)
     text = extract.html_to_text(body.text) if "<" in body.text and ">" in body.text else body.text
     doc = Document(user_id=user.id, filename=body.title, source_type="email", raw_text=text)
     _run_parse(doc, None)
@@ -152,8 +154,16 @@ def run_rpa(doc_id: int, body: RpaIn, user: User = Depends(get_current_user), db
             rows = excel_writer.append_rows(_ledger_path(doc.user_id), [excel_writer.to_row(doc.id, doc.parsed)])
             job.message = f"엑셀 원장에 적재했습니다. (총 {rows}행)"
         else:
-            # ERP_ADAPTER 로 대상 결정: web_form(기본, ERP_CONFIG 셀렉터 맵) · file_export(일괄등록 엑셀)
-            voucher = erp.submit_record(doc.parsed)
+            # 문서 소유자가 고객사 ERP 연결을 저장해 두면 그 계정으로 입력한다.
+            # 없으면 ERP_ADAPTER/ERP_CONFIG 로 정한 플랫폼 기본 대상(데모 ERP)을 쓴다.
+            conn = db.scalar(select(ErpConnection).where(ErpConnection.user_id == doc.user_id))
+            config = None
+            if conn:
+                config = erp.config_for_connection(
+                    url=conn.erp_url, login_url=conn.login_url, username=conn.username,
+                    password=crypto.decrypt(conn.password_enc), fields=conn.fields_json,
+                )
+            voucher = erp.submit_record(doc.parsed, config=config)
             job.message = f"ERP 입력 완료 ({voucher})"
         job.status = "success"
     except Exception as exc:

@@ -8,6 +8,23 @@ const ADMIN_ROLES = ['admin', 'test_admin']
 const TEST_ACCOUNT_EMAILS = ['user@datapick.io', 'admin@datapick.io']
 const PASSWORD_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/
 
+const PLANS = {
+  free: { label: 'Free', price: 0, docs_per_month: 10, erp_connection: false, features: ['월 문서 10건', 'AI 도구 3종', '엑셀 원장'] },
+  pro: { label: 'Pro', price: 29000, docs_per_month: 200, erp_connection: true, features: ['월 문서 200건', '내 ERP 연동', 'AI 도구 3종', '엑셀 원장'] },
+  business: { label: 'Business', price: 99000, docs_per_month: 2000, erp_connection: true, features: ['월 문서 2,000건', '내 ERP 연동', '우선 지원'] },
+}
+const monthStart = () => { const d = new Date(); d.setDate(1); d.setHours(0, 0, 0, 0); return d.toISOString() }
+const planOf = (user) => PLANS[user.plan || 'free']
+const usageOf = (db, user) => {
+  const plan = planOf(user)
+  const used = db.documents.filter((d) => d.user_id === user.id && d.created_at >= monthStart()).length
+  return { plan: user.plan || 'free', plan_label: plan.label, price: plan.price, docs_used: used, docs_limit: plan.docs_per_month, docs_remaining: Math.max(plan.docs_per_month - used, 0), erp_connection: plan.erp_connection }
+}
+const checkQuota = (db, user) => {
+  const u = usageOf(db, user)
+  if (u.docs_used >= u.docs_limit) fail(402, `이번 달 문서 처리 한도(${u.docs_limit}건)를 모두 사용했습니다. 상위 요금제로 업그레이드하세요.`)
+}
+
 const fail = (status, message) => {
   throw Object.assign(new Error(message), { status })
 }
@@ -23,11 +40,11 @@ const VENDORS = ['스타벅스 강남R점', '쿠팡(주)', '네이버클라우�
 
 function seed() {
   const users = [
-    { id: 1, email: 'user@datapick.io', name: '테스트 사용자', password: 'User1234!', role: 'user', provider: 'local', created_at: daysAgo(30), last_login_at: null },
+    { id: 1, email: 'user@datapick.io', name: '테스트 사용자', password: 'User1234!', role: 'user', plan: 'free', provider: 'local', created_at: daysAgo(30), last_login_at: null },
     { id: 2, email: 'admin@datapick.io', name: '테스트 관리자', password: 'Admin1234!', role: 'test_admin', provider: 'local', created_at: daysAgo(30), last_login_at: null },
-    { id: 3, email: 'kim.hr@acme.co.kr', name: '김인사', password: null, role: 'user', provider: 'google', created_at: daysAgo(12), last_login_at: daysAgo(1) },
-    { id: 4, email: 'lee.fin@acme.co.kr', name: '이재무', password: null, role: 'user', provider: 'naver', created_at: daysAgo(8), last_login_at: daysAgo(2) },
-    { id: 5, email: 'park@acme.co.kr', name: '박회계', password: null, role: 'user', provider: 'kakao', created_at: daysAgo(4), last_login_at: daysAgo(0) },
+    { id: 3, email: 'kim.hr@acme.co.kr', name: '김인사', password: null, role: 'user', plan: 'pro', provider: 'google', created_at: daysAgo(12), last_login_at: daysAgo(1) },
+    { id: 4, email: 'lee.fin@acme.co.kr', name: '이재무', password: null, role: 'user', plan: 'pro', provider: 'naver', created_at: daysAgo(8), last_login_at: daysAgo(2) },
+    { id: 5, email: 'park@acme.co.kr', name: '박회계', password: null, role: 'user', plan: 'business', provider: 'kakao', created_at: daysAgo(4), last_login_at: daysAgo(0) },
   ]
   const documents = []
   const jobs = []
@@ -213,7 +230,7 @@ export async function mockRequest(path, { method, body, token }) {
   if (route === 'POST /api/auth/register') {
     if (!PASSWORD_RE.test(body.password)) fail(422, '비밀번호는 영문 대·소문자, 숫자, 특수문자를 모두 포함해 8자 이상이어야 합니다.')
     if (db.users.some((u) => u.email === body.email.toLowerCase())) fail(409, '이미 가입된 이메일입니다.')
-    const user = { id: db.seq.user++, email: body.email.toLowerCase(), name: body.name, password: body.password, role: 'user', provider: 'local', created_at: now(), last_login_at: now() }
+    const user = { id: db.seq.user++, email: body.email.toLowerCase(), name: body.name, password: body.password, role: 'user', plan: 'free', provider: 'local', created_at: now(), last_login_at: now() }
     db.users.push(user)
     return done({ access_token: tokenFor(user), token_type: 'bearer', user: publicUser(user) })
   }
@@ -265,13 +282,56 @@ export async function mockRequest(path, { method, body, token }) {
       db.documents = db.documents.filter((d) => d.user_id !== user.id)
       db.jobs = db.jobs.filter((j) => !docIds.includes(j.document_id))
       db.analyses = (db.analyses || []).filter((a) => a.user_id !== user.id)
+      db.erp_connections = (db.erp_connections || []).filter((c) => c.user_id !== user.id)
       return done(null)
+    }
+    case 'GET /api/billing/plans':
+      return { plans: Object.entries(PLANS).map(([id, plan]) => ({ id, ...plan })) }
+    case 'GET /api/billing/usage':
+      return usageOf(db, user)
+    case 'POST /api/billing/subscribe': {
+      if (!PLANS[body.plan]) fail(400, '알 수 없는 요금제입니다.')
+      user.plan = body.plan
+      return done(usageOf(db, user))
+    }
+    case 'POST /api/billing/cancel': {
+      user.plan = 'free'
+      return done(usageOf(db, user))
+    }
+    case 'GET /api/erp/connection': {
+      const conn = (db.erp_connections || []).find((c) => c.user_id === user.id)
+      // eslint-disable-next-line no-unused-vars
+      return conn ? (({ password, ...pub }) => pub)(conn) : null
+    }
+    case 'PUT /api/erp/connection': {
+      if (!planOf(user).erp_connection) fail(403, '고객사 ERP 연동은 Pro 이상 요금제에서 사용할 수 있습니다.')
+      db.erp_connections ||= []
+      db.seq.erp_connection ||= 1
+      const conn = {
+        id: db.seq.erp_connection++, user_id: user.id, name: body.name || '우리 회사 ERP',
+        erp_url: body.erp_url?.replace(/\/$/, ''), login_url: body.login_url || null,
+        username: body.username, password: body.password, has_password: true,
+        fields: body.fields || null, updated_at: now(),
+      }
+      db.erp_connections = db.erp_connections.filter((c) => c.user_id !== user.id).concat(conn)
+      // eslint-disable-next-line no-unused-vars
+      return done((({ password, ...pub }) => pub)(conn))
+    }
+    case 'DELETE /api/erp/connection': {
+      db.erp_connections = (db.erp_connections || []).filter((c) => c.user_id !== user.id)
+      return done(null)
+    }
+    case 'POST /api/erp/connection/test': {
+      const conn = (db.erp_connections || []).find((c) => c.user_id === user.id)
+      if (!conn) fail(404, '저장된 ERP 연결 정보가 없습니다.')
+      return { ok: true, detail: `로그인 성공 — 세션이 발급되었습니다 (${conn.login_url || conn.erp_url + '/login'})` }
     }
     case 'GET /api/dashboard':
       return computeStats(db, user.id)
     case 'GET /api/documents':
       return db.documents.filter((d) => d.user_id === user.id).sort((a, b) => b.id - a.id).map((d) => withJobs(db, d))
     case 'POST /api/documents/upload': {
+      checkQuota(db, user)
       const file = body.get('file')
       const ext = file.name.split('.').pop().toLowerCase()
       const textual = ['txt', 'eml', 'html', 'htm', 'csv', 'md'].includes(ext)
@@ -282,6 +342,7 @@ export async function mockRequest(path, { method, body, token }) {
       return done(withJobs(db, doc))
     }
     case 'POST /api/documents/text': {
+      checkQuota(db, user)
       const doc = { id: db.seq.document++, user_id: user.id, filename: body.title || '이메일 본문', source_type: 'email', created_at: now() }
       runParse(doc, body.text)
       db.documents.push(doc)
@@ -318,7 +379,7 @@ export async function mockRequest(path, { method, body, token }) {
       if (doc.status !== 'parsed') fail(409, '파싱이 완료된 문서만 RPA 입력을 실행할 수 있습니다.')
       const job = {
         id: db.seq.job++, document_id: doc.id, target: body.target, status: 'success', created_at: now(), finished_at: now(),
-        message: body.target === 'excel' ? '엑셀 원장에 적재했습니다. (목업)' : `ERP 전표 입력 완료 (전표번호 JV-MOCK-${String(db.seq.job).padStart(4, '0')})`,
+        message: body.target === 'excel' ? '엑셀 원장에 적재했습니다. (목업)' : `ERP 입력 완료 (${(db.erp_connections || []).find((c) => c.user_id === user.id) ? 'AC' : 'JV'}-MOCK-${String(db.seq.job).padStart(4, '0')})`,
       }
       db.jobs.push(job)
       return done(job)
@@ -353,6 +414,7 @@ export async function mockRequest(path, { method, body, token }) {
       db.documents = db.documents.filter((d) => d.user_id !== target.id)
       db.jobs = db.jobs.filter((j) => !docIds.includes(j.document_id))
       db.analyses = (db.analyses || []).filter((a) => a.user_id !== target.id)
+      db.erp_connections = (db.erp_connections || []).filter((c) => c.user_id !== target.id)
       return done(null)
     }
     case 'GET /api/admin/stats':

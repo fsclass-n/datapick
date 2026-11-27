@@ -100,3 +100,10 @@
 - 녹화는 설치된 Edge(`channel="msedge"`) + CDP 스크린캐스트(프레임 타임스탬프). Playwright 기본 녹화는 실제 시간과 어긋나므로 쓰지 않음
 - `record_demo.py` 는 공개 테스트 일반 사용자의 문서를 지우고 2건(가상 영수증 스캔 PDF, 샘플 청구 메일)을 새로 처리함 (Gemini 호출 발생). 스캔 PDF 는 Gemini 멀티모달 경로라 정확하고 빠름(이미지 업로드는 Tesseract 경로라 60초 이상 · 품목 오인식)
 - 장면 동작이 장면 길이를 넘으면 녹화 로그에 `!!` 경고 → 끝부분이 잘리므로 동작을 줄이고 해당 클립(`build/clips/<id>.mp4`)만 지운 뒤 `compose.py` 재실행
+
+## 상용화 구조 (2026-11-27)
+- 요금제: `users.plan`(free/pro/business) + `services/billing.py`(월 문서 한도, 402 차단). 기존 DB 는 `database.migrate()` 가 기동 시 ALTER TABLE 로 컬럼 추가
+- 결제: `POST /api/billing/subscribe` 는 게이트웨이 없는 인앱 스텁 — 실제 결제 연동 시 이 지점을 교체
+- 고객사 ERP: `erp_connections` 테이블(계정별 ERP 주소·로그인 자격증명, 비밀번호는 Fernet 암호화 — `services/crypto.py`, SECRET_KEY 기반). Pro 이상만 저장 가능. 문서 소유자 연결이 있으면 `rpa/erp.config_for_connection()` → 인라인 자격증명(username_value/password_value)으로 입력
+- external_erp 화면은 가상 고객사 "(주)한빛물산"의 "BizCube ERP" 컨셉(셀렉터·API 는 데모와 동일)
+- 프런트 `/billing`: 요금제 카드 + 사용량 게이지 + ERP 연결 폼·연결 테스트
