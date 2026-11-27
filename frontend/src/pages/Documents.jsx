@@ -345,9 +345,11 @@ function DocumentDetail({ docId, onChanged, onDeleted, onClose }) {
 
 export default function Documents() {
   const toast = useToast()
+  const { readOnly } = useAuth()
   const [params, setParams] = useSearchParams()
   const [docs, setDocs] = useState(null)
   const [filter, setFilter] = useState('')
+  const [bulk, setBulk] = useState(null)
   const selected = Number(params.get('id')) || null
   const select = (id) => setParams(id ? { id } : {}, { replace: true })
 
@@ -361,6 +363,29 @@ export default function Documents() {
     download('/api/documents/ledger.xlsx', IS_MOCK ? 'datapick_ledger.csv' : 'datapick_ledger.xlsx').catch((err) => toast(err.message, 'error'))
 
   const visible = (docs || []).filter((d) => !filter || d.status === filter)
+  // ERP 입력 성공 이력이 없는 파싱 완료 문서가 일괄 입력 대상
+  const pendingErp = (docs || []).filter(
+    (d) => d.status === 'parsed' && !d.jobs?.some((j) => j.target === 'erp' && j.status === 'success')
+  )
+
+  async function bulkErp() {
+    const targets = pendingErp
+    setBulk({ done: 0, total: targets.length })
+    let ok = 0
+    let failed = 0
+    for (const d of targets) {
+      try {
+        const job = await api(`/api/documents/${d.id}/rpa`, { method: 'POST', body: { target: 'erp' } })
+        job.status === 'success' ? ok++ : failed++
+        upsert({ ...d, jobs: [...(d.jobs || []), job] })
+      } catch {
+        failed++
+      }
+      setBulk((b) => ({ ...b, done: b.done + 1 }))
+    }
+    setBulk(null)
+    toast(`ERP 일괄 입력 완료 — 성공 ${ok}건 · 실패 ${failed}건`, failed ? 'error' : 'success')
+  }
 
   return (
     <>
@@ -383,12 +408,26 @@ export default function Documents() {
           <section className="card overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
               <h2 className="text-base font-semibold">처리 내역 {docs && <span className="text-slate-400">{visible.length}</span>}</h2>
-              <div className="flex gap-1 rounded-lg bg-slate-100 p-1 text-xs font-semibold">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={bulkErp}
+                  disabled={!pendingErp.length || !!bulk || readOnly}
+                  title={readOnly ? READ_ONLY_HINT : undefined}
+                  className="btn-primary py-1.5 text-xs disabled:opacity-50"
+                >
+                  {bulk ? (
+                    <><Spinner /> ERP 입력 중 {bulk.done}/{bulk.total}…</>
+                  ) : (
+                    <><FontAwesomeIcon icon={faKeyboard} /> ERP 일괄 입력{pendingErp.length ? ` (${pendingErp.length})` : ''}</>
+                  )}
+                </button>
+                <div className="flex gap-1 rounded-lg bg-slate-100 p-1 text-xs font-semibold">
                 {[['', '전체'], ['parsed', '완료'], ['failed', '실패']].map(([value, label]) => (
                   <button key={value} onClick={() => setFilter(value)} className={`rounded-md px-3 py-1.5 transition ${filter === value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}`}>
                     {label}
                   </button>
                 ))}
+                </div>
               </div>
             </div>
             {!docs ? (
