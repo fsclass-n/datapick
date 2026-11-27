@@ -15,15 +15,26 @@
 `.env`에 아래를 설정하고 백엔드를 재시작한다.
 
 ```env
+ERP_CONFIG=rpa/erp_target.example.json
+ERP_URL=http://localhost:8100/
 ERP_USERNAME=erp
 ERP_PASSWORD=demo1234
-ERP_CONFIG=rpa/erp_target.example.json   # url 을 8100 포트로 설정한 예시
 ```
 
 그 뒤 대시보드에서 'ERP 자동 타이핑'을 실행하면 Playwright 가
 `http://localhost:8100`에 로그인해 전표를 등록한다.
 
-## 별도 배포
+## 별도 배포 (Render)
 
-Render 에 Web Service 를 새로 만들어 연결할 수 있다(render.yaml 의 주석 예시 참조).
-배포 후 `ERP_CONFIG` 의 url 두 곳을 배포 주소로 바꾸면 된다.
+render.yaml 의 주석 블록을 해제하면 `datapick-erp-demo` 서비스가 생성된다.
+그 뒤 `datapick-api` 의 Environment 에 아래를 등록한다(JSON 을 통째로 붙일 필요 없음).
+
+```env
+ERP_CONFIG=rpa/erp_target.example.json
+ERP_URL=https://<외부ERP-서비스주소>/
+ERP_USERNAME=erp
+ERP_PASSWORD=demo1234
+```
+
+`ERP_URL` 이 설정 파일의 url 을 덮어쓰고 로그인 주소({URL}/login)도 자동으로 유도된다.
+`ERP_CONFIG` 에는 같은 형식의 완전한 JSON 문자열을 넣어도 된다.

@@ -6,7 +6,8 @@
 - ERP_ADAPTER  : `web_form`(기본) | `file_export`
 - ERP_CONFIG   : web_form 대상 설정 JSON 파일 경로 또는 JSON 문자열.
                  비우면 같은 서버의 데모 ERP(/erp-demo) 대상으로 자동 설정된다.
-- ERP_URL      : 설정 파일이 없을 때의 대상 화면 URL(데모 ERP 기본값과 함께 사용)
+- ERP_URL      : 대상 화면 URL — 설정의 url 을 덮어쓰고, login.url 이 없으면
+                 `{ERP_URL}/login` 으로 자동 유도된다(파일 설정 + URL 만으로 연결 가능)
 - ERP_EXPORT_PATH : file_export 출력 파일(기본 storage/erp_upload.xlsx)
 
 web_form 설정 예시는 rpa/erp_target.example.json 참조.
@@ -18,6 +19,13 @@ import json
 import os
 import re
 from pathlib import Path
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+except ImportError:  # dotenv 없이 단독 실행되는 환경
+    pass
 
 DEMO_FIELD_SELECTORS = {
     "vendor": "#vendor",
@@ -167,11 +175,14 @@ class FileExportAdapter(ErpAdapter):
         return f"{self.path.name} {len(new)}행"
 
 
-def _demo_url() -> str:
-    """미설정 시 같은 컨테이너의 데모 ERP(Render 는 PORT=10000, 로컬은 8000)."""
-    url = os.getenv("ERP_URL")
+def _resolve_url(config_url: str = "") -> str:
+    """대상 URL 결정: ERP_URL env > 설정 파일 url > 같은 컨테이너의 데모 ERP.
+
+    Render 에서 localhost 계열은 자기 컨테이너일 수밖에 없으므로 데모로 되돌린다.
+    """
+    url = os.getenv("ERP_URL") or config_url
     if not url or (os.getenv("RENDER") and ("localhost" in url or "127.0.0.1" in url)):
-        url = f"http://127.0.0.1:{os.getenv('PORT', '8000')}/erp-demo"
+        return f"http://127.0.0.1:{os.getenv('PORT', '8000')}/erp-demo"
     return url
 
 
@@ -179,12 +190,19 @@ def load_target_config() -> dict:
     """ERP_CONFIG(JSON 파일 경로 또는 JSON 문자열)를 읽는다. 없으면 데모 ERP 대상."""
     raw = (os.getenv("ERP_CONFIG") or "").strip()
     if raw:
-        cfg = json.loads(Path(raw).read_text(encoding="utf-8") if Path(raw).exists() else raw)
+        try:
+            cfg = json.loads(Path(raw).read_text(encoding="utf-8") if Path(raw).exists() else raw)
+        except json.JSONDecodeError as exc:
+            raise ErpTypingError(f"ERP_CONFIG JSON 해석 실패: {exc}. 파일 경로 또는 완전한 JSON 인지 확인하세요.") from exc
         if not isinstance(cfg, dict):
             raise ErpTypingError("ERP_CONFIG 은 JSON 객체여야 합니다.")
-        cfg.setdefault("url", _demo_url())
-        return cfg
-    return {"url": _demo_url(), "fields": dict(DEMO_FIELD_SELECTORS)}
+        cfg["url"] = _resolve_url(cfg.get("url", ""))
+    else:
+        cfg = {"url": _resolve_url(), "fields": dict(DEMO_FIELD_SELECTORS)}
+    login = cfg.get("login")
+    if isinstance(login, dict) and not login.get("url"):
+        login["url"] = cfg["url"].rstrip("/") + "/login"
+    return cfg
 
 
 def get_adapter() -> ErpAdapter:

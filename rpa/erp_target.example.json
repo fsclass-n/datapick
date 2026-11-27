@@ -2,7 +2,6 @@
   "주석": "ERP_CONFIG 에 넣는 web_form 대상 설정 예시 — 외부 미니 ERP(external_erp)와 실제 ERP 모두 같은 형식",
   "url": "http://localhost:8100/",
   "login": {
-    "url": "http://localhost:8100/login",
     "username": "#login_id",
     "password": "#login_pw",
     "submit": "#login_btn",
