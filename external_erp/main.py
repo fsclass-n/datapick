@@ -66,8 +66,24 @@ def list_vouchers(request: Request):
     return VOUCHERS[-50:]
 
 
+FAVICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<rect width="64" height="64" rx="14" fill="#0d2240"/>
+<path d="M32 13 51 24 32 35 13 24Z" fill="#7db2ff"/>
+<path d="M13 24 32 35v17L13 41Z" fill="#1d5fbf"/>
+<path d="M51 24 32 35v17l19-11Z" fill="#4a8de0"/>
+</svg>"""
+
+
+@app.get("/favicon.svg")
+def favicon():
+    from fastapi.responses import Response
+
+    return Response(FAVICON_SVG, media_type="image/svg+xml")
+
+
 LOGIN_PAGE = """<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <title>__PRODUCT__ 로그인 - __COMPANY__</title>
 <style>
 *{box-sizing:border-box;margin:0}
@@ -90,7 +106,10 @@ footer{margin-top:22px;color:#9db4d4;font-size:11px;text-align:center;line-heigh
 </style></head><body>
 <div class="card">
  <div class="brand">
-  <div class="co">__COMPANY__</div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+   <img src="/favicon.svg" width="34" height="34" alt="">
+   <div class="co">__COMPANY__</div>
+  </div>
   <h1>__PRODUCT__ <b>Cloud</b></h1>
   <div class="ver">v5.2.1 · 통합회계관리시스템 · 회계기준 K-IFRS</div>
  </div>
@@ -133,6 +152,7 @@ def logout(request: Request):
 
 MAIN_PAGE = """<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <title>__PRODUCT__ - 매입전표등록</title>
 <style>
 *{box-sizing:border-box}
@@ -184,6 +204,7 @@ form.reg button#submit:hover{background:#1d5fbf}
 .statusbar{background:#0d2240;color:#8fa8cc;font-size:11px;padding:5px 18px;display:flex;gap:18px}
 </style></head><body>
 <div class="topbar">
+ <img src="/favicon.svg" width="26" height="26" alt="" style="border-radius:5px">
  <span class="logo">__PRODUCT__ <b>Cloud</b></span>
  <nav><span>시스템</span><span class="on">회계</span><span>인사</span><span>구매·자재</span><span>영업</span></nav>
  <span class="who">__COMPANY__ · <b>경리팀 김한빛</b> (__UID__) <a href="/logout">로그아웃</a></span>
